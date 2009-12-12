@@ -1,3 +1,12 @@
-<project name="fv3">
+<project name="fv3" default="jar">
+
+
+  <target name="jar">
+
+  </target>
+
+  <target name="clean">
+
+  </target>
 
 </project>
