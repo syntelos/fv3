@@ -15,19 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.nui;
+package fv3.model;
 
-/**
- * @see fv3.Component
- */
-public abstract class Model
-    extends Component 
-    implements fv3.Model
+import javax.media.opengl.GL2;
+
+public final class ShadeModel
+    extends fv3.model.Object
 {
+    private final int glType;
 
 
-    public Model(){
+    public ShadeModel(int glType){
         super();
+        if (0 < glType)
+            this.glType = glType;
+        else
+            throw new IllegalArgumentException();
     }
 
+
+    public void apply(GL2 gl){
+        gl.glShadeModel(this.glType);
+    }
+    public Object.Type getObjectType(){
+        return Object.Type.ShadeModel;
+    }
 }

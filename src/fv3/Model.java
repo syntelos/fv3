@@ -15,19 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.nui;
+package fv3;
 
 /**
- * @see fv3.Component
+ * 
  */
-public abstract class Model
-    extends Component 
-    implements fv3.Model
+public interface Model 
+    extends Component
 {
-
-
-    public Model(){
-        super();
-    }
-
+    /**
+     * @return Zero- positive number of GL lists employed by this
+     * model.
+     */
+    public int getGlListCount();
+    /**
+     * @param idx A Zero- positive index into the GL lists defined by this
+     * model.
+     * @return GL list identifier
+     * @exception java.lang.ArrayIndexOutOfBoundsException For
+     * argument 'idx' not greater than negative one and less than list
+     * count.
+     */
+    public int getGlListId(int idx)
+        throws java.lang.ArrayIndexOutOfBoundsException;
 }

@@ -15,19 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.nui;
+package fv3.model;
 
-/**
- * @see fv3.Component
- */
-public abstract class Model
-    extends Component 
-    implements fv3.Model
+import javax.media.opengl.GL2;
+
+public final class Normal3f
+    extends fv3.model.Object
 {
+    private final float x, y, z;
 
 
-    public Model(){
+    public Normal3f(double x, double y, double z){
+        this( (float)x, (float)y, (float)z);
+    }
+    public Normal3f(float x, float y, float z){
         super();
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
+
+    public void apply(GL2 gl){
+        gl.glNormal3f(this.x,this.y,this.z);
+    }
+    public Object.Type getObjectType(){
+        return Object.Type.Normal3f;
+    }
 }

@@ -11,6 +11,7 @@
     <property name="fv3tk.Animator.SwapInterval" value="default"/>
     <property name="fv3tk.Animator.Sync.DT" value="40"/>
     <property name="sun.java2d.noddraw" value="true"/>
+    <jar href="vecmath.jar" main="true"/>
     <jar href="@ProjectName@-@ProjectVersion@.jar" main="true"/>
     <extension name="newt-jogl" href="newt-jogl.jnlp" />
   </resources>

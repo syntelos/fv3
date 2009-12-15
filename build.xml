@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="fv3" default="loader">
+<project name="fv3" default="apps">
 
-  <property name="main" value="fv3.Main"/>
+  <property name="main" value="fv3.World"/>
 
   <property name="src" value="src"/>
   <property name="bin" value="bin"/>
-  <property name="lib" value="../web"/>
-  <property name="dst" value="../web"/>
+  <property name="lib" value="lib"/>
+  <property name="web" value="../web"/>
 
   <property name="jnlp.codebase" value="http://fv3.googlecode.com/svn/web/"/>
 
@@ -18,9 +18,20 @@
   <property file="build.version"/>
   <property name="this.version" value="${version.major}.${version.minor}.${version.build}"/>
 
+  <property name="lib.fv3tk.jar" value="${lib}/fv3tk-${this.version}.jar"/>
+
+  <path id="lib.fv3tk.jar.path">
+    <pathelement location="${lib.fv3tk.jar}" />
+  </path>
+
   <path id="lib.path">
     <fileset dir="${lib}">
       <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${web}">
+      <include name="**/*.jar" />
+      <exclude name="**/fv3*.jar" />
+      <exclude name="**/*-natives-*.jar" />
     </fileset>
   </path>
   <path id="jnlp.loader.jar">
@@ -30,13 +41,21 @@
   </path>
 
 
-  <property name="target.jar" value="${dst}/${ant.project.name}-${this.version}.jar"/>
+  <property name="target.jar" value="${web}/${ant.project.name}-${this.version}.jar"/>
 
-  <property name="loader.jar" value="${dst}/${ant.project.name}-loader-${this.version}.jar"/>
+  <property name="loader.jar" value="${web}/${ant.project.name}-loader-${this.version}.jar"/>
 
-  <property name="target.jnlp" value="${dst}/${ant.project.name}-${this.version}.jnlp"/>
+  <property name="target.jnlp" value="${web}/${ant.project.name}-${this.version}.jnlp"/>
 
 
+  <target name="apps" depends="loader">
+    <subant>
+      <fileset dir="." includes="**/buildapp.*.xml" />
+    </subant>
+    <subant>
+      <fileset dir="." includes="**/buildloader.*.xml" />
+    </subant>
+  </target>
   <target name="loader" depends="jar" description="Package target loader jar.">
     <delete file="${loader.jar}"/>
 
@@ -59,9 +78,7 @@
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
-      <zipfileset dir="${lib}">
-        <include name="**/fv3tk-*.jar" />
-      </zipfileset>
+      <zipfileset src="${toString:lib.fv3tk.jar.path}" excludes="META-INF/**"/>
     </jar>
     <delete dir="${bin}"/>
     <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">

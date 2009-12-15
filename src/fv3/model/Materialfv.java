@@ -15,19 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.nui;
+package fv3.model;
 
-/**
- * @see fv3.Component
- */
-public abstract class Model
-    extends Component 
-    implements fv3.Model
+import javax.media.opengl.GL2;
+
+public final class Materialfv
+    extends fv3.model.Object
 {
+    private final int face, name;
+    private final float[] params;
 
 
-    public Model(){
+    public Materialfv(int face, int name, float[] params){
         super();
+        if (0 < face && 0 < name && null != params){
+            this.face = face;
+            this.name = name;
+            this.params = params;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
+
+    public void apply(GL2 gl){
+        gl.glMaterialfv(this.face,this.name,this.params,0);
+    }
+    public Object.Type getObjectType(){
+        return Object.Type.Materialfv;
+    }
 }
