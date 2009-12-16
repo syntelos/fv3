@@ -39,41 +39,64 @@ public class Light
 
 
     public void init(GL2 gl){
-        gl.glEnable(GL2.GL_LIGHTING);
         float[] pos = this.position;
         if (null != pos){
             switch (this.number){
             case 0:
-                gl.glEnable(GL2.GL_LIGHT0);
                 gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT0);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 1:
-                gl.glEnable(GL2.GL_LIGHT1);
                 gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT1);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 2:
-                gl.glEnable(GL2.GL_LIGHT2);
                 gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT2);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 3:
-                gl.glEnable(GL2.GL_LIGHT3);
                 gl.glLightfv(GL2.GL_LIGHT3, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT3);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 4:
-                gl.glEnable(GL2.GL_LIGHT4);
                 gl.glLightfv(GL2.GL_LIGHT4, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT4);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 5:
-                gl.glEnable(GL2.GL_LIGHT5);
                 gl.glLightfv(GL2.GL_LIGHT5, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT5);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 6:
-                gl.glEnable(GL2.GL_LIGHT6);
                 gl.glLightfv(GL2.GL_LIGHT6, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT6);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             case 7:
-                gl.glEnable(GL2.GL_LIGHT7);
                 gl.glLightfv(GL2.GL_LIGHT7, GL2.GL_POSITION, pos, 0);
+                gl.glEnable(GL2.GL_CULL_FACE);
+                gl.glEnable(GL2.GL_LIGHTING);
+                gl.glEnable(GL2.GL_LIGHT7);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 return;
             }
         }

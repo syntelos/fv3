@@ -72,9 +72,6 @@ public class Region
     }
     public void init(GL2 gl){
 
-        gl.glEnable(GL2.GL_CULL_FACE);
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-
         List<fv3.Component> children = this.children;
         if (null != children){
             Object[] list = children.array();
@@ -83,10 +80,6 @@ public class Region
                 co.init(gl);
             }
         }
-
-        gl.glEnable(GL2.GL_NORMALIZE);
-
-        this.checkErrors(gl);
     }
     public void step(long time, long dt){
         List<fv3.Component> children = this.children;
@@ -99,8 +92,6 @@ public class Region
         }
     }
     public void display(GL2 gl){
-
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
@@ -137,7 +128,6 @@ public class Region
             if (this.pushSpace)
                 gl.glPopMatrix();
         }
-        this.checkErrors(gl);
     }
     public void keyPressed(KeyEvent e){
         fv3.Component current = this.current;
