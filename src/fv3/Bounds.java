@@ -17,19 +17,23 @@
  */
 package fv3;
 
-import javax.vecmath.Point3f;
+import fv3.math.Vector;
 
-public class Bounds3f
+/**
+ * Bounds of a geometric object as a minimum point and a maximum
+ * point.
+ */
+public class Bounds
     extends Object
 {
 
-    public final Point3f min, max;
+    public final Vector min, max;
 
 
-    public Bounds3f(float[][] b){
-        this(new Point3f(b[0]),new Point3f(b[1]));
+    public Bounds(float[][] b){
+        this(new Vector(b[0]),new Vector(b[1]));
     }
-    public Bounds3f(Point3f min, Point3f max){
+    public Bounds(Vector min, Vector max){
         super();
         if (null != min && null != max){
             this.min = min;
@@ -40,20 +44,11 @@ public class Bounds3f
     }
 
 
-    public final Point3f getMin(){
+    public final Vector getMin(){
         return this.min;
     }
-    public final Point3f getMax(){
+    public final Vector getMax(){
         return this.max;
     }
-    public final float[] array(){
-        return new float[]{
-            this.min.x,
-            this.min.y,
-            this.min.z,
-            this.max.x,
-            this.max.y,
-            this.max.z
-        };
-    }
+
 }

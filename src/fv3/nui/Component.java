@@ -17,13 +17,13 @@
  */
 package fv3.nui;
 
-import fv3.Bounds3f;
+import fv3.Bounds;
 import java.nio.FloatBuffer;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
+import fv3.math.AxisAngle;
+import fv3.math.Matrix;
+import fv3.math.Quat;
+import fv3.math.Vector;
 
 /**
  * @see fv3.Component
@@ -37,13 +37,11 @@ public class Component
 
     private volatile boolean alive;
 
-    private volatile Matrix4f matrix;
+    private volatile Matrix matrix;
 
     private volatile FloatBuffer matrixBuffer;
 
-    private volatile Bounds3f bounds;
-
-    private volatile FloatBuffer boundsBuffer;
+    protected volatile Bounds bounds;
 
     protected volatile boolean visible = true;
 
@@ -67,22 +65,21 @@ public class Component
     public final boolean hasNotFv3Matrix(){
         return (null == this.matrix);
     }
-    protected final Matrix4f matrix(){
-        Matrix4f m = this.matrix;
+    protected final Matrix matrix(){
+        Matrix m = this.matrix;
         if (null == m){
-            m = new Matrix4f();
-            m.setIdentity();
+            m = new Matrix();
             this.matrix = m;
         }
         return m;
     }
-    public final Matrix4f getFv3Matrix(){
+    public final Matrix getFv3Matrix(){
         return this.matrix;
     }
     public final FloatBuffer getFv3MatrixBuffer(){
         FloatBuffer fb = this.matrixBuffer;
         if (null == fb){
-            Matrix4f m = this.matrix;
+            Matrix m = this.matrix;
             if (null != m){
                 fb = FloatBuffer.wrap(m.array());
                 this.matrixBuffer = fb;
@@ -90,19 +87,18 @@ public class Component
         }
         return fb;
     }
-    protected final Matrix4f setFv3Matrix(Matrix4f m){
+    protected final Matrix setFv3Matrix(Matrix m){
         this.matrix = m;
         this.matrixBuffer = null;
         return m;
     }
-    protected final Matrix4f setFv3Matrix(){
-        Matrix4f m = new Matrix4f();
-        m.setIdentity();
-        return this.setFv3Matrix(m);
-    }
-    protected final Matrix4f setFv3Matrix(float[] m){
+    protected final Matrix setFv3Matrix(){
 
-        return this.setFv3Matrix(new Matrix4f(m));
+        return this.setFv3Matrix(new Matrix());
+    }
+    protected final Matrix setFv3Matrix(float[] m){
+
+        return this.setFv3Matrix(new Matrix(m));
     }
     public final boolean hasFv3Bounds(){
         return (null != this.bounds);
@@ -110,23 +106,11 @@ public class Component
     public final boolean hasNotFv3Bounds(){
         return (null == this.bounds);
     }
-    public final Bounds3f getFv3Bounds(){
+    public final Bounds getFv3Bounds(){
         return this.bounds;
     }
-    public final FloatBuffer getFv3BoundsBuffer(){
-        FloatBuffer fb = this.boundsBuffer;
-        if (null == fb){
-            Bounds3f b = this.bounds;
-            if (null != b){
-                fb = FloatBuffer.wrap(b.array());
-                this.boundsBuffer = fb;
-            }
-        }
-        return fb;
-    }
-    protected final Bounds3f setFv3Bounds(Bounds3f b){
+    protected final Bounds setFv3Bounds(Bounds b){
         this.bounds = b;
-        this.boundsBuffer = null;
         return b;
     }
     public final boolean isVisible(){
@@ -140,7 +124,7 @@ public class Component
         this.matrix().translate(x,y,z);
         return this;
     }
-    public final fv3.Component translate(Vector3f v){
+    public final fv3.Component translate(Vector v){
         this.matrix().translate(v);
         return this;
     }
@@ -148,11 +132,11 @@ public class Component
         this.matrix().scale(s);
         return this;
     }
-    public final fv3.Component rotate(Quat4f q){
+    public final fv3.Component rotate(Quat q){
         this.matrix().rotate(q);
         return this;
     }
-    public final fv3.Component rotate(AxisAngle4f a){
+    public final fv3.Component rotate(AxisAngle a){
         this.matrix().rotate(a);
         return this;
     }

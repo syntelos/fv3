@@ -19,10 +19,10 @@ package fv3;
 
 import java.nio.FloatBuffer;
 
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
+import fv3.math.AxisAngle;
+import fv3.math.Matrix;
+import fv3.math.Quat;
+import fv3.math.Vector;
 
 /**
  * A component that is not a {@link Region} is a leaf in a component
@@ -52,7 +52,7 @@ public interface Component
      * defined in a single component tree branch from root to leaf.
      * @return Null to inherit the coordinate space.
      */
-    public Matrix4f getFv3Matrix();
+    public Matrix getFv3Matrix();
 
     public FloatBuffer getFv3MatrixBuffer();
 
@@ -61,9 +61,7 @@ public interface Component
     /**
      * Bounds in the coordinate space within this component. 
      */
-    public Bounds3f getFv3Bounds();
-
-    public FloatBuffer getFv3BoundsBuffer();
+    public Bounds getFv3Bounds();
     /**
      * The current state of component visibility.  A component is
      * visible by default (typically).
@@ -77,12 +75,12 @@ public interface Component
 
     public Component translate(float x, float y, float z);
 
-    public Component translate(Vector3f v);
+    public Component translate(Vector v);
 
     public Component scale(float s);
 
-    public Component rotate(Quat4f q);
+    public Component rotate(Quat q);
 
-    public Component rotate(AxisAngle4f a);
+    public Component rotate(AxisAngle a);
 
 }

@@ -2,6 +2,7 @@
 package test;
 
 import fv3.Component;
+import fv3.math.Quat;
 import fv3.model.Begin ;
 import fv3.model.End ;
 import fv3.model.Materialfv ;
@@ -14,7 +15,6 @@ import fv3tk.Animator;
 import fv3tk.Fv3Screen;
 
 import javax.media.opengl.GL2;
-import javax.vecmath.Quat4f;
 
 import com.sun.javafx.newt.MouseEvent;
 
@@ -1397,11 +1397,11 @@ public class Gears
 
 
 
-    private Quat4f view = new Quat4f().rotX(20).rotY(30);
+    //private Quat view = new Quat().rotX(20).rotY(30);//(Radians!!)//
 
-    private Quat4f gearView1 = new Quat4f().identity();
-    private Quat4f gearView2 = new Quat4f().identity();
-    private Quat4f gearView3 = new Quat4f().identity();
+    //private Quat gearView1 = new Quat();
+    //private Quat gearView2 = new Quat();
+    //private Quat gearView3 = new Quat();
 
     private Component gear1, gear2, gear3;
 
@@ -1414,9 +1414,9 @@ public class Gears
         super();
 
         this.add(new fv3.nui.Light(0,LightPos));
-        this.add(this.gear1 = new Model(MODEL1));//.translate(-3.0f, -2.0f, 0.0f));
-        this.add(this.gear2 = new Model(MODEL2));//.translate(3.1f, -2.0f, 0.0f));
-        this.add(this.gear3 = new Model(MODEL3));//.translate(-3.1f, 4.2f, 0.0f));
+        this.add(this.gear1 = new Model(MODEL1).translate(-3.0f, -2.0f, 0.0f));
+        this.add(this.gear2 = new Model(MODEL2).translate(3.1f, -2.0f, 0.0f));
+        this.add(this.gear3 = new Model(MODEL3).translate(-3.1f, 4.2f, 0.0f));
         this.add(new fv3.nui.Frustrum(-1.0f, 1.0f, -1.0f, +1.0f, 5.0f, 60.0f));
 
         this.addEnd();

@@ -2,8 +2,8 @@
 <jnlp codebase="@ProjectCodebase@" href="@ProjectName@-@ProjectVersion@.jnlp">
   <information>
     <title>@ProjectName@</title>
-    <vendor>fv3tk</vendor>
-    <homepage href="http://code.google.com/p/fv3tk/"/>
+    <vendor>fv3</vendor>
+    <homepage href="http://code.google.com/p/fv3/"/>
     <offline-allowed/>
   </information>
   <resources>
