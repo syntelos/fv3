@@ -63,22 +63,26 @@ public class Region
     public void init(fv3.Region region){
         List<fv3.Component> children = this.children;
         if (null != children){
-            fv3.Component[] list = children.array();
+            Object[] list = children.array();
             for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                list[cc].init(region);
+                fv3.Component co = (fv3.Component)list[cc];
+                co.init(region);
             }
         }
     }
     public void init(GL2 gl){
+
+        this.checkErrors(gl);
 
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glEnable(GL2.GL_DEPTH_TEST);
 
         List<fv3.Component> children = this.children;
         if (null != children){
-            fv3.Component[] list = children.array();
+            Object[] list = children.array();
             for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                list[cc].init(gl);
+                fv3.Component co = (fv3.Component)list[cc];
+                co.init(gl);
             }
         }
 
@@ -87,13 +91,16 @@ public class Region
     public void step(long time, long dt){
         List<fv3.Component> children = this.children;
         if (null != children){
-            fv3.Component[] list = children.array();
+            Object[] list = children.array();
             for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                list[cc].step(time,dt);
+                fv3.Component co = (fv3.Component)list[cc];
+                co.step(time,dt);
             }
         }
     }
     public void display(GL2 gl){
+
+        this.checkErrors(gl);
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
@@ -107,9 +114,9 @@ public class Region
         try {
             List<fv3.Component> children = this.children;
             if (null != children){
-                fv3.Component[] list = children.array();
+                Object[] list = children.array();
                 for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                    fv3.Component co = list[cc];
+                    fv3.Component co = (fv3.Component)list[cc];
                     if (co.isVisible()){
                         boolean cm = co.hasFv3Matrix();
                         if (cm){

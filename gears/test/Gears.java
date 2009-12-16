@@ -1407,7 +1407,7 @@ public class Gears
 
     private float prevMouseX, prevMouseY;
 
-    private final double screenW, screenH;
+    private double screenW, screenH;
 
 
     public Gears(){
@@ -1422,14 +1422,17 @@ public class Gears
         this.addEnd();
 
         this.translate(0.0f, 0.0f, -40.0f);
+    }
+
+
+    public void init(GL2 gl){
 
         Fv3Screen fv3s = Fv3Screen.Current();
         this.screenW = fv3s.width;
         this.screenH = fv3s.height;
+
+        super.init(gl);
     }
-
-
-
     public void step(long time, long dt){
 
         this.gearView1.rotZ(Gear1Rot);
@@ -1439,7 +1442,6 @@ public class Gears
         this.gearView3.rotZ(Gear3Rot);
         this.gear3.rotate(this.gearView3);
     }
-
     public void mousePressed(MouseEvent e){
         this.prevMouseX = e.getX();
         this.prevMouseY = e.getY();
