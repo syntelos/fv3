@@ -1414,9 +1414,9 @@ public class Gears
         super();
 
         this.add(new fv3.nui.Light(0,LightPos));
-        this.add(this.gear1 = new Model(MODEL1).translate(-3.0f, -2.0f, 0.0f));
-        this.add(this.gear2 = new Model(MODEL2).translate(3.1f, -2.0f, 0.0f));
-        this.add(this.gear3 = new Model(MODEL3).translate(-3.1f, 4.2f, 0.0f));
+        this.add(this.gear1 = new Model(MODEL1));//.translate(-3.0f, -2.0f, 0.0f));
+        this.add(this.gear2 = new Model(MODEL2));//.translate(3.1f, -2.0f, 0.0f));
+        this.add(this.gear3 = new Model(MODEL3));//.translate(-3.1f, 4.2f, 0.0f));
         this.add(new fv3.nui.Frustrum(-1.0f, 1.0f, -1.0f, +1.0f, 5.0f, 60.0f));
 
         this.addEnd();
@@ -1435,12 +1435,12 @@ public class Gears
     }
     public void step(long time, long dt){
 
-        this.gearView1.rotZ(Gear1Rot);
-        this.gear1.rotate(this.gearView1);
-        this.gearView2.rotZ(Gear2Rot);
-        this.gear2.rotate(this.gearView2);
-        this.gearView3.rotZ(Gear3Rot);
-        this.gear3.rotate(this.gearView3);
+//         this.gearView1.rotZ(Gear1Rot);
+//         this.gear1.rotate(this.gearView1);
+//         this.gearView2.rotZ(Gear2Rot);
+//         this.gear2.rotate(this.gearView2);
+//         this.gearView3.rotZ(Gear3Rot);
+//         this.gear3.rotate(this.gearView3);
     }
     public void mousePressed(MouseEvent e){
         this.prevMouseX = e.getX();
@@ -1452,10 +1452,10 @@ public class Gears
         double rx = (x-this.prevMouseX)/this.screenW;
         double ry = (this.prevMouseY-y)/this.screenH;
 
-        this.view.rotXY( (PI2 * rx), (PI2 * ry));
-        this.prevMouseX = x;
-        this.prevMouseY = y;
-        this.rotate(this.view);
+//         this.view.rotXY( (PI2 * rx), (PI2 * ry));
+//         this.prevMouseX = x;
+//         this.prevMouseY = y;
+//         this.rotate(this.view);
     }
 
 }
