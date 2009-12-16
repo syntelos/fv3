@@ -144,56 +144,78 @@ public class Region
         fv3.Component current = this.current;
         if (null != current)
             current.keyPressed(e);
+        else
+            super.keyPressed(e);
     }
     public void keyReleased(KeyEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.keyReleased(e);
+        else
+            super.keyReleased(e);
     }
     public void keyTyped(KeyEvent e) {
         fv3.Component current = this.current;
         if (null != current)
             current.keyTyped(e);
+        else
+            super.keyTyped(e);
     }
     public void mouseClicked(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseClicked(e);
+        else
+            super.mouseClicked(e);
     }
     public void mouseEntered(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseEntered(e);
+        else
+            super.mouseEntered(e);
     }
     public void mouseExited(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseExited(e);
+        else
+            super.mouseExited(e);
     }
     public void mousePressed(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mousePressed(e);
+        else
+            super.mousePressed(e);
     }
     public void mouseReleased(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseReleased(e);
+        else
+            super.mouseReleased(e);
     }
     public void mouseMoved(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseMoved(e);
+        else
+            super.mouseMoved(e);
     }
     public void mouseDragged(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseDragged(e);
+        else
+            super.mouseDragged(e);
     }
     public void mouseWheelMoved(MouseEvent e){
         fv3.Component current = this.current;
         if (null != current)
             current.mouseWheelMoved(e);
+        else
+            super.mouseWheelMoved(e);
     }
     public final fv3.Component getCurrent(){
         return this.current;
