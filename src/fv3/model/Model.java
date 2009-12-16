@@ -59,8 +59,11 @@ public final class Model
             this.lid = gl.glGenLists(1);
             this.inited = true;
         }
-        else 
+        else {
             gl.glDeleteLists(this.lid,1);
+            this.lid = gl.glGenLists(1);
+            this.inited = true;
+        }
 
         gl.glNewList(this.lid, GL2.GL_COMPILE);
         Object[] model = this.model;
