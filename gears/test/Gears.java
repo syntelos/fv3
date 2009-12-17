@@ -1416,14 +1416,13 @@ public class Gears
         super();
 
         this.add(new fv3.nui.Light(0,LightPos));
-        this.add(this.gear1 = new Model(MODEL1).translate(-3.0f, -2.0f, 0.0f));
-        this.add(this.gear2 = new Model(MODEL2).translate(3.1f, -2.0f, 0.0f));
-        this.add(this.gear3 = new Model(MODEL3).translate(-3.1f, 4.2f, 0.0f));
+        this.add(this.gear1 = new Model(MODEL1).translate(0.0f, 0.0f, -40.0f).translate(-3.0f, -2.0f, 0.0f));
+        this.add(this.gear2 = new Model(MODEL2).translate(0.0f, 0.0f, -40.0f).translate(3.1f, -2.0f, 0.0f));
+        this.add(this.gear3 = new Model(MODEL3).translate(0.0f, 0.0f, -40.0f).translate(-3.1f, 4.2f, 0.0f));
         this.add(new fv3.nui.Frustrum(-1.0f, 1.0f, -1.0f, +1.0f, 5.0f, 60.0f));
 
         this.addEnd();
 
-        this.translate(0.0f, 0.0f, -40.0f);
     }
 
 
@@ -1434,8 +1433,6 @@ public class Gears
         this.screenH = fv3s.height;
 
         super.init(gl);
-
-        gl.glEnable(GL2.GL_NORMALIZE);
     }
     public void step(long time, long dt){
 
@@ -1445,10 +1442,6 @@ public class Gears
 //         this.gear2.rotate(this.gearView2);
 //         this.gearView3.rotZ(Gear3Rot);
 //         this.gear3.rotate(this.gearView3);
-    }
-    public void display(GL2 gl){
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-        super.display(gl);
     }
     public void mousePressed(MouseEvent e){
         this.prevMouseX = e.getX();

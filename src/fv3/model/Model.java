@@ -71,6 +71,8 @@ public final class Model
             model[cc].apply(gl);
         }
         gl.glEndList();
+
+        gl.glEnable(GL2.GL_NORMALIZE);
     }
     public void display(GL2 gl){
 
