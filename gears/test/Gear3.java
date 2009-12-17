@@ -369,11 +369,11 @@ public class Gear3
 
     Gear3(){
         super(MODEL3);
-        this.translate(-3.1f,  4.2f, -40.0f);//.rotate(this.rotation);
+        this.translate(-3.1f,  4.2f, -40.0f).rotate(this.rotation);
     }
 
 
     public void step(long time, long dt){
-        //this.rotate(this.rotation);
+        this.rotate(this.rotation);
     }
 }

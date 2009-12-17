@@ -84,12 +84,10 @@ public class Gears
         double rx = (Math.PI * ((x-this.prevMouseX)/this.screenW));
         double ry = (Math.PI * ((this.prevMouseY-y)/this.screenH));
 
-//         this.rotateXY( (float)(rx), (float)(ry));
+        this.rotateXY( (float)(rx), (float)(ry));
 
         this.prevMouseX = x;
         this.prevMouseY = y;
-
-//         System.err.println(String.format("Gears rotate (%f,%f)",rx,ry));
     }
 
 }
