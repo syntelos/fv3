@@ -41,6 +41,20 @@ public abstract class Object
             return copier;
         }
     }
+    public final static Object[] Add(Object[] list, Object[] object){
+        if (null == object)
+            return list;
+        else if (null == list)
+            return object;
+        else {
+            int len1 = list.length;
+            int len2 = object.length;
+            Object[] copier = new Object[len1+len2];
+            System.arraycopy(list,0,copier,0,len1);
+            System.arraycopy(object,0,copier,len1,len2);
+            return copier;
+        }
+    }
 
 
     public abstract Object.Type getObjectType();

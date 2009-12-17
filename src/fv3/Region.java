@@ -22,12 +22,12 @@ import lxl.List;
 /**
  * A region is a branch node member of a component graph.  
  * 
- * The lxl component hierarchy is an experimental feature for dynamic
- * work space graphing.  With this feature set embedded in the Fv3
- * Component graph, an application or tool can spider the Fv3 World
- * and then elaborate on that graph visually or in data I/O.  The Fv3
- * Component graph exists in the lxl graph in the class {@link
- * fv3.Component}.
+ * The {@link lxl.Hier lxl component hierarchy} is an experimental
+ * feature for dynamic work space graphing.  With this feature set
+ * embedded in the Fv3 Component graph, an application or tool can
+ * spider the Fv3 World and then elaborate on that graph visually or
+ * in data I/O.  The Fv3 Component graph exists in the lxl graph at
+ * the identifying class {@link fv3.Component}.
  * 
  * @see Component
  * @see fv3.nui.Region
@@ -37,6 +37,26 @@ public interface Region
             lxl.Hier
 {
     /**
+     * The position of the view in the list of children should be zero.
+     * @return Negative one for not found, otherwise a zero- positive
+     * index into the list of children.
+     */
+    public int indexOfView();
+    /**
+     * @return Index of view is not negative one.
+     */
+    public boolean hasView();
+    /**
+     * @return Null for not found.
+     */
+    public View getView();
+    /**
+     * Replace or insert a non- null view in the list of component children.
+     * @param view If null, no effect.
+     */
+    public Region setView(View view);
+
+    /**
      * @return A descendant of this that is current for input events,
      * or null for none.
      */
@@ -45,16 +65,16 @@ public interface Region
      * @param c A descendant of this to be made current for input
      * events, or null for none.
      */
-    public void setCurrent(Component c);
+    public Region setCurrent(Component c);
 
     public Component getParent();
 
-    public void setParent(Component p);
+    public Region setParent(Component p);
 
     public List<Component> getChildren();
 
-    public void setChildren(List<Component> c);
+    public Region setChildren(List<Component> c);
 
-    public void dropChildren();
+    public Region dropChildren();
 
 }

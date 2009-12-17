@@ -83,4 +83,11 @@ public interface Component
 
     public Component rotate(AxisAngle a);
 
+    public Component rotateX(float a);
+
+    public Component rotateY(float a);
+
+    public Component rotateZ(float a);
+
+    public Component rotateXY(float ax, float ay);
 }

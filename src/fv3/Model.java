@@ -18,7 +18,11 @@
 package fv3;
 
 /**
+ * This interface exposes a GL list as a foundation for other classes
+ * of geometric objects.
  * 
+ * @see fv3.nui.Model
+ * @see fv3.model.Model
  */
 public interface Model 
     extends Component

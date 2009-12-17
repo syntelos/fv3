@@ -19,33 +19,41 @@ package fv3.model;
 
 import javax.media.opengl.GL2;
 
-public final class Model
+public class Model
     extends fv3.nui.Model
 {
 
-    private final Object[] model;
+    private volatile Object[] model;
 
     private volatile boolean inited;
 
     private volatile int lid;
 
 
+    public Model(){
+        super();
+    }
     public Model(Object[] model){
         super();
-        if (null != model)
-            this.model = model;
-        else
-            throw new IllegalArgumentException();
+        this.model = model;
     }
 
 
-    public int getGlListCount(){
+    public final Model add(Object object){
+        this.model = Object.Add(this.model,object);
+        return this;
+    }
+    public final Model add(Object[] object){
+        this.model = Object.Add(this.model,object);
+        return this;
+    }
+    public final int getGlListCount(){
         if (this.inited)
             return 1;
         else
             return 0;
     }
-    public int getGlListId(int idx)
+    public final int getGlListId(int idx)
         throws java.lang.ArrayIndexOutOfBoundsException
     {
         if (this.inited && 0 == idx)
@@ -53,7 +61,7 @@ public final class Model
         else
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
     }
-    public void init(GL2 gl){
+    public final void init(GL2 gl){
 
         if (!this.inited){
             this.lid = gl.glGenLists(1);
@@ -74,11 +82,11 @@ public final class Model
 
         gl.glEnable(GL2.GL_NORMALIZE);
     }
-    public void display(GL2 gl){
+    public final void display(GL2 gl){
 
         gl.glCallList(this.lid);
     }
-    public void destroy(){
+    public final void destroy(){
         this.inited = false;
         super.destroy();
     }

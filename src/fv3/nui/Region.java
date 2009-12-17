@@ -27,10 +27,12 @@ import com.sun.javafx.newt.KeyEvent;
 import com.sun.javafx.newt.MouseEvent;
 
 /**
- * Ensure that a matrix is defined before setting children for the
- * correct application of the matrix to the scene.  This practice will
- * ensure correct operations with respect to coordinate space and
- * visibility.
+ * If the region itself will be using a transformation matrix -- as
+ * for translation or rotation, ensure that it is defined before
+ * calling <code>"addEnd()"</code>.  One way to do this is by calling
+ * the protected method named <code>"matrix()"</code>, defined in the
+ * {@link Component} class in this package.  The Gears demo
+ * demonstrates this usage.
  * 
  * @see fv3.Region
  */
@@ -207,17 +209,49 @@ public class Region
         else
             super.mouseWheelMoved(e);
     }
+    public int indexOfView(){
+        List<fv3.Component> c = this.children;
+        if (null != c){
+            Object[] list = c.array();
+            for (int cc = 0, count = ((null != list)?(list.length):(0)); cc < count; cc++){
+                if (list[cc] instanceof fv3.View)
+                    return cc;
+            }
+        }
+        return -1;
+    }
+    public boolean hasView(){
+        return (-1 != this.indexOfView());
+    }
+    public fv3.View getView(){
+        int idx = this.indexOfView();
+        if (-1 != idx)
+            return (fv3.View)this.children.get(idx);
+        else
+            return null;
+    }
+    public Region setView(fv3.View view){
+        int idx = this.indexOfView();
+        if (-1 != idx)
+            this.children.update(idx,view);
+        else 
+            this.children().insert(view,0);
+
+        return this;
+    }
     public final fv3.Component getCurrent(){
         return this.current;
     }
-    public final void setCurrent(fv3.Component c){
+    public final Region setCurrent(fv3.Component c){
         this.current = c;
+        return this;
     }
     public final fv3.Component getParent(){
         return this.parent;
     }
-    public final void setParent(fv3.Component p){
+    public final Region setParent(fv3.Component p){
         this.parent = p;
+        return this;
     }
     public final List<fv3.Component> getChildren(){
         return this.children;
@@ -233,7 +267,7 @@ public class Region
     protected final List<fv3.Component> addBegin(){
         return this.children();
     }
-    protected final void addEnd(){
+    protected final Region addEnd(){
         List<fv3.Component> c = this.children;
         this.pushSpace = (null != c && (!c.isEmpty()) && this.hasFv3Matrix());
         if (this.pushSpace){
@@ -246,10 +280,11 @@ public class Region
             }
             this.visible = visibility;
         }
+        return this;
     }
-    public final void setChildren(List<fv3.Component> c){
+    public final Region setChildren(List<fv3.Component> c){
         this.children = c;
-        this.addEnd();
+        return this.addEnd();
     }
     /**
      * After adding, call {@link #addEnd()}
@@ -264,9 +299,10 @@ public class Region
         }
         return this;
     }
-    public final void dropChildren(){
+    public final Region dropChildren(){
         this.children = null;
         this.pushSpace = false;
+        return this;
     }
     /*
      * lxl graph

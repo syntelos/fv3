@@ -26,6 +26,9 @@ import fv3.math.Quat;
 import fv3.math.Vector;
 
 /**
+ * The transformation matrix of a component is applied by a containing
+ * {@link fv3.Region} (see also {@link fv3.World}).
+ * 
  * @see fv3.Component
  */
 public class Component 
@@ -48,6 +51,7 @@ public class Component
 
     public Component(){
         super();
+        this.alive = true;
     }
 
 
@@ -138,6 +142,22 @@ public class Component
     }
     public final fv3.Component rotate(AxisAngle a){
         this.matrix().rotate(a);
+        return this;
+    }
+    public final fv3.Component rotateX(float a){
+        this.matrix().rotateX(a);
+        return this;
+    }
+    public final fv3.Component rotateY(float a){
+        this.matrix().rotateY(a);
+        return this;
+    }
+    public final fv3.Component rotateZ(float a){
+        this.matrix().rotateZ(a);
+        return this;
+    }
+    public final fv3.Component rotateXY(float ax, float ay){
+        this.matrix().rotateXY(ax,ay);
         return this;
     }
 }
