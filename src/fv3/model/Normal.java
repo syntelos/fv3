@@ -19,29 +19,25 @@ package fv3.model;
 
 import javax.media.opengl.GL2;
 
-public final class Materialfv
+public final class Normal
     extends fv3.model.Object
 {
-    private final int face, name;
-    private final float[] params;
+
+    private final double x, y, z;
 
 
-    public Materialfv(int face, int name, float[] params){
+    public Normal(double x, double y, double z){
         super();
-        if (0 < face && 0 < name && null != params){
-            this.face = face;
-            this.name = name;
-            this.params = params;
-        }
-        else
-            throw new IllegalArgumentException();
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
 
     public void apply(GL2 gl){
-        gl.glMaterialfv(this.face,this.name,this.params,0);
+        gl.glNormal3d(this.x,this.y,this.z);
     }
     public Object.Type getObjectType(){
-        return Object.Type.Materialfv;
+        return Object.Type.Normal;
     }
 }

@@ -17,7 +17,7 @@
  */
 package fv3;
 
-import java.nio.FloatBuffer;
+import java.nio.DoubleBuffer;
 
 import fv3.math.AxisAngle;
 import fv3.math.Matrix;
@@ -54,7 +54,7 @@ public interface Component
      */
     public Matrix getFv3Matrix();
 
-    public FloatBuffer getFv3MatrixBuffer();
+    public DoubleBuffer getFv3MatrixBuffer();
 
     public boolean hasFv3Bounds();
     public boolean hasNotFv3Bounds();
@@ -73,21 +73,21 @@ public interface Component
      */
     public Component setVisible(boolean b);
 
-    public Component translate(float x, float y, float z);
+    public Component translate(double x, double y, double z);
 
     public Component translate(Vector v);
 
-    public Component scale(float s);
+    public Component scale(double s);
 
     public Component rotate(Quat q);
 
     public Component rotate(AxisAngle a);
 
-    public Component rotateX(float a);
+    public Component rotateX(double a);
 
-    public Component rotateY(float a);
+    public Component rotateY(double a);
 
-    public Component rotateZ(float a);
+    public Component rotateZ(double a);
 
-    public Component rotateXY(float ax, float ay);
+    public Component rotateXY(double ax, double ay);
 }

@@ -45,7 +45,7 @@ public class Gears
 
     private View view;
 
-    private float prevMouseX, prevMouseY;
+    private double prevMouseX, prevMouseY;
 
     private double screenW, screenH;
 
@@ -58,7 +58,7 @@ public class Gears
         this.add(new Gear1());
         this.add(new Gear2());
         this.add(new Gear3());
-        this.add(new fv3.nui.Frustrum(-1.0f, 1.0f, -1.0f, +1.0f, 5.0f, 60.0f));
+        this.add(new fv3.nui.Frustrum(-1.0, 1.0, -1.0, +1.0, 5.0, 60.0));
         this.addEnd();
     }
 
@@ -79,12 +79,12 @@ public class Gears
         this.prevMouseY = e.getY();
     }
     public void mouseDragged(MouseEvent e){
-        float x = e.getX();
-        float y = e.getY();
+        double x = e.getX();
+        double y = e.getY();
         double rx = (Math.PI * ((x-this.prevMouseX)/this.screenW));
         double ry = (Math.PI * ((this.prevMouseY-y)/this.screenH));
 
-        this.rotateXY( (float)(rx), (float)(ry));
+        //this.rotateXY( (double)(rx), (double)(ry));
 
         this.prevMouseX = x;
         this.prevMouseY = y;

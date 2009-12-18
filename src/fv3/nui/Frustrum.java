@@ -23,13 +23,13 @@ public class Frustrum
     extends Component
 {
 
-    protected volatile float left, right, bottom, top, near, far;
+    protected volatile double left, right, bottom, top, near, far;
 
 
     public Frustrum(){
         super();
     }
-    public Frustrum(float left, float right, float bottom, float top, float near, float far){
+    public Frustrum(double left, double right, double bottom, double top, double near, double far){
         super();
         this.left = left;
         this.right = right;
@@ -46,40 +46,40 @@ public class Frustrum
         gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
     }
 
-    public final float getLeft(){
+    public final double getLeft(){
         return this.left;
     }
-    public final void setLeft(float left){
+    public final void setLeft(double left){
         this.left = left;
     }
-    public final float getRight(){
+    public final double getRight(){
         return this.right;
     }
-    public final void setRight(float right){
+    public final void setRight(double right){
         this.right = right;
     }
-    public final float getBottom(){
+    public final double getBottom(){
         return this.bottom;
     }
-    public final void setBottom(float bottom){
+    public final void setBottom(double bottom){
         this.bottom = bottom;
     }
-    public final float getTop(){
+    public final double getTop(){
         return this.top;
     }
-    public final void setTop(float top){
+    public final void setTop(double top){
         this.top = top;
     }
-    public final float getNear(){
+    public final double getNear(){
         return this.near;
     }
-    public final void setNear(float near){
+    public final void setNear(double near){
         this.near = near;
     }
-    public final float getFar(){
+    public final double getFar(){
         return this.far;
     }
-    public final void setFar(float far){
+    public final void setFar(double far){
         this.far = far;
     }
 }

@@ -19,16 +19,14 @@ package fv3.model;
 
 import javax.media.opengl.GL2;
 
-public final class Normal3f
+public final class Vertex
     extends fv3.model.Object
 {
-    private final float x, y, z;
+
+    private final double x, y, z;
 
 
-    public Normal3f(double x, double y, double z){
-        this( (float)x, (float)y, (float)z);
-    }
-    public Normal3f(float x, float y, float z){
+    public Vertex(double x, double y, double z){
         super();
         this.x = x;
         this.y = y;
@@ -37,9 +35,9 @@ public final class Normal3f
 
 
     public void apply(GL2 gl){
-        gl.glNormal3f(this.x,this.y,this.z);
+        gl.glVertex3d(this.x,this.y,this.z);
     }
     public Object.Type getObjectType(){
-        return Object.Type.Normal3f;
+        return Object.Type.Vertex;
     }
 }

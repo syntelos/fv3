@@ -26,7 +26,7 @@ public abstract class Object
     extends java.lang.Object
 {
     public enum Type {
-        Begin, ShadeModel, Normal3f, Vertex3f, Materialfv, End;
+        Begin, ShadeModel, Normal, Vertex, Material, End;
     }
     public final static Object[] Add(Object[] list, Object object){
         if (null == object)

@@ -18,11 +18,6 @@
   <property file="build.version"/>
   <property name="this.version" value="${version.major}.${version.minor}.${version.build}"/>
 
-  <property name="lib.fv3tk.jar" value="${lib}/fv3tk-${this.version}.jar"/>
-
-  <path id="lib.fv3tk.jar.path">
-    <pathelement location="${lib.fv3tk.jar}" />
-  </path>
 
   <path id="lib.path">
     <fileset dir="${lib}">
@@ -32,11 +27,6 @@
       <include name="**/*.jar" />
       <exclude name="**/fv3*.jar" />
       <exclude name="**/*-natives-*.jar" />
-    </fileset>
-  </path>
-  <path id="jnlp.loader.jar">
-    <fileset dir="loader">
-      <include name="**/jnlp-loader-*.jar"/>
     </fileset>
   </path>
 
@@ -68,7 +58,7 @@
         <attribute name="Main-Class" value="loader.Main"/>
       </manifest>
       <fileset file="main.jnlp"/>
-      <zipfileset src="${toString:jnlp.loader.jar}"/>
+      <zipgroupfileset dir="loader" includes="**/jnlp-loader-*.jar"/>
     </jar>
 
     <delete file="main.jnlp"/>
@@ -78,7 +68,7 @@
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
-      <zipfileset src="${toString:lib.fv3tk.jar.path}" excludes="META-INF/**"/>
+      <zipgroupfileset dir="${lib}" includes="**/fv3*.jar"/>
     </jar>
     <delete dir="${bin}"/>
     <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">

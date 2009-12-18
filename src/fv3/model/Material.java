@@ -19,27 +19,29 @@ package fv3.model;
 
 import javax.media.opengl.GL2;
 
-public final class Vertex3f
+public final class Material
     extends fv3.model.Object
 {
-    private final float x, y, z;
+    private final int face, name;
+    private final float[] params;
 
 
-    public Vertex3f(double x, double y, double z){
-        this( (float)x, (float)y, (float)z);
-    }
-    public Vertex3f(float x, float y, float z){
+    public Material(int face, int name, float[] params){
         super();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        if (0 < face && 0 < name && null != params){
+            this.face = face;
+            this.name = name;
+            this.params = params;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
 
     public void apply(GL2 gl){
-        gl.glVertex3f(this.x,this.y,this.z);
+        gl.glMaterialfv(this.face,this.name,this.params,0);
     }
     public Object.Type getObjectType(){
-        return Object.Type.Vertex3f;
+        return Object.Type.Material;
     }
 }

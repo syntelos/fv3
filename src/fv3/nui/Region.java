@@ -99,7 +99,7 @@ public class Region
         gl.glLoadIdentity();
         if (this.pushSpace){
             gl.glPushMatrix();
-            gl.glLoadMatrixf(this.getFv3MatrixBuffer());
+            gl.glLoadMatrixd(this.getFv3MatrixBuffer());
         }
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -113,7 +113,7 @@ public class Region
                         boolean cm = co.hasFv3Matrix();
                         if (cm){
                             gl.glPushMatrix();
-                            gl.glLoadMatrixf(co.getFv3MatrixBuffer());
+                            gl.glLoadMatrixd(co.getFv3MatrixBuffer());
                         }
                         try {
                             co.display(gl);

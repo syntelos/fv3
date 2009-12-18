@@ -30,7 +30,7 @@ public class Bounds
     public final Vector min, max;
 
 
-    public Bounds(float[][] b){
+    public Bounds(double[][] b){
         this(new Vector(b[0]),new Vector(b[1]));
     }
     public Bounds(Vector min, Vector max){

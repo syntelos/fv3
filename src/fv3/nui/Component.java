@@ -18,7 +18,7 @@
 package fv3.nui;
 
 import fv3.Bounds;
-import java.nio.FloatBuffer;
+import java.nio.DoubleBuffer;
 
 import fv3.math.AxisAngle;
 import fv3.math.Matrix;
@@ -42,7 +42,7 @@ public class Component
 
     private volatile Matrix matrix;
 
-    private volatile FloatBuffer matrixBuffer;
+    private volatile DoubleBuffer matrixBuffer;
 
     protected volatile Bounds bounds;
 
@@ -80,12 +80,12 @@ public class Component
     public final Matrix getFv3Matrix(){
         return this.matrix;
     }
-    public final FloatBuffer getFv3MatrixBuffer(){
-        FloatBuffer fb = this.matrixBuffer;
+    public final DoubleBuffer getFv3MatrixBuffer(){
+        DoubleBuffer fb = this.matrixBuffer;
         if (null == fb){
             Matrix m = this.matrix;
             if (null != m){
-                fb = FloatBuffer.wrap(m.array());
+                fb = DoubleBuffer.wrap(m.array());
                 this.matrixBuffer = fb;
             }
         }
@@ -100,7 +100,7 @@ public class Component
 
         return this.setFv3Matrix(new Matrix());
     }
-    protected final Matrix setFv3Matrix(float[] m){
+    protected final Matrix setFv3Matrix(double[] m){
 
         return this.setFv3Matrix(new Matrix(m));
     }
@@ -124,7 +124,7 @@ public class Component
         this.visible = b;
         return this;
     }
-    public final fv3.Component translate(float x, float y, float z){
+    public final fv3.Component translate(double x, double y, double z){
         this.matrix().translate(x,y,z);
         return this;
     }
@@ -132,7 +132,7 @@ public class Component
         this.matrix().translate(v);
         return this;
     }
-    public final fv3.Component scale(float s){
+    public final fv3.Component scale(double s){
         this.matrix().scale(s);
         return this;
     }
@@ -144,19 +144,19 @@ public class Component
         this.matrix().rotate(a);
         return this;
     }
-    public final fv3.Component rotateX(float a){
+    public final fv3.Component rotateX(double a){
         this.matrix().rotateX(a);
         return this;
     }
-    public final fv3.Component rotateY(float a){
+    public final fv3.Component rotateY(double a){
         this.matrix().rotateY(a);
         return this;
     }
-    public final fv3.Component rotateZ(float a){
+    public final fv3.Component rotateZ(double a){
         this.matrix().rotateZ(a);
         return this;
     }
-    public final fv3.Component rotateXY(float ax, float ay){
+    public final fv3.Component rotateXY(double ax, double ay){
         this.matrix().rotateXY(ax,ay);
         return this;
     }
