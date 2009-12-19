@@ -26,40 +26,63 @@ import java.net.URL;
 /**
  * The world of the screen may contain many regions and components
  * having many coordinate spaces -- all visible simultaneously without
- * pages or tabs -- as a single application or practical workspace.
+ * pages or tabs -- as a single application, or a practical workspace.
  * 
  * A component is added to the world of the screen with the "load"
  * function.  Or, a new view is created from a component with the
  * "clear and load" function.
+ * 
+ * The methods defined here will not interfere with the normal
+ * operation of an instance of this class as a normal {@link Region}.
  * 
  * @author jdp
  */
 public class World
     extends fv3.nui.Region
 {
+    /**
+     * @see #load(java.net.URL)
+     * @see #clear()
+     */
     public static Component ClearAndLoad(URL jnlp) throws IOException {
-        Instance.clear();
-        return Instance.load(jnlp);
+        Window.clear();
+        return Window.load(jnlp);
     }
+    /**
+     * @see #load(java.net.URL)
+     */
     public static Component Load(URL jnlp) throws IOException {
-        return Instance.load(jnlp);
+        return Window.load(jnlp);
     }
+    /**
+     * @see #unload(java.net.URL)
+     */
     public static Component Unload(URL jnlp) throws IOException {
-        return Instance.unload(jnlp);
+        return Window.unload(jnlp);
     }
+    /**
+     * Current focus of input events.
+     * @see Region
+     */
     public static Component Current(){
-        return Instance.getCurrent();
+        return Window.getCurrent();
     }
+    /**
+     * @see Region
+     */
     public static void Current(Component c){
-        Instance.setCurrent(c);
+        Window.setCurrent(c);
     }
 
 
-    private volatile static World Instance;
-
+    private volatile static World Window;
+    /*
+     * Main subclasses do the same..
+     */
     public static void main(String[] argv){
         try {
-            Animator animator = new Animator(World.Instance);
+            World window = new World();
+            Animator animator = new Animator(window);
             animator.start();
         }
         catch (Exception exc){
@@ -71,10 +94,8 @@ public class World
 
     protected World(){
         super();
-        if (null == Instance)
-            Instance = this;
-        else
-            throw new IllegalStateException();
+        if (null == Window)
+            Window = this;
     }
 
 

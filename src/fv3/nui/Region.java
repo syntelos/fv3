@@ -62,6 +62,9 @@ public class Region
     }
 
 
+    public boolean pushFv3Matrix(){
+        return false;
+    }
     public void init(fv3.Region region){
         List<fv3.Component> children = this.children;
         if (null != children){
@@ -96,10 +99,15 @@ public class Region
     public void display(GL2 gl){
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        if (this.pushSpace){
+
+        boolean ps = this.pushSpace;
+
+        if (ps){
             gl.glPushMatrix();
             gl.glLoadMatrixd(this.getFv3MatrixBuffer());
+            if (fv3tk.Animator.GLTrace){
+                System.out.println(this.getFv3Matrix().toString());
+            }
         }
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -110,16 +118,19 @@ public class Region
                 for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
                     fv3.Component co = (fv3.Component)list[cc];
                     if (co.isVisible()){
-                        boolean cm = co.hasFv3Matrix();
-                        if (cm){
+                        boolean cp = co.pushFv3Matrix();
+                        if (cp){
                             gl.glPushMatrix();
                             gl.glLoadMatrixd(co.getFv3MatrixBuffer());
+                            if (fv3tk.Animator.GLTrace){
+                                System.out.println(co.getFv3Matrix().toString());
+                            }
                         }
                         try {
                             co.display(gl);
                         }
                         finally {
-                            if (cm){
+                            if (cp){
                                 gl.glPopMatrix();
                             }
                         }
@@ -128,7 +139,7 @@ public class Region
             }
         }
         finally {
-            if (this.pushSpace)
+            if (ps)
                 gl.glPopMatrix();
         }
     }

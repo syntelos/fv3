@@ -52,7 +52,7 @@
       <zipfileset src="${toString:lib.fv3.jar.path}" excludes="META-INF/**"/>
     </jar>
     <delete dir="${bin}"/>
-    <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">
+    <copy tofile="${target.jnlp}" file="ver/pkg/gears.jnlp" filtering="true" overwrite="true">
       <filterset>
         <filter token="ProjectName"         value="${ant.project.name}"/>
         <filter token="ProjectVersion"      value="${this.version}"/>

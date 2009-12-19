@@ -69,6 +69,9 @@ public class Component
     public final boolean hasNotFv3Matrix(){
         return (null == this.matrix);
     }
+    public boolean pushFv3Matrix(){
+        return (null != this.matrix);
+    }
     protected final Matrix matrix(){
         Matrix m = this.matrix;
         if (null == m){
