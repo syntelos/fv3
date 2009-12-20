@@ -1,7 +1,6 @@
 package test;
 
 import fv3.math.AxisAngle;
-import fv3.math.Quat;
 import fv3.model.Begin ;
 import fv3.model.End ;
 import fv3.model.Material ;
@@ -682,7 +681,4 @@ public class Gear1
     }
 
 
-    public void step(long time, long dt){
-
-    }
 }

@@ -22,7 +22,6 @@ import java.nio.DoubleBuffer;
 
 import fv3.math.AxisAngle;
 import fv3.math.Matrix;
-import fv3.math.Quat;
 import fv3.math.Vector;
 
 /**
@@ -55,8 +54,6 @@ public class Component
     }
 
 
-    public void init(fv3.Region parent){
-    }
     public final boolean alive(){
         return this.alive;
     }
@@ -137,10 +134,6 @@ public class Component
     }
     public final fv3.Component scale(double s){
         this.matrix().scale(s);
-        return this;
-    }
-    public final fv3.Component rotate(Quat q){
-        this.matrix().rotate(q);
         return this;
     }
     public final fv3.Component rotate(AxisAngle a){

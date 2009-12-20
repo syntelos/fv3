@@ -20,7 +20,8 @@ package fv3;
 import lxl.List;
 
 /**
- * A region is a branch node member of a component graph.  
+ * When a region has a matrix, its matrix creates a new coordinate
+ * space (loading, not multiplying).
  * 
  * The {@link lxl.Hier lxl component hierarchy} is an experimental
  * feature for dynamic work space graphing.  With this feature set

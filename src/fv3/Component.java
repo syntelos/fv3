@@ -21,7 +21,6 @@ import java.nio.DoubleBuffer;
 
 import fv3.math.AxisAngle;
 import fv3.math.Matrix;
-import fv3.math.Quat;
 import fv3.math.Vector;
 
 /**
@@ -35,21 +34,15 @@ public interface Component
     extends fv3tk.Fv3Component,
             lxl.Component
 {
-    /**
-     * Called after construction and after being added to the
-     * component graph, and before the Fv3Tk init.  The implementor
-     * may find this step useful, or may ignore it completely.
-     */
-    public void init(Region parent);
 
     public boolean hasFv3Matrix();
     public boolean hasNotFv3Matrix();
     /**
      * A fast and effective way to manage coordinate spaces.  A {@link
-     * World} or {@link Region} will push their own matrix.  This
-     * method permits the Region display code to push matrices on
-     * behalf of child components when present, but to not push
-     * matrices on behalf of subordinate regions.
+     * World} or {@link Region} will push its own matrix.  This method
+     * permits the Region display code to push matrices on behalf of
+     * child components when present, but to not push matrices on
+     * behalf of subordinate regions.
      * 
      * @return Whether a containing region should push this matrix
      * before calling display.  Should be true when: the component has
@@ -91,8 +84,6 @@ public interface Component
     public Component translate(Vector v);
 
     public Component scale(double s);
-
-    public Component rotate(Quat q);
 
     public Component rotate(AxisAngle a);
 

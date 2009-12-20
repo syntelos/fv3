@@ -2,8 +2,7 @@
 package test;
 
 import fv3.Component;
-import fv3.math.AxisAngle;
-import fv3.math.Quat;
+
 import fv3.nui.View;
 
 import fv3tk.Animator;
@@ -84,7 +83,7 @@ public class Gears
         double rx = (Math.PI * ((x-this.prevMouseX)/this.screenW));
         double ry = (Math.PI * ((this.prevMouseY-y)/this.screenH));
 
-        //this.rotateXY( (double)(rx), (double)(ry));
+        this.rotateXY( rx, ry);
 
         this.prevMouseX = x;
         this.prevMouseY = y;
