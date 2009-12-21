@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="fv3" default="apps">
+<project name="fv3" default="update">
 
   <property name="main" value="fv3.World"/>
 
@@ -17,6 +17,18 @@
 
   <property file="build.version"/>
   <property name="this.version" value="${version.major}.${version.minor}.${version.build}"/>
+
+  <property file="${user.home}/fv3.build.properties"/>
+  <condition property="update.llg.not">
+    <or>
+      <not>
+        <isset property="copyto.llg.fv3"/>
+      </not>
+      <not>
+        <available file="${copyto.llg.fv3}" type="dir"/>
+      </not>
+    </or>
+  </condition>
 
 
   <path id="lib.path">
@@ -36,6 +48,13 @@
   <property name="loader.jar" value="${web}/${ant.project.name}-loader-${this.version}.jar"/>
 
   <property name="target.jnlp" value="${web}/${ant.project.name}-${this.version}.jnlp"/>
+
+
+  <target name="update" depends="apps, update-llg" />
+
+  <target name="update-llg" unless="update.llg.not" depends="apps">
+    <copy file="${target.jar}" todir="${copyto.llg.fv3}"/>
+  </target>
 
 
   <target name="apps" depends="loader">
