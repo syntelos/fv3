@@ -17,38 +17,18 @@
  */
 package fv3;
 
-import fv3.math.Vector;
-
 /**
- * Bounds of a geometric object as a minimum point and a maximum
- * point.
+ * 
  */
-public class Bounds
-    extends Object
+public interface Bounds
 {
 
-    public final Vector min, max;
+    public double getBoundsMinX();
+    public double getBoundsMaxX();
 
+    public double getBoundsMinY();
+    public double getBoundsMaxY();
 
-    public Bounds(double[][] b){
-        this(new Vector(b[0]),new Vector(b[1]));
-    }
-    public Bounds(Vector min, Vector max){
-        super();
-        if (null != min && null != max){
-            this.min = min;
-            this.max = max;
-        }
-        else
-            throw new IllegalArgumentException();
-    }
-
-
-    public final Vector getMin(){
-        return this.min;
-    }
-    public final Vector getMax(){
-        return this.max;
-    }
-
+    public double getBoundsMidX();
+    public double getBoundsMidY();
 }
