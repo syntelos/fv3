@@ -43,8 +43,6 @@ public class Component
 
     private volatile DoubleBuffer matrixBuffer;
 
-    protected volatile Bounds bounds;
-
     protected volatile boolean visible = true;
 
 
@@ -104,18 +102,14 @@ public class Component
 
         return this.setFv3Matrix(new Matrix(m));
     }
-    public final boolean hasFv3Bounds(){
-        return (null != this.bounds);
+    public boolean hasFv3Bounds(){
+        return false;
     }
-    public final boolean hasNotFv3Bounds(){
-        return (null == this.bounds);
+    public boolean hasNotFv3Bounds(){
+        return true;
     }
-    public final Bounds getFv3Bounds(){
-        return this.bounds;
-    }
-    protected final Bounds setFv3Bounds(Bounds b){
-        this.bounds = b;
-        return b;
+    public Bounds getFv3Bounds(){
+        return null;
     }
     public final boolean isVisible(){
         return this.visible;
