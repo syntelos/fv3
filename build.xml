@@ -56,7 +56,6 @@
     <copy file="${target.jar}" todir="${copyto.llg.fv3}"/>
   </target>
 
-
   <target name="apps" depends="loader">
     <subant>
       <fileset dir="." includes="**/buildapp.*.xml" />
@@ -65,6 +64,7 @@
       <fileset dir="." includes="**/buildloader.*.xml" />
     </subant>
   </target>
+
   <target name="loader" depends="jar" description="Package target loader jar.">
     <delete file="${loader.jar}"/>
 
@@ -87,7 +87,6 @@
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
-      <zipgroupfileset dir="${lib}" includes="**/fv3*.jar"/>
     </jar>
     <delete dir="${bin}"/>
     <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">

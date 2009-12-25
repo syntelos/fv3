@@ -5,8 +5,8 @@ import fv3.Component;
 
 import fv3.nui.View;
 
-import fv3tk.Animator;
-import fv3tk.Fv3Screen;
+import fv3.tk.Animator;
+import fv3.tk.Fv3Screen;
 
 import javax.media.opengl.GL2;
 
