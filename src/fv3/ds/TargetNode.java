@@ -29,7 +29,7 @@ public final class TargetNode
     extends Node
 {
 
-    public float[] pos = new float[3];
+    public double[] pos = new double[3];
     public Track   pos_track = new Track(Track.Type.VECTOR);
 
 

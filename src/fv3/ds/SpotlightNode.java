@@ -26,11 +26,11 @@ public final class SpotlightNode
     extends Node
 {
 
-    public float[]   pos = new float[3];
-    public float[]   color = new float[3];
-    public float     hotspot;
-    public float     falloff;
-    public float     roll;
+    public double[]   pos = new double[3];
+    public double[]   color = new double[3];
+    public double     hotspot;
+    public double     falloff;
+    public double     roll;
     public Track     pos_track = new Track(Track.Type.VECTOR);
     public Track     color_track = new Track(Track.Type.VECTOR);
     public Track     hotspot_track = new Track(Track.Type.FLOAT);

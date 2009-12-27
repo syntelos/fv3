@@ -30,10 +30,10 @@ public final class Shadow
 {
 
     public short   map_size;           /* Global shadow map size that ranges from 10 to 4096 */
-    public float   low_bias;           /* Global shadow low bias */
-    public float   hi_bias;            /* Global shadow hi bias */
-    public float   filter;             /* Global shadow filter that ranges from 1 (lowest) to 10 (highest) */
-    public float   ray_bias;           /* Global raytraced shadow bias */
+    public double   low_bias;           /* Global shadow low bias */
+    public double   hi_bias;            /* Global shadow hi bias */
+    public double   filter;             /* Global shadow filter that ranges from 1 (lowest) to 10 (highest) */
+    public double   ray_bias;           /* Global raytraced shadow bias */
 
 
     public Shadow(Model model, Reader r, Chunk cp)

@@ -33,12 +33,12 @@ public final class Background
     public boolean     useBitmap;
     public String      bitmapName;
     public boolean     useSolid;
-    public float[]     solidColor = new float[3];
+    public double[]     solidColor = new double[3];
     public boolean     useGradient;
-    public float       gradientPercent;
-    public float[]     gradientTop = new float[3];
-    public float[]     gradientMiddle = new float[3];
-    public float[]     gradientBottom = new float[3];
+    public double       gradientPercent;
+    public double[]     gradientTop = new double[3];
+    public double[]     gradientMiddle = new double[3];
+    public double[]     gradientBottom = new double[3];
 
 
     public Background(Model model, Reader r, Chunk cp)
@@ -76,7 +76,7 @@ public final class Background
         }
         case Chunk.V_GRADIENT: {
             int[] index = new int[2];
-            float[][][] col = new float[2][3][3];
+            double[][][] col = new double[2][3][3];
             int lin = 0;
             this.gradientPercent = r.readFloat(cp1);
             while (cp1.in()){

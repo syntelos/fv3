@@ -26,19 +26,19 @@ import fv3.Fv3Exception;
 
 
 public final class Camera {
-    private final static float EPSILON = (float)1e-5;
+    private final static double EPSILON = 1e-5;
 
     public final String name;
     public int         user_id;
     public Object      user_ptr;
     public int         object_flags; /*< @see ObjectFlags */ 
-    public float[]     position = new float[3];
-    public float[]     target = new float[3];
-    public float       roll;
-    public float       fov = 45f;
+    public double[]     position = new double[3];
+    public double[]     target = new double[3];
+    public double       roll;
+    public double       fov = 45f;
     public boolean     seeCone;
-    public float       nearRange;
-    public float       farRange;
+    public double       nearRange;
+    public double       farRange;
 
 
     public Camera(Model model, Reader r, Chunk cp, String name){
@@ -57,7 +57,7 @@ public final class Camera {
         r.readVector(cp,this.position);
         r.readVector(cp,this.target);
         this.roll = r.readFloat(cp);
-        float s = r.readFloat(cp);
+        double s = r.readFloat(cp);
         if (EPSILON > Math.abs(s))
             this.fov = 45f;
         else

@@ -187,7 +187,7 @@ public class Dump
     }
 
 
-    public void dump(float matrix[][]) {
+    public void dump(double matrix[][]) {
         int i, j;
         for (i = 0; i < 4; ++i) {
             for (j = 0; j < 4; ++j) {
@@ -361,7 +361,7 @@ public class Dump
         dump(mesh.matrix);
         printf("  vertices (x, y, z, u, v):\n");
 
-        float[] p;
+        double[] p;
         for (int i = 0, z = mesh.vertices.length; i < z; ++i) {
             p = mesh.vertices[i];
             printf("    %10.5f %10.5f %10.5f", p[0], p[1], p[2]);

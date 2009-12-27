@@ -123,7 +123,7 @@ public final class Reader
                  | (this.buffer.get(cp.pos++) << 24))
                 & Integer.MAX_VALUE);
     }
-    public float readFloat(Chunk cp) throws Fv3Exception {
+    public double readFloat(Chunk cp) throws Fv3Exception {
         return Float.intBitsToFloat(this.readS32(cp));
     }
     public String readString(Chunk cp){
@@ -139,29 +139,29 @@ public final class Reader
         }
         throw new Fv3Exception("Unterminated string.");
     }
-    public void readVector(Chunk cp, float[] v){
+    public void readVector(Chunk cp, double[] v){
         v[0] = this.readFloat(cp);
         v[1] = this.readFloat(cp);
         v[2] = this.readFloat(cp);
     }
-    public void readColor(Chunk cp, float[] c){
+    public void readColor(Chunk cp, double[] c){
         c[0] = this.readFloat(cp);
         c[1] = this.readFloat(cp);
         c[2] = this.readFloat(cp);
     }
-    public float readPercentageS16(Chunk cp, float defaultValue){
+    public double readPercentageS16(Chunk cp, double defaultValue){
         while (cp.in()){
             Chunk cp1 = this.next(cp);
             switch (cp1.id){
             case Chunk.INT_PERCENTAGE: {
                 int i = this.readS16(cp1);
-                return (float)(1.0 * i / 100.0);
+                return (1.0 * i / 100.0);
             }
             }
         }
         return defaultValue;
     }
-    public void readMaterialColor(Chunk cp, float[] rgb){
+    public void readMaterialColor(Chunk cp, double[] rgb){
         boolean lin = false;
         while (cp.in()){
             Chunk cp1 = this.next(cp);

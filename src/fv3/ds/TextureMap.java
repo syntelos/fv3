@@ -52,16 +52,16 @@ public final class TextureMap
     public Object      user_ptr;
     public String      name;
     public int         flags = 0x10;
-    public float       percent = 1.0f;
-    public float       blur;
-    public float[]     scale = {1.0f,1.0f};
-    public float[]     offset = {0f,0f};
-    public float       rotation;
-    public float[]     tint_1 = {0f,0f,0f};
-    public float[]     tint_2 = {0f,0f,0f};
-    public float[]     tint_r = {0f,0f,0f};
-    public float[]     tint_g = {0f,0f,0f};
-    public float[]     tint_b = {0f,0f,0f};
+    public double       percent = 1.0f;
+    public double       blur;
+    public double[]     scale = {1.0f,1.0f};
+    public double[]     offset = {0f,0f};
+    public double       rotation;
+    public double[]     tint_1 = {0f,0f,0f};
+    public double[]     tint_2 = {0f,0f,0f};
+    public double[]     tint_r = {0f,0f,0f};
+    public double[]     tint_g = {0f,0f,0f};
+    public double[]     tint_b = {0f,0f,0f};
 
 
     public TextureMap(){

@@ -28,28 +28,28 @@ import fv3.Fv3Exception;
 public final class Material
     extends Object
 {
-    private final static float[] DefaultAmbient  = new float[]{0.588235f,0.588235f,0.588235f};
-    private final static float[] DefaultDiffuse  = new float[]{0.588235f,0.588235f,0.588235f};
-    private final static float[] DefaultSpecular = new float[]{0.898039f,0.898039f,0.898039f};
-    public final static float DefaultShininess = 0.1f;
-    public final static float DefaultWireSize = 1.0f;
+    private final static double[] DefaultAmbient  = new double[]{0.588235f,0.588235f,0.588235f};
+    private final static double[] DefaultDiffuse  = new double[]{0.588235f,0.588235f,0.588235f};
+    private final static double[] DefaultSpecular = new double[]{0.898039f,0.898039f,0.898039f};
+    public final static double DefaultShininess = 0.1f;
+    public final static double DefaultWireSize = 1.0f;
     public final static int DefaultShading = 3;
 
     public int           user_id;
     public Object        user_ptr;
     public String        name;                                  /* Material name */
-    public float[]       ambient = DefaultAmbient.clone();      /* Material ambient reflectivity */
-    public float[]       diffuse = DefaultDiffuse.clone();      /* Material diffuse reflectivity */
-    public float[]       specular = DefaultSpecular.clone();    /* Material specular reflectivity */
-    public float         shininess = DefaultShininess;          /* Material specular exponent */
-    public float         shinStrength;
+    public double[]       ambient = DefaultAmbient.clone();      /* Material ambient reflectivity */
+    public double[]       diffuse = DefaultDiffuse.clone();      /* Material diffuse reflectivity */
+    public double[]       specular = DefaultSpecular.clone();    /* Material specular reflectivity */
+    public double         shininess = DefaultShininess;          /* Material specular exponent */
+    public double         shinStrength;
     public boolean       useBlur;
-    public float         blur;
-    public float         transparency;
-    public float         falloff;
+    public double         blur;
+    public double         transparency;
+    public double         falloff;
     public boolean       isAdditive;
     public boolean       selfIllumFlag; /* bool */
-    public float         selfIllum;
+    public double         selfIllum;
     public boolean       useFalloff;
     public int           shading = DefaultShading;
     public boolean       soften;        /* bool */
@@ -58,7 +58,7 @@ public final class Material
     public boolean       mapDecal;      /* bool */
     public boolean       useWire;
     public boolean       useWireAbs;
-    public float         wireSize = DefaultWireSize;
+    public double         wireSize = DefaultWireSize;
     public TextureMap    texture1Map = new TextureMap();
     public TextureMap    texture1Mask = new TextureMap();
     public TextureMap    texture2Map = new TextureMap();

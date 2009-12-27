@@ -32,29 +32,29 @@ public final class Light
     public int         object_flags; 
     public boolean     spot_light;     /* bool */
     public boolean     see_cone;
-    public float[]     color = new float[3];
-    public float[]     position = new float[3];
-    public float[]     target = new float[3];
-    public float       roll;
+    public double[]     color = new double[3];
+    public double[]     position = new double[3];
+    public double[]     target = new double[3];
+    public double       roll;
     public boolean     off;              /* bool */
-    public float       outer_range;
-    public float       inner_range;
-    public float       multiplier;
+    public double       outer_range;
+    public double       inner_range;
+    public double       multiplier;
     /*const char**  excludes;*/
-    public float       attenuation;
+    public double       attenuation;
     public boolean     rectangular_spot;   /* bool */
     public boolean     shadowed;           /* bool */
-    public float       shadow_bias;
-    public float       shadow_filter;
+    public double       shadow_bias;
+    public double       shadow_filter;
     public int         shadow_size;
-    public float       spot_aspect;
+    public double       spot_aspect;
     public boolean     use_projector;
     public String      projector;
     public boolean     spot_overshoot;      /* bool */
     public boolean     ray_shadows;         /* bool */
-    public float       ray_bias;
-    public float       hotspot;
-    public float       falloff;
+    public double       ray_bias;
+    public double       hotspot;
+    public double       falloff;
 
 
     public Light(){

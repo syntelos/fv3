@@ -46,12 +46,12 @@ public final class Key
 
     public int     frame;
     public int     flags;
-    public float   tens;
-    public float   cont;
-    public float   bias;
-    public float   easeTo;
-    public float   easeFrom;
-    public float[] value = {0f,0f,0f,0f};
+    public double   tens;
+    public double   cont;
+    public double   bias;
+    public double   easeTo;
+    public double   easeFrom;
+    public double[] value = {0f,0f,0f,0f};
 
 
     public Key(){

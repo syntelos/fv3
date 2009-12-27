@@ -26,9 +26,9 @@ public final class CameraNode
     extends Node
 {
 
-    public float[]   pos = new float[3];
-    public float     fov;
-    public float     roll;
+    public double[]   pos = new double[3];
+    public double     fov;
+    public double     roll;
     public Track     pos_track = new Track(Track.Type.VECTOR);
     public Track     fov_track = new Track(Track.Type.FLOAT);
     public Track     roll_track = new Track(Track.Type.FLOAT);

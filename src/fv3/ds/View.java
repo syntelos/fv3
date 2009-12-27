@@ -66,10 +66,10 @@ public final class View
     public int         axisLock;
     public short[]     position = {0,0};
     public short[]     size = {0,0};
-    public float       zoom;
-    public float[]     center = new float[3];
-    public float       horizAngle;
-    public float       vertAngle;
+    public double       zoom;
+    public double[]     center = new double[3];
+    public double       horizAngle;
+    public double       vertAngle;
     public String      camera;
 
 

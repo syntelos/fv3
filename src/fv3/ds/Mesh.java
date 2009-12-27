@@ -35,9 +35,9 @@ public final class Mesh
     public Object    user_ptr;
     public int       object_flags;                 /** @see ObjectFlags */ 
     public int       color;                        /** Index to editor palette [0..255] */
-    public float[][] matrix = new float[4][4];     /** Transformation matrix for mesh data */
-    public float[][] vertices = {};
-    public float[][] texcos = {};
+    public double[][] matrix = new double[4][4];     /** Transformation matrix for mesh data */
+    public double[][] vertices = {};
+    public double[][] texcos = {};
     public int[]     vflags = {};
     public Face[]    faces = {};
     public String    box_front;
@@ -47,16 +47,16 @@ public final class Mesh
     public String    box_top;
     public String    box_bottom;
     public MapType   map_type = MapType.NONE;
-    public float[]   map_pos = new float[3];
-    public float[][] map_matrix = new float[4][4];
-    public float     map_scale;
-    public float[]   map_tile = {0f,0f};
-    public float[]   map_planar_size = {0f,0f};
-    public float     map_cylinder_height;
+    public double[]   map_pos = new double[3];
+    public double[][] map_matrix = new double[4][4];
+    public double     map_scale;
+    public double[]   map_tile = {0f,0f};
+    public double[]   map_planar_size = {0f,0f};
+    public double     map_cylinder_height;
 
     public double minX, maxX, minY, maxY, minZ, maxZ;
 
-    private volatile float[][] normals;
+    private volatile double[][] normals;
 
 
 
@@ -71,7 +71,7 @@ public final class Mesh
         double minX = 0.0, minY = 0.0, minZ = 0.0, maxX = 0.0, maxY = 0.0, maxZ = 0.0;
 
         for (int cc = 0, count = this.vertices.length; cc < count; ++cc) {
-            float[] vertex = this.vertices[cc];
+            double[] vertex = this.vertices[cc];
             double x = vertex[0];
             double y = vertex[1];
             double z = vertex[2];
@@ -101,11 +101,11 @@ public final class Mesh
     }
 
 
-    public float[][] normals(){
-        float[][] normals = this.normals;
+    public double[][] normals(){
+        double[][] normals = this.normals;
         if (null == normals){
             int count = this.faces.length;
-            normals = new float[count][3] ;
+            normals = new double[count][3] ;
             for (int cc = 0; cc < count; ++cc){
                 Normal(normals[cc],
                        this.vertices[this.faces[cc].index[0]],
@@ -236,7 +236,7 @@ public final class Mesh
                 this.texcos = Resize(this.texcos,count);
                 this.vflags = Resize(this.vflags,count);
                 for (int cc = 0; cc < ntexcos; ++cc) {
-                    float[] texcos = this.texcos[cc];
+                    double[] texcos = this.texcos[cc];
                     texcos[0] = r.readFloat(cp2);
                     texcos[1] = r.readFloat(cp2);
                 }
@@ -250,8 +250,8 @@ public final class Mesh
             /* Flip X coordinate of vertices if mesh matrix
              * has negative determinant
              */
-            float[][] inv_matrix = new float[4][4], M = new float[4][4];
-            float[] tmp = new float[3];
+            double[][] inv_matrix = new double[4][4], M = new double[4][4];
+            double[] tmp = new double[3];
 
             Copy(inv_matrix, this.matrix);
             Inv(inv_matrix);
@@ -269,9 +269,9 @@ public final class Mesh
 
     /*
      */
-    private final static float EPSILON = (float)1e-5;
+    private final static double EPSILON = 1e-5;
 
-    private final static float[][] Identity = {
+    private final static double[][] Identity = {
         {1,0,0,0},
         {0,1,0,0},
         {0,0,1,0},
@@ -292,41 +292,41 @@ public final class Mesh
             }
         }
     }
-    private final static float[][] Resize(float[][] list, int size){
+    private final static double[][] Resize(double[][] list, int size){
         if (null == list)
-            return new float[size][3];
+            return new double[size][3];
         else {
             int length = list.length;
             if (size == length)
                 return list;
             else {
-                float[][] copier = new float[size][3];
+                double[][] copier = new double[size][3];
                 System.arraycopy(list,0,copier,0,length);
                 return copier;
             }
         }
     }
-    private final static void Identity(float[][] m){
+    private final static void Identity(double[][] m){
         System.arraycopy(Identity[0],0,m[0],0,4);
         System.arraycopy(Identity[1],0,m[1],0,4);
         System.arraycopy(Identity[2],0,m[2],0,4);
         System.arraycopy(Identity[3],0,m[3],0,4);
     }
-    private final static float[][] Copy(float[][] dst, float[][] src){
+    private final static double[][] Copy(double[][] dst, double[][] src){
         System.arraycopy(src[0],0,dst[0],0,4);
         System.arraycopy(src[1],0,dst[1],0,4);
         System.arraycopy(src[2],0,dst[2],0,4);
         System.arraycopy(src[3],0,dst[3],0,4);
         return dst;
     }
-    private final static float Det2x2( float a, float b, 
-                                       float c, float d)
+    private final static double Det2x2( double a, double b, 
+                                       double c, double d)
     {
         return ((a)*(d) - (b)*(c));
     }
-    private final static float Det3x3(float a1, float a2, float a3,
-                                float b1, float b2, float b3,
-                                float c1, float c2, float c3)
+    private final static double Det3x3(double a1, double a2, double a3,
+                                double b1, double b2, double b3,
+                                double c1, double c2, double c3)
     {
         return (a1*Det2x2(b2, b3, c2, c3) -
                b1*Det2x2(a2, a3, c2, c3) +
@@ -335,8 +335,8 @@ public final class Mesh
     /**
      * Find determinant of a matrix.
      */
-    private final static float Det(float m[][]) {
-        float a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
+    private final static double Det(double m[][]) {
+        double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
 
         a1 = m[0][0];
         b1 = m[1][0];
@@ -359,12 +359,12 @@ public final class Mesh
                 c1 * Det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4) -
                 d1 * Det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
     }
-    private final static boolean Inv(float m[][]) {
+    private final static boolean Inv(double m[][]) {
         int i, j, k;
         int[] pvt_i = new int[4], pvt_j = new int[4];            /* Locations of pivot elements */
-        float pvt_val;               /* Value of current pivot element */
-        float hold;                  /* Temporary storage */
-        float determinat;
+        double pvt_val;               /* Value of current pivot element */
+        double hold;                  /* Temporary storage */
+        double determinat;
 
         determinat = 1.0f;
         for (k = 0; k < 4; k++)  {
@@ -452,7 +452,7 @@ public final class Mesh
         }
         return true;
     }
-    private final static float[][] Scale(float m[][], float x, float y, float z) {
+    private final static double[][] Scale(double m[][], double x, double y, double z) {
         for (int i = 0; i < 4; i++) {
             m[0][i] *= x;
             m[1][i] *= y;
@@ -460,9 +460,9 @@ public final class Mesh
         }
         return m;
     }
-    private final static float[][] Mult(float[][] m, float[][] a, float[][] b){
+    private final static double[][] Mult(double[][] m, double[][] a, double[][] b){
         int i, j, k;
-        float ab;
+        double ab;
         for (j = 0; j < 4; j++) {
             for (i = 0; i < 4; i++) {
                 ab = 0.0f;
@@ -474,31 +474,31 @@ public final class Mesh
         }
         return m;
     }
-    private final static float[] Copy(float dst[], float src[]) {
+    private final static double[] Copy(double dst[], double src[]) {
         System.arraycopy(src,0,dst,0,3);
         return dst;
     }
-    private final static float[] Transform(float c[], float m[][], float a[]) {
+    private final static double[] Transform(double c[], double m[][], double a[]) {
         c[0] = m[0][0] * a[0] + m[1][0] * a[1] + m[2][0] * a[2] + m[3][0];
         c[1] = m[0][1] * a[0] + m[1][1] * a[1] + m[2][1] * a[2] + m[3][1];
         c[2] = m[0][2] * a[0] + m[1][2] * a[1] + m[2][2] * a[2] + m[3][2];
         return c;
     }
-    private final static float[] Sub(float c[], float a[], float b[]) {
+    private final static double[] Sub(double c[], double a[], double b[]) {
         for (int i = 0; i < 3; ++i) {
             c[i] = a[i] - b[i];
         }
         return c;
     }
-    private final static float[] Cross(float c[], float a[], float b[]) {
+    private final static double[] Cross(double c[], double a[], double b[]) {
         c[0] = a[1] * b[2] - a[2] * b[1];
         c[1] = a[2] * b[0] - a[0] * b[2];
         c[2] = a[0] * b[1] - a[1] * b[0];
         return c;
     }
-    private final static float[] Normalize(float c[]) {
-        float l, m;
-        l = (float)Math.sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
+    private final static double[] Normalize(double c[]) {
+        double l, m;
+        l = Math.sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
         if (Math.abs(l) < EPSILON) {
             if ((c[0] >= c[1]) && (c[0] >= c[2])) {
                 c[0] = 1.0f;
@@ -523,8 +523,8 @@ public final class Mesh
         }
         return c;
     }
-    private final static float[] Normal(float n[], float a[], float b[], float c[]) {
-        float p[] = new float[3], q[] = new float[3];
+    private final static double[] Normal(double n[], double a[], double b[], double c[]) {
+        double p[] = new double[3], q[] = new double[3];
         Sub(p, c, b);
         Sub(q, a, b);
         Cross(n, p, q);

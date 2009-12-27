@@ -95,7 +95,7 @@ public abstract class Node
     public int        node_id = 65535;
     public String     name;
     public int        flags;
-    public float[][]  matrix = new float[4][4];
+    public double[][]  matrix = new double[4][4];
 
 
     protected Node(Type type){

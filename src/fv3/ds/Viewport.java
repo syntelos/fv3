@@ -39,11 +39,11 @@ public final class Viewport
     public int[]     layoutSize = {0,0};
     public View[]    layoutViews;
     public View.Type defaultType;
-    public float[]   defaultPosition = new float[3];
-    public float     defaultWidth;
-    public float     defaultHorizAngle;
-    public float     defaultVertAngle;
-    public float     defaultRollAngle;
+    public double[]   defaultPosition = new double[3];
+    public double     defaultWidth;
+    public double     defaultHorizAngle;
+    public double     defaultVertAngle;
+    public double     defaultRollAngle;
     public String    defaultCamera;
 
 

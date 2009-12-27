@@ -26,15 +26,15 @@ public final class MeshInstanceNode
     extends Node
 {
 
-    public float[]   pivot = new float[3];
+    public double[]   pivot = new double[3];
     public String    instance_name;
-    public float[]   bbox_min = new float[3];
-    public float[]   bbox_max = new float[3];
+    public double[]   bbox_min = new double[3];
+    public double[]   bbox_max = new double[3];
     public int       hide;
-    public float[]   pos = new float[3];
-    public float[]   rot = {0f,0f,0f,0f};
-    public float[]   scl = new float[3];
-    public float     morph_smooth;
+    public double[]   pos = new double[3];
+    public double[]   rot = {0f,0f,0f,0f};
+    public double[]   scl = new double[3];
+    public double     morph_smooth;
     public String    morph;
     public Track     pos_track = new Track(Track.Type.VECTOR);
     public Track     rot_track = new Track(Track.Type.QUAT);

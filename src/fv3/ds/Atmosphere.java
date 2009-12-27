@@ -30,24 +30,24 @@ public final class Atmosphere
 {
 
     public boolean     useFog;
-    public float[]     fogColor = new float[3];
+    public double[]     fogColor = new double[3];
     public boolean     fogBackground;
-    public float       fogNearPlane;
-    public float       fogNearDensity;
-    public float       fogFarPlane;
-    public float       fogFarDensity;
+    public double       fogNearPlane;
+    public double       fogNearDensity;
+    public double       fogFarPlane;
+    public double       fogFarDensity;
     public boolean     useLayerFog;
     public int         layerFogFlags;
-    public float[]     layerFogColor = new float[3];
-    public float       layerFogNearY;
-    public float       layerFogFarY;
-    public float       layerFogDensity;
+    public double[]     layerFogColor = new double[3];
+    public double       layerFogNearY;
+    public double       layerFogFarY;
+    public double       layerFogDensity;
     public boolean     useDistCue;
     public boolean     distCueBackground;
-    public float       distCueNearPlane;
-    public float       distCueNearDimming;
-    public float       distCueFarPlane;
-    public float       distCueFarDimming;
+    public double       distCueNearPlane;
+    public double       distCueNearDimming;
+    public double       distCueFarPlane;
+    public double       distCueFarDimming;
 
 
     public Atmosphere(Model model, Reader r, Chunk cp)

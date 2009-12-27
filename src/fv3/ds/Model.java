@@ -44,10 +44,10 @@ public class Model
     public Camera[] camera = new Camera[0];
     public Material[] material = new Material[0];
     public Light[] light = new Light[0];
-    public float[] constructionPlane = new float[3];
-    public float[] ambient = new float[3];
+    public double[] constructionPlane = new double[3];
+    public double[] ambient = new double[3];
     public int meshVersion;
-    public float masterScale;
+    public double masterScale;
     public int segmentFrom, segmentTo;
     public int keyfRevision;
     public int frames, currentFrame;

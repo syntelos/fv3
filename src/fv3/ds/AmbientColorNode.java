@@ -26,7 +26,7 @@ public final class AmbientColorNode
     extends Node
 {
 
-    public float[] color = new float[3];
+    public double[] color = new double[3];
     public Track   color_track = new Track(Track.Type.VECTOR);
 
 
