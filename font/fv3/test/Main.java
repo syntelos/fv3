@@ -34,6 +34,25 @@ public class Main
     implements java.awt.event.WindowListener
 {
 
+    public static void main(String[] argv){
+        String name = "typeright";
+        try {
+            CFFFontReader reader = new CFFFontReader(name);
+            try {
+                CFFFont font = new CFFFont(name,reader);
+                Main main = new Main(font);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        catch (java.io.IOException exc){
+            exc.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+
     private final CFFFont font ;
 
     private final Screen screen;
@@ -58,13 +77,20 @@ public class Main
         g.fillRect(0,0,bounds.width,bounds.height);
         g.setColor(Color.black);
         CFFFont font = this.font;
-        double x = 0, y = 0;
+        double x = 0, y = 0, width = bounds.width, height = bounds.height;
         for (int glc = 0, glz = font.getLength(); glc < glz; glc++){
             Path2D.Double glyph = font.getPath(glc);
             Rectangle2D.Double glyphBounds = (Rectangle2D.Double)glyph.getBounds2D();
             Graphics2D glyphGraphics = (Graphics2D)g.create();
             glyphGraphics.translate(x,y);
-            g.draw(glyph);
+            glyphGraphics.draw(glyph);
+            x += glyphBounds.width;
+            if (x >= width){
+                x = 0.0;
+                y += glyphBounds.height;
+                if (y >= height)
+                    break;
+            }
         }
     }
     public void windowOpened(WindowEvent e) {}
@@ -78,36 +104,4 @@ public class Main
     public void windowDeiconified(WindowEvent e) {}
     public void windowActivated(WindowEvent e) {}
     public void windowDeactivated(WindowEvent e) {}
-
-
-
-    static void usage(java.io.PrintStream out){
-        out.println("Usage ");
-        out.println("          fv3.font.test.Main font-name ");
-        out.println(" ");
-    }
-
-    public static void main(String[] argv){
-        if (1 == argv.length){
-            String name = argv[0];
-            try {
-                CFFFontReader reader = new CFFFontReader(name);
-                try {
-                    CFFFont font = new CFFFont(name,reader);
-                    Main main = new Main(font);
-                }
-                finally {
-                    reader.close();
-                }
-            }
-            catch (java.io.IOException exc){
-                exc.printStackTrace();
-                System.exit(1);
-            }
-        }
-        else {
-            usage(System.err);
-            System.exit(1);
-        }
-    }
 }

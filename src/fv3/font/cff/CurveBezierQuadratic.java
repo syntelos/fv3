@@ -28,7 +28,7 @@ public class CurveBezierQuadratic
     extends Curve 
     implements CurveConstants
 {
-    private final static int DT = (4096 / STEPS_IN_QUADRATIC_BEZIER);
+    private final static int DT = (EM / STEPS_IN_QUADRATIC_BEZIER);
 
 
     public CurveBezierQuadratic(CFFPoint p1, CFFPoint p2, CFFPoint p4) {
@@ -53,10 +53,10 @@ public class CurveBezierQuadratic
 
         this.addPoint(x0, y0);
 
-        for (int dt = DT, t = dt; t < 4096; t += dt){
+        for (int dt = DT, t = dt; t < EM; t += dt){
 
-            double x = (((((x_b * t) / 4096.0) + x_c) * t) / 4096.0) + x_d;
-            double y = (((((y_b * t) / 4096.0) + y_c) * t) / 4096.0) + y_d;
+            double x = (((((x_b * t) / EM) + x_c) * t) / EM) + x_d;
+            double y = (((((y_b * t) / EM) + y_c) * t) / EM) + y_d;
 
             this.addPoint(x, y);
         }
