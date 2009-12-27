@@ -22,6 +22,22 @@ import fv3.font.cff.DisplayOptions;
 import fv3.font.cff.InstructionStream;
 
 /**
+ * A compact font file format for application- embedded bezier outline
+ * fonts.
+ * 
+ * The general strategy is that applications embed fonts in a compact
+ * outline format.  Fonts are scaled and rendered for size and
+ * resolution.  Following the Fv3 model, whether this happens at run
+ * time or design time is a variable.
+ * 
+ * <h3>CFF Format</h3>
+ * 
+ * This "CFF" is not "OpenType CFF", although there are similarities.
+ * There's more than a bit of "placeholding" going on here.  The
+ * format employed here may change in future.
+ * 
+ * <h3>Extension</h3>
+ * 
  * This font class may be subclassed to implement specialized glyph
  * subclasses.  A text editor may employ a glyph subclass as an
  * integrated component of its internal data structures.
