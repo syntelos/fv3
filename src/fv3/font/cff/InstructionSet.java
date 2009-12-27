@@ -27,20 +27,18 @@ public abstract class InstructionSet
     implements InstructionConstants
 {
 
-    public static Instruction Get(int instruction_number) {
+    public final static Instruction Get(int instruction_number) {
 
         return SET[instruction_number];
     }
 
 
-
     private final static Instruction[] SET;
     static {
         SET = new Instruction[OPEN_PATH+1];
-        Instruction Error = new InstructionError();
-        SET[ERROR]            = Error;
-        SET[GLYPH_NEXT]       = Error;
-        SET[GLYPH_NUMBER]     = Error;
+        SET[ERROR]            = new Instruction(ERROR,"Error");
+        SET[GLYPH_NEXT]       = new Instruction(GLYPH_NEXT,"Glyph Next");
+        SET[GLYPH_NUMBER]     = new Instruction(GLYPH_NUMBER,"Glyph Number");
         SET[STRAIGHT_LINE]    = new InstructionStraightLine();
         SET[QUADRATIC_BEZIER] = new InstructionQuadraticBezier();
         SET[CUBIC_BEZIER]     = new InstructionCubicBezier();
