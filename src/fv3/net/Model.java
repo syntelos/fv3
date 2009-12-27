@@ -17,12 +17,46 @@
  */
 package fv3.net;
 
-import java.net.URL;
+import fv3.Component;
+import fv3.math.AxisAngle;
+import fv3.math.Matrix;
+import fv3.math.Vector;
+import fv3.tk.Animator;
 
+import java.net.URL;
+import java.nio.DoubleBuffer;
+
+import javax.media.opengl.GL2;
+import javax.media.opengl.glu.GLU;
+
+import com.sun.javafx.newt.KeyEvent;
+import com.sun.javafx.newt.MouseEvent;
+
+
+/**
+ * 
+ */
 public abstract class Model 
     extends lxl.net.ContentLoader
     implements fv3.Model
 {
+    /**
+     * This can be called from any of the {@link Fv3Component}
+     * methods, including the input event listeners.  
+     */
+    public static GL2 GL(){
+        return (GL2)javax.media.opengl.GLContext.getCurrentGL();
+    }
+
+    public final static double PI2 = (Math.PI * 2.0);
+
+
+    protected volatile boolean alive = true, visible = true;
+
+    protected volatile Matrix matrix;
+
+    protected volatile GLU glu;
+
 
     protected Model(URL source, boolean lazy){
         super(source,lazy);
@@ -32,6 +66,171 @@ public abstract class Model
     }
     protected Model(String url, boolean lazy){
         super(url,lazy);
+    }
+
+
+    public boolean alive(){
+        return this.alive;
+    }
+    public void destroy(){
+        this.alive = false;
+    }
+    public void init(GL2 gl){
+    }
+    public final void setGLU(GLU glu){
+        this.glu = glu;
+    }
+    public void display(GL2 gl){
+    }
+    public boolean isVisible(){
+        return this.visible;
+    }
+    public Component setVisible(boolean b){
+        this.visible = b;
+        return this;
+    }
+    public boolean hasFv3Matrix(){
+        return (null != this.matrix);
+    }
+    public boolean hasNotFv3Matrix(){
+        return (null == this.matrix);
+    }
+    public boolean pushFv3Matrix(){
+        return (null != this.matrix);
+    }
+    public Matrix getFv3Matrix(){
+        return this.matrix;
+    }
+    public DoubleBuffer getFv3MatrixBuffer(){
+        Matrix matrix = this.matrix;
+        if (null != matrix)
+            return matrix.buffer();
+        else
+            return null;
+    }
+    protected Matrix matrix(){
+        Matrix matrix = this.matrix;
+        if (null == matrix){
+            matrix = new Matrix();
+            this.matrix = matrix;
+        }
+        return matrix;
+    }
+    public Component translate(double x, double y, double z){
+        this.matrix().translate(x,y,z);
+        return this;
+    }
+    public Component translate(Vector v){
+        this.matrix().translate(v);
+        return this;
+    }
+    public Component scale(double s){
+        this.matrix().scale(s);
+        return this;
+    }
+    public Component rotate(AxisAngle a){
+        this.matrix().rotate(a);
+        return this;
+    }
+    public Component rotateX(double a){
+        this.matrix().rotateX(a);
+        return this;
+    }
+    public Component rotateY(double a){
+        this.matrix().rotateY(a);
+        return this;
+    }
+    public Component rotateZ(double a){
+        this.matrix().rotateZ(a);
+        return this;
+    }
+    public Component rotateXY(double ax, double ay){
+        this.matrix().rotateXY(ax,ay);
+        return this;
+    }
+    protected final String[] errorStrings(GL2 gl){
+        String[] re = null;
+        do {
+            int er = gl.glGetError();
+            if (0 != er){
+                String ers = this.glu.gluErrorString(er);
+                if (null != ers){
+                    if (null == re)
+                        re = new String[]{ers};
+                    else {
+                        int len = re.length;
+                        String[] copier = new String[len+1];
+                        System.arraycopy(re,0,copier,0,len);
+                        copier[len] = ers;
+                        re = copier;
+                    }
+                }
+                else
+                    throw new IllegalStateException("glu Error String");
+            }
+            else
+                break;
+        }
+        while (true);
+
+        return re;
+    }
+    protected final void checkErrors(GL2 gl){
+        String[] errors = this.errorStrings(gl);
+        if (null != errors){
+            StringBuilder string = new StringBuilder();
+
+            for (int cc = 0, count = errors.length; cc < count; cc++){
+                if (0 != cc)
+                    string.append(", ");
+                string.append(errors[cc]);
+            }
+            throw new IllegalStateException(string.toString());
+        }
+    }
+    /*
+     * Newt input events
+     */
+    public void keyPressed(KeyEvent e){
+    }
+    public void keyReleased(KeyEvent e){
+        switch (e.getKeyCode()){
+        case KeyEvent.VK_ESCAPE:
+            Animator.currentAnimator().halt();
+            return;
+        case 0x12:
+        case KeyEvent.VK_F4:
+            if (e.isAltDown())
+                Animator.currentAnimator().halt();
+            return;
+        }
+    }
+    public void keyTyped(KeyEvent e) {
+        switch (e.getKeyCode()){
+        case KeyEvent.VK_ESCAPE:
+            Animator.currentAnimator().halt();
+            return;
+        case KeyEvent.VK_F4:
+            if (e.isAltDown())
+                Animator.currentAnimator().halt();
+            return;
+        }
+    }
+    public void mouseClicked(MouseEvent e){
+    }
+    public void mouseEntered(MouseEvent e){
+    }
+    public void mouseExited(MouseEvent e){
+    }
+    public void mousePressed(MouseEvent e){
+    }
+    public void mouseReleased(MouseEvent e){
+    }
+    public void mouseMoved(MouseEvent e){
+    }
+    public void mouseDragged(MouseEvent e){
+    }
+    public void mouseWheelMoved(MouseEvent e){
     }
 
 }

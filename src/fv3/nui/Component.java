@@ -31,7 +31,7 @@ import fv3.math.Vector;
  * @see fv3.Component
  */
 public class Component 
-    extends fv3tk.Fv3Canvas
+    extends fv3.tk.Fv3Canvas
     implements fv3.Component
 {
     protected final static Class Type = fv3.Component.class;

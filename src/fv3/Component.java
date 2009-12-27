@@ -31,22 +31,17 @@ import fv3.math.Vector;
  * @see fv3.nui.Component
  */
 public interface Component 
-    extends fv3tk.Fv3Component,
+    extends fv3.tk.Fv3Component,
             lxl.Component
 {
 
     public boolean hasFv3Matrix();
     public boolean hasNotFv3Matrix();
     /**
-     * A fast and effective way to manage coordinate spaces.  A {@link
-     * World} or {@link Region} will push its own matrix.  This method
-     * permits the Region display code to push matrices on behalf of
-     * child components when present, but to not push matrices on
-     * behalf of subordinate regions.
-     * 
-     * @return Whether a containing region should push this matrix
-     * before calling display.  Should be true when: the component has
-     * a matrix, the component has children or other operable display
+     * @return If not a region, return "has matrix".  If a region,
+     * whether a containing region should push this matrix before
+     * calling display.  Should be true when: the component has a
+     * matrix, the component has children or other operable display
      * code, and the component will not push the matrix itself.
      */
     public boolean pushFv3Matrix();

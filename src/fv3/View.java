@@ -51,14 +51,14 @@ public interface View
     /**
      * After defining the width and height of this viewport, any of
      * the centering methods may be called.  This may only occur after
-     * the screen is established in Fv3Tk, as in the {@link
-     * fv3tk.Component} init (GL) method.
+     * the screen is established in Fv3.Tk, as in the {@link
+     * fv3.tk.Component} init (GL) method.
      */
     public View center();
     public View centerHor();
     public View centerVer();
-    public View center(fv3tk.Fv3Screen fv3s);
-    public View centerHor(fv3tk.Fv3Screen fv3s);
-    public View centerVer(fv3tk.Fv3Screen fv3s);
+    public View center(fv3.tk.Fv3Screen fv3s);
+    public View centerHor(fv3.tk.Fv3Screen fv3s);
+    public View centerVer(fv3.tk.Fv3Screen fv3s);
 
 }

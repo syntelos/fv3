@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3tk;
+package fv3.tk;
 
-import fv3ds.Fv3Exception;
+import fv3.Fv3Exception;
 
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;

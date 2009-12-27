@@ -17,7 +17,7 @@
  */
 package fv3;
 
-import fv3tk.Animator;
+import fv3.tk.Animator;
 
 import java.io.IOException;
 

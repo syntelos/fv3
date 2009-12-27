@@ -15,11 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3tk;
-
-import fv3tk.hid.Button;
-import fv3tk.hid.Pad;
-import fv3tk.hid.Stick;
+package fv3.tk;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;

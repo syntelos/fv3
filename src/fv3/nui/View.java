@@ -17,7 +17,7 @@
  */
 package fv3.nui;
 
-import fv3tk.Fv3Screen;
+import fv3.tk.Fv3Screen;
 
 import javax.media.opengl.GL2;
 
@@ -124,18 +124,18 @@ public class View
     public final View centerVer(){
         return this.centerVer(Fv3Screen.Current());
     }
-    public final View center(fv3tk.Fv3Screen fv3s){
+    public final View center(fv3.tk.Fv3Screen fv3s){
 
         this.x = (int)(fv3s.w2 - (this.w / 2.0));
         this.y = (int)(fv3s.h2 - (this.h / 2.0));
         return this;
     }
-    public final View centerHor(fv3tk.Fv3Screen fv3s){
+    public final View centerHor(fv3.tk.Fv3Screen fv3s){
 
         this.x = (int)(fv3s.w2 - (this.w / 2.0));
         return this;
     }
-    public final View centerVer(fv3tk.Fv3Screen fv3s){
+    public final View centerVer(fv3.tk.Fv3Screen fv3s){
 
         this.y = (int)(fv3s.h2 - (this.h / 2.0));
         return this;

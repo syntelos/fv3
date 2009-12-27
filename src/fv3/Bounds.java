@@ -24,11 +24,14 @@ public interface Bounds
 {
 
     public double getBoundsMinX();
+    public double getBoundsMidX();
     public double getBoundsMaxX();
 
     public double getBoundsMinY();
+    public double getBoundsMidY();
     public double getBoundsMaxY();
 
-    public double getBoundsMidX();
-    public double getBoundsMidY();
+    public double getBoundsMinZ();
+    public double getBoundsMidZ();
+    public double getBoundsMaxZ();
 }

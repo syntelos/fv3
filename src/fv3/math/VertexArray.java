@@ -84,7 +84,7 @@ public class VertexArray
     public final double[] getNormal(int index, double[] re){
 
         int start = (3 * index);
-        System.arraycopy(this.normal,start,re,0,3);
+        System.arraycopy(this.normals,start,re,0,3);
         return re;
     }
     /**
@@ -95,7 +95,7 @@ public class VertexArray
     public final VertexArray setNormal(int index, double[] vertex){
 
         int start = (3 * index);
-        System.arraycopy(vertex,0,this.normal,start,3);
+        System.arraycopy(vertex,0,this.normals,start,3);
         return this;
     }
     public final double[] normals(){
@@ -104,12 +104,14 @@ public class VertexArray
     public final VertexArray faces(int count){
         this.faces = count;
         this.normals = new double[3 * count];
+
+        return this;
     }
     public final VertexArray face(int index, int a, int b, int c){
         Vector va = new Vector(this.get(a));
         Vector vb = new Vector(this.get(b));
         Vector vc = new Vector(this.get(c));
         Vector normal = va.normal(vb,vc);
-        this.setNormal(index,normal.array());
+        return this.setNormal(index,normal.array());
     }
 }

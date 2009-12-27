@@ -1,5 +1,5 @@
 /*
- * fv3tk
+ * fv3.tk
  * Copyright (C) 2009  John Pritchard, jdp@syntelos.org
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3tk;
+package fv3.tk;
 
 import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GLContext;
@@ -33,7 +33,7 @@ import com.sun.javafx.newt.opengl.GLWindow;
 
 /**
  * Animator is instantiated by the application main in a subclass of
- * {@link Fv3Canvas}, and started.  Fv3tk is designed for one animator
+ * {@link Fv3Canvas}, and started.  Fv3.Tk is designed for one animator
  * on one (full screen) window (per jvm process).
  * 
  * <h3>Elapse of Time</h3>
@@ -84,19 +84,19 @@ public final class Animator
     }
     /**
      * GLWindow position X optionally defined by system property
-     * <code>"fv3tk.Animator.X"</code>.
+     * <code>"fv3.tk.Animator.X"</code>.
      * 
      * Default value: Zero
      */
     public final static int X;
     static {
         int x = -1;
-        String config = System.getProperty("fv3tk.Animator.X");
+        String config = System.getProperty("fv3.tk.Animator.X");
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
                 x = tt;
-                System.err.println(String.format("%s: Set fv3tk.Animator.X(%d)",Thread.currentThread().getName(),x));
+                System.err.println(String.format("%s: Set fv3.tk.Animator.X(%d)",Thread.currentThread().getName(),x));
             }
             catch (NumberFormatException exc){
             }
@@ -105,19 +105,19 @@ public final class Animator
     }
     /**
      * GLWindow position Y optionally defined by system property
-     * <code>"fv3tk.Animator.Y"</code>.
+     * <code>"fv3.tk.Animator.Y"</code>.
      * 
      * Default value: Zero
      */
     public final static int Y;
     static {
         int y = -1;
-        String config = System.getProperty("fv3tk.Animator.Y");
+        String config = System.getProperty("fv3.tk.Animator.Y");
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
                 y = tt;
-                System.err.println(String.format("%s: Set fv3tk.Animator.Y(%d)",Thread.currentThread().getName(),y));
+                System.err.println(String.format("%s: Set fv3.tk.Animator.Y(%d)",Thread.currentThread().getName(),y));
             }
             catch (NumberFormatException exc){
             }
@@ -126,19 +126,19 @@ public final class Animator
     }
     /**
      * GLWindow position W optionally defined by system property
-     * <code>"fv3tk.Animator.W"</code>.
+     * <code>"fv3.tk.Animator.W"</code>.
      * 
      * Default value: Zero
      */
     public final static int W;
     static {
         int w = -1;
-        String config = System.getProperty("fv3tk.Animator.W");
+        String config = System.getProperty("fv3.tk.Animator.W");
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
                 w = tt;
-                System.err.println(String.format("%s: Set fv3tk.Animator.W(%d)",Thread.currentThread().getName(),w));
+                System.err.println(String.format("%s: Set fv3.tk.Animator.W(%d)",Thread.currentThread().getName(),w));
             }
             catch (NumberFormatException exc){
             }
@@ -147,19 +147,19 @@ public final class Animator
     }
     /**
      * GLWindow position H optionally defined by system property
-     * <code>"fv3tk.Animator.H"</code>.
+     * <code>"fv3.tk.Animator.H"</code>.
      * 
      * Default value: Zero
      */
     public final static int H;
     static {
         int h = -1;
-        String config = System.getProperty("fv3tk.Animator.H");
+        String config = System.getProperty("fv3.tk.Animator.H");
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
                 h = tt;
-                System.err.println(String.format("%s: Set fv3tk.Animator.H(%d)",Thread.currentThread().getName(),h));
+                System.err.println(String.format("%s: Set fv3.tk.Animator.H(%d)",Thread.currentThread().getName(),h));
             }
             catch (NumberFormatException exc){
             }
@@ -169,19 +169,19 @@ public final class Animator
 
     /**
      * GLWindow swap interval optionally defined by system property
-     * <code>"fv3tk.Animator.SwapInterval"</code>.
+     * <code>"fv3.tk.Animator.SwapInterval"</code>.
      * 
      * Default value: accept underlying JOGL/NEWT default value.
      */
     public final static int SwapInterval;
     static {
         int swapi = -1;
-        String config = System.getProperty("fv3tk.Animator.SwapInterval");
+        String config = System.getProperty("fv3.tk.Animator.SwapInterval");
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
                 swapi = tt;
-                System.err.println(String.format("%s: Set fv3tk.Animator.SwapInterval(%d)",Thread.currentThread().getName(),swapi));
+                System.err.println(String.format("%s: Set fv3.tk.Animator.SwapInterval(%d)",Thread.currentThread().getName(),swapi));
             }
             catch (NumberFormatException exc){
             }
@@ -190,33 +190,33 @@ public final class Animator
     }
     /**
      * GL tracing optionally defined by system property
-     * <code>"fv3tk.Animator.GLTrace"</code>.
+     * <code>"fv3.tk.Animator.GLTrace"</code>.
      * 
      * Default value: accept underlying JOGL/NEWT default value.
      */
     public final static boolean GLTrace;
     static {
         boolean traceb = false;
-        String config = System.getProperty("fv3tk.Animator.GLTrace");
+        String config = System.getProperty("fv3.tk.Animator.GLTrace");
         if (null != config){
             traceb = ("true".equals(config));
-            System.err.println(String.format("%s: Set fv3tk.Animator.GLTrace(%b)",Thread.currentThread().getName(),traceb));
+            System.err.println(String.format("%s: Set fv3.tk.Animator.GLTrace(%b)",Thread.currentThread().getName(),traceb));
         }
         GLTrace = traceb;
     }
     /**
      * GL debugging optionally defined by system property
-     * <code>"fv3tk.Animator.GLDebug"</code>.
+     * <code>"fv3.tk.Animator.GLDebug"</code>.
      * 
      * Default value: accept underlying JOGL/NEWT default value.
      */
     public final static boolean GLDebug;
     static {
         boolean traceb = false;
-        String config = System.getProperty("fv3tk.Animator.GLDebug");
+        String config = System.getProperty("fv3.tk.Animator.GLDebug");
         if (null != config){
             traceb = ("true".equals(config));
-            System.err.println(String.format("%s: Set fv3tk.Animator.GLDebug(%b)",Thread.currentThread().getName(),traceb));
+            System.err.println(String.format("%s: Set fv3.tk.Animator.GLDebug(%b)",Thread.currentThread().getName(),traceb));
         }
         GLDebug = traceb;
     }
@@ -232,7 +232,7 @@ public final class Animator
      * The animation cycle may be slower on slow or busy computers.
      * 
      * A (non zero) positive DT value is optionally defined in the
-     * system property named <code>"fv3tk.Animator.Sync.DT"</code>.
+     * system property named <code>"fv3.tk.Animator.Sync.DT"</code>.
      * 
      * A DT value between 20 and 40 is 50 to 25 frames per second,
      * while a DT value between 50 and 100 is for conventional
@@ -241,7 +241,7 @@ public final class Animator
     public final static class Sync {
         /**
          * Animator cycle time optionally defined by system property
-         * <code>"fv3tk.Animator.Sync.DT"</code>.
+         * <code>"fv3.tk.Animator.Sync.DT"</code>.
          * 
          * Ideal elapsed time per animation cycle.
          */
@@ -249,17 +249,17 @@ public final class Animator
         static {
             long dt = 40L;
 
-            String config = System.getProperty("fv3tk.Animator.Sync.DT");
+            String config = System.getProperty("fv3.tk.Animator.Sync.DT");
             if (null != config){
                 try {
                     long tt = Long.parseLong(config);
                     if (0 < tt){
                         dt = tt;
-                        System.err.println(String.format("%s: Set fv3tk.Animator.Sync.DT(%d)",Thread.currentThread().getName(),dt));
+                        System.err.println(String.format("%s: Set fv3.tk.Animator.Sync.DT(%d)",Thread.currentThread().getName(),dt));
                     }
                 }
                 catch (NumberFormatException exc){
-                    System.err.println(String.format("Error parsing value of 'fv3tk.Animator.Sync.DT' from '%s'",config));
+                    System.err.println(String.format("Error parsing value of 'fv3.tk.Animator.Sync.DT' from '%s'",config));
                 }
             }
             DT = dt;
@@ -417,8 +417,6 @@ public final class Animator
             this.glWindow.destroy();
 
             this.fv3s.screenDestroy();
-
-            this.fv3h.hidDestroy();
         }
     }
 
