@@ -17,10 +17,6 @@
  */
 package fv3.font;
 
-import fv3.font.cff.Instruction;
-import fv3.font.cff.InstructionSet;
-import fv3.font.cff.InstructionStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,19 +29,18 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * @author Tim Tyler
+ * 
  * @author John Pritchard
  */
-public final class CFFFontReader
+public class FontReader
     extends Object
-    implements fv3.font.cff.InstructionConstants,
-               java.io.Closeable
+    implements java.io.Closeable
 {
 
     public static ByteBuffer Resource(String name)
         throws IOException
     {
-        InputStream in = CFFFontReader.class.getResourceAsStream("/fonts/"+name+".cff");
+        InputStream in = FontReader.class.getResourceAsStream("/fonts/"+name+".cff");
 
         if (in == null)
             throw new IOException(String.format("Resource not found '%s'",name));
@@ -71,12 +66,12 @@ public final class CFFFontReader
     private ByteBuffer buffer;
 
 
-    public CFFFontReader(String resource)
+    public FontReader(String resource)
         throws IOException
     {
         this(Resource(resource));
     }
-    public CFFFontReader(ByteBuffer in){
+    public FontReader(ByteBuffer in){
         super();
         if (null != in)
             this.buffer = in;
@@ -85,51 +80,14 @@ public final class CFFFontReader
     }
 
 
-    public CFFGlyph read(CFFFont font){
+    public Glyph read(Font font){
         if (null == this.buffer)
             throw new IllegalStateException("Closed");
         else {
             try {
-                InstructionStream stream = new InstructionStream();
-                CFFGlyph glyph = font.create(stream);
-
-                int last_point_x = 0;
-                int last_point_y = 0;
-
-                do {
-                    int ins = this.buffer.get();
-
-                    if (ins == END_GLYPH)
-
-                        return glyph;
-
-                    else if (ins == GLYPH_NUMBER) {
-
-                        this.buffer.get();
-                    }
-                    else if (ins != GLYPH_NEXT) {
-
-                        Instruction instruction = InstructionSet.Get(ins);
-
-                        stream.add(ins);
-
-                        for (int i = 0; i < instruction.numberOfCoordinates(); i++) {
-
-                            int v = this.read();
-
-                            if ((i & 1) == 0) {
-                                last_point_x = (last_point_x + v) & 0xFFFF;
-                                v = last_point_x;
-                            }
-                            else {
-                                last_point_y = (last_point_y + v) & 0xFFFF;
-                                v = last_point_y;
-                            }
-                            stream.add(v);
-                        }
-                    }
-                }
-                while (true);
+                Glyph glyph = font.createGlyph();
+                glyph.read(this);
+                return glyph;
             }
             catch (java.nio.BufferUnderflowException end){
 

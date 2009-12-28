@@ -15,29 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.font.cff;
+package fv3.font;
 
 /**
+ * Part of a {@link Glyph}.
  * 
- * @author Tim Tyler
  * @author John Pritchard
  */
-public final class InstructionEndFont
-    extends Instruction
-{
+public interface Path {
 
+    public void destroy();
 
-    InstructionEndFont() {
-        super(END_FONT, "EndFont");
-    }
-
-
-    public void execute(InstructionStream is) {
-
-        is.setQuit(true);
-    }
-    public void copy(InstructionStream is_in, InstructionStream is_out) {
-        is_out.add(END_GLYPH);
-        is_in.setQuit(true);
-    }
 }
