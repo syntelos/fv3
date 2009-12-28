@@ -31,6 +31,8 @@ public class Glyph
 
     protected Path[] list;
 
+    protected double[] points;
+
 
     protected Glyph(Font font){
         super();
@@ -53,6 +55,47 @@ public class Glyph
     }
     protected void read(FontReader reader){
 
+    }
+    public final double[] points(){
+        double[] points = this.points;
+        if (null == points){
+            Path[] paths = this.list;
+            if (null != paths){
+                Path path;
+                double[] pointset;
+                for (int cc = 0, count = paths.length; cc < count; cc++){
+                    path = paths[cc];
+                    pointset = path.points();
+                    if (null == pointset)
+                        continue;
+                    else if (null == points)
+                        points = pointset;
+                    else {
+                        int pointsl = points.length;
+                        int pointsly = (pointsl - 1);
+                        int pointslx = (pointsly - 1);
+                        if (points[pointslx] == pointset[0] &&
+                            points[pointsly] == pointset[1])
+                        {
+                            int pslen = (pointset.length - 2);
+                            double[] copier = new double[pointsl + pslen];
+                            System.arraycopy(points,0,copier,0,pointsl);
+                            System.arraycopy(pointset,2,copier,pointsl,pslen);
+                            points = copier;
+                        }
+                        else {
+                            int pslen = (pointset.length);
+                            double[] copier = new double[pointsl + pslen];
+                            System.arraycopy(points,0,copier,0,pointsl);
+                            System.arraycopy(pointset,0,copier,pointsl,pslen);
+                            points = copier;
+                        }
+                    }
+                }
+                this.points = points;
+            }
+        }
+        return points;
     }
     public final Font getFont() {
         return this.font;

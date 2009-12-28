@@ -24,6 +24,17 @@ package fv3.font;
  */
 public interface Path {
 
+    /**
+     * The first point coordinate in a path may be identical to the
+     * last point coordinate in the immediately previous path in a
+     * glyph.
+     * 
+     * @return A series of (X,Y) coordinates describing a set of
+     * lines.  May be null.  Otherwise a minimum of one (X,Y)
+     * coordinate pair.
+     */
+    public double[] points();
+
     public void destroy();
 
 }
