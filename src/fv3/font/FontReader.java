@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.Channels;
@@ -36,6 +37,7 @@ public class FontReader
     extends Object
     implements java.io.Closeable
 {
+    public final static long MAX_FILESIZE = Integer.MAX_VALUE;
 
     public static ByteBuffer Resource(String name)
         throws IOException
@@ -63,7 +65,7 @@ public class FontReader
     }
 
 
-    private ByteBuffer buffer;
+    protected ByteBuffer buffer;
 
 
     public FontReader(String resource)
@@ -77,6 +79,32 @@ public class FontReader
             this.buffer = in;
         else
             throw new IllegalArgumentException();
+    }
+    /**
+     * Map the file into memory.
+     */
+    public FontReader(File source)
+        throws IOException
+    {
+        super();
+        if (null != source && source.isFile()){
+            long length = source.length();
+            if (MAX_FILESIZE < length)
+                throw new IllegalArgumentException("Size of file '"+source.getPath()+"' exceeds practical limits.");
+            else {
+                FileChannel fileChannel = (new FileInputStream(source)).getChannel();
+                try {
+                    this.buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,0L,length);
+                }
+                finally {
+                    fileChannel.close();
+                }
+            }
+        }
+        else if (null != source)
+            throw new IllegalArgumentException("File not found, '"+source.getPath()+"'.");
+        else
+            throw new IllegalArgumentException("Null file argument.");
     }
 
 
@@ -95,28 +123,56 @@ public class FontReader
             }
         }
     }
+    public FontReader seek(int offset){
+        this.buffer.position(offset);
+        return this;
+    }
+    public FontReader read(byte[] bary, int ofs, int len){
+        this.buffer.get(bary,ofs,len);
+        return this;
+    }
+    public FontReader read(byte[] bary){
+        this.buffer.get(bary);
+        return this;
+    }
+    public FontReader read(ByteBuffer buf){
+        this.buffer.get(buf.array());
+        return this;
+    }
+    public int readUint8()
+        throws BufferUnderflowException
+    {
+        return (this.buffer.get() & 0xff);
+    }
+    public int readUint16()
+        throws BufferUnderflowException
+    {
+        int a = (this.buffer.get() & 0xff);
+        int b = (this.buffer.get() & 0xff);
+
+        return ((a<<8)|b);
+    }
+    public int readUint24()
+        throws BufferUnderflowException
+    {
+        int a = (this.buffer.get() & 0xff);
+        int b = (this.buffer.get() & 0xff);
+        int c = (this.buffer.get() & 0xff);
+
+        return ((a<<16)|(b<<8)|c);
+    }
+    public int readUint32()
+        throws BufferUnderflowException
+    {
+        int a = (this.buffer.get() & 0xff);
+        int b = (this.buffer.get() & 0xff);
+        int c = (this.buffer.get() & 0xff);
+        int d = (this.buffer.get() & 0xff);
+
+        return ((a<<24)|(b<<16)|(c<<8)|d);
+    }
     public void close() throws IOException {
 
         this.buffer = null;
-    }
-    private int read(){
-
-        int v = this.buffer.get() & 0xFF;
-
-        if (v != 0x80) {
-            return v << 8;
-        }
-        else {
-            int v2 = this.buffer.get() & 0xFF;
-
-            if (v2 == 0x00) {
-                return 0x8000;
-            }
-            else {
-                int v3 = this.buffer.get() & 0xFF;
-
-                return (v3 << 8) | v2;
-            }
-        }
     }
 }

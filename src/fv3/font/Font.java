@@ -23,11 +23,6 @@ package fv3.font;
  * model, whether this happens at run time or design time is a
  * variable.
  * 
- * <h3>Extension</h3>
- * 
- * This font class may be subclassed to implement specialized glyph
- * subclasses.  A text editor may employ a glyph subclass as an
- * integrated component of its internal data structures.
  * 
  * @author John Pritchard
  */
@@ -40,7 +35,7 @@ public class Font
 
     private final FontOptions options;
 
-    private Glyph[] glyph;
+    private Glyph[] list;
 
 
     public Font(String name, FontReader reader) {
@@ -49,28 +44,8 @@ public class Font
     public Font(String name, FontReader reader, FontOptions opts) {
         super();
         if (null != name && null != reader && null != opts){
-            this.name = name;
+            this.name = Clean(name);
             this.options = opts;
-
-            Glyph[] list = null;
-            Glyph glyp = reader.read(this);
-
-            while (null != glyp){
-
-                glyp.init(opts);
-
-                if (null == list)
-                    list = new Glyph[]{glyp};
-                else {
-                    int len = list.length;
-                    Glyph[] copier = new Glyph[len+1];
-                    System.arraycopy(list,0,copier,0,len);
-                    copier[len] = glyp;
-                    list = copier;
-                }
-                glyp = reader.read(this);
-            }
-            this.glyph = list;
         }
         else
             throw new IllegalArgumentException();
@@ -78,12 +53,12 @@ public class Font
 
 
     public final boolean alive(){
-        return (null != this.glyph);
+        return (null != this.list);
     }
     public void destroy(){
-        Glyph[] glyphs = this.glyph;
+        Glyph[] glyphs = this.list;
         if (null != glyphs){
-            this.glyph = null;
+            this.list = null;
             for (Glyph gly : glyphs){
                 gly.destroy();
             }
@@ -100,14 +75,14 @@ public class Font
         return new Glyph(this);
     }
     public final int getLength(){
-        Glyph[] list = this.glyph;
+        Glyph[] list = this.list;
         if (null == list)
             return 0;
         else
             return list.length;
     }
     public final Glyph get(int idx){
-        Glyph[] list = this.glyph;
+        Glyph[] list = this.list;
         if (null == list)
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
 
@@ -115,6 +90,24 @@ public class Font
             return list[idx];
         else
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
+    }
+    protected final Font add(Glyph glyph){
+        if (null != glyph){
+
+            glyph.init(this.options);
+
+            Glyph[] list = this.list;
+            if (null == list)
+                this.list = new Glyph[]{glyph};
+            else {
+                int len = list.length;
+                Glyph[] copier = new Glyph[len+1];
+                System.arraycopy(list,0,copier,0,len);
+                copier[len] = glyph;
+                this.list = copier;
+            }
+        }
+        return this;
     }
     public Font clone(){
         try {
@@ -134,5 +127,13 @@ public class Font
             return false;
         else 
             return (((Font)o).name.equals(name));
+    }
+    private final static String Clean(String name){
+        if (null != name){
+            int idx = name.lastIndexOf('.');
+            if (-1 != idx)
+                name = name.substring(0,idx);
+        }
+        return name;
     }
 }
