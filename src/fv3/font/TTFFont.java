@@ -20,6 +20,8 @@ package fv3.font;
 import fv3.font.ttf.CID;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
+import fv3.font.ttf.Hhea;
+import fv3.font.ttf.Name;
 import fv3.font.ttf.Table;
 import fv3.font.ttf.TTF;
 import fv3.font.ttf.TTCF;
@@ -169,6 +171,52 @@ public class TTFFont
     public final Head getTableHead(){
         return (Head)this.getTableByType(Head.TYPE);
     }
+    public final Hhea getTableHhea(){
+        return (Hhea)this.getTableByType(Hhea.TYPE);
+    }
+    public final Name getTableName(){
+        return (Name)this.getTableByType(Name.TYPE);
+    }
+    public final double getEm(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.emsize;
+        else
+            return 0.0;
+    }
+    public final double getAscent(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.ascent;
+        else
+            return 0.0;
+    }
+    public final double getDescent(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.descent;
+        else
+            return 0.0;
+    }
+    public final double getLeading(){
+
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.leading;
+        else
+            return 0.0;
+    }
+    public final double getAdvance(){
+
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.advance;
+        else
+            return 0.0;
+    }
     public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
         TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
@@ -199,6 +247,37 @@ public class TTFFont
                     System.out.printf("\tTable '%s'.\n",font.getTableName(cc));
                     switch (font.getTableType(cc)){
 
+                    case fv3.font.ttf.Glyf.TYPE:{
+                        fv3.font.ttf.Glyf table = (fv3.font.ttf.Glyf)font.getTable(cc);
+                        System.out.printf("\t\tCount %d\n",table.count);
+                        break;
+                    }
+                    case fv3.font.ttf.Head.TYPE:{
+                        fv3.font.ttf.Head table = (fv3.font.ttf.Head)font.getTable(cc);
+                        System.out.printf("\t\tEm-Size %f\n",table.emsize);
+                        System.out.printf("\t\tAscent %f\n",table.ascent);
+                        System.out.printf("\t\tDescent %f\n",table.descent);
+                        break;
+                    }
+                    case fv3.font.ttf.Hhea.TYPE:{
+                        fv3.font.ttf.Hhea table = (fv3.font.ttf.Hhea)font.getTable(cc);
+                        System.out.printf("\t\tAscent %f\n",table.ascent);
+                        System.out.printf("\t\tDescent %f\n",table.descent);
+                        System.out.printf("\t\tLeading %f\n",table.leading);
+                        System.out.printf("\t\tAdvance %f\n",table.advance);
+                        System.out.printf("\t\tWidth-Count %d\n",table.widthCount);
+                        break;
+                    }
+                    case fv3.font.ttf.Loca.TYPE:{
+                        fv3.font.ttf.Loca table = (fv3.font.ttf.Loca)font.getTable(cc);
+                        System.out.printf("\t\tGlyph-Count %d\n",table.glyphCount);
+                        break;
+                    }
+                    case fv3.font.ttf.Maxp.TYPE:{
+                        fv3.font.ttf.Maxp table = (fv3.font.ttf.Maxp)font.getTable(cc);
+                        System.out.printf("\t\tGlyph-Count %d\n",table.glyphCount);
+                        break;
+                    }
                     case fv3.font.ttf.Name.TYPE:{
                         fv3.font.ttf.Name table = (fv3.font.ttf.Name)font.getTable(cc);
                         if (null != table.copyright)
