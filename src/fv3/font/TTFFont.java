@@ -37,10 +37,10 @@ public class TTFFont
     private final static int MAGIC_TTCF = ('t'<<24)|('t'<<16)|('c'<<8)|('f');
     private final static int MAGIC_TYP1 = ('t'<<24)|('y'<<16)|('p'<<8)|('1');
     private final static int MAGIC_CID = ('C'<<24)|('I'<<16)|('D'<<8)|(' ');
-    private final static int MAGIC_OTF1 = 0x10000;
-    private final static int MAGIC_OTF2 = 0x20000;
-    private final static int MAGIC_OTF3 = ('t'<<24)|('r'<<16)|('u'<<8)|('e');
-    private final static int MAGIC_OTF4 = ('O'<<24)|('T'<<16)|('T'<<8)|('O');
+    private final static int MAGIC_TTF1 = 0x10000;
+    private final static int MAGIC_TTF2 = 0x20000;
+    private final static int MAGIC_TTF3 = ('t'<<24)|('r'<<16)|('u'<<8)|('e');
+    private final static int MAGIC_OTTO = ('O'<<24)|('T'<<16)|('T'<<8)|('O');
 
 
     public final boolean isTTF, isTTCF, isTYP1, isCID;
@@ -65,10 +65,10 @@ public class TTFFont
         int magic;
         switch (magic = reader.readUint32()){
 
-        case MAGIC_OTF1:
-        case MAGIC_OTF2:
-        case MAGIC_OTF3:
-        case MAGIC_OTF4:
+        case MAGIC_TTF1:
+        case MAGIC_TTF2:
+        case MAGIC_TTF3:
+        case MAGIC_OTTO:
             isTTF = true;
             ttf = new TTF(this,reader);
             break;
