@@ -48,8 +48,8 @@ public final class Name
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-        this.seekto(reader);
-        reader.readUint16();
+        reader.seek(this.offset+2);
+
         int count = reader.readUint16();
         int tabof = this.offset + reader.readUint16();
         for (int cc = 0; cc < count; cc++){
