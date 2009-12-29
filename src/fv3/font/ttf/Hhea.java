@@ -37,13 +37,25 @@ public final class Hhea
     public final static String DESC = "horizontal header table";
 
 
+    public double ascent, descent, leading, advance;
+
+    public int widthCount;
+
+
     protected Hhea(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-
+        reader.seek(this.offset+4);
+        this.ascent = reader.readUint16();
+        this.descent = reader.readUint16();
+        this.leading = reader.readUint16();
+        this.advance = reader.readUint16();
+        for (int cc = 0; cc < 11; cc++)
+            reader.readUint16();
+        this.widthCount = reader.readUint16();
     }
     public String getName(){
         return NAME;

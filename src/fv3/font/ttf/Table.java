@@ -28,7 +28,8 @@ import fv3.font.TTFPath;
  */
 public abstract class Table
     extends Object
-    implements Cloneable
+    implements Names,
+               Cloneable
 {
     public final static int COUNT = 68;
 

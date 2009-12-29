@@ -37,13 +37,17 @@ public final class Maxp
     public final static String DESC = "maximum profile table";
 
 
+    public int glyphCount;
+
+
     protected Maxp(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-
+        reader.seek(this.offset+4);
+        this.glyphCount = reader.readUint16();
     }
     public String getName(){
         return NAME;

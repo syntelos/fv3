@@ -99,49 +99,55 @@ public class TTFFont
     }
 
 
-    public int countFaces(){
+    public final int countFaces(){
         if (this.isTTCF)
             return this.ttcf.getLength();
         else
             throw new IllegalStateException("Not TTCF");
     }
-    public String firstFaceName(){
+    public final String firstFaceName(){
         if (this.isTTCF)
             return this.ttcf.firstName();
         else
             throw new IllegalStateException("Not TTCF");
     }
-    public String getFaceName(int idx){
+    public final String getFaceName(int idx){
         if (this.isTTCF)
             return this.ttcf.getName(idx);
         else
             throw new IllegalStateException("Not TTCF");
     }
-    public int indexOfFaceName(String name){
+    public final int indexOfFaceName(String name){
         if (this.isTTCF)
             return this.ttcf.indexOfName(name);
         else
             throw new IllegalStateException("Not TTCF");
     }
-    public int countTables(){
+    public final int countTables(){
         if (this.isTTF)
             return this.ttf.countTables();
         else
             throw new IllegalStateException("Not TTF");
     }
-    public Table getTable(int idx){
+    public final Table getTable(int idx){
         if (this.isTTF)
             return this.ttf.getTable(idx);
         else
             throw new IllegalStateException("Not TTF");
     }
-    public String getTableName(int idx){
+    public final String getTableName(int idx){
         if (this.isTTF)
             return this.ttf.getName(idx);
         else
             throw new IllegalStateException("Not TTF");
     }
-    public Table getTableByType(int type){
+    public final int getTableType(int idx){
+        if (this.isTTF)
+            return this.ttf.getType(idx);
+        else
+            throw new IllegalStateException("Not TTF");
+    }
+    public final Table getTableByType(int type){
         if (this.isTTF)
             return this.ttf.getTableByType(type);
         else
@@ -170,6 +176,43 @@ public class TTFFont
                 System.out.printf("Found TTF font '%s' with %d tables.\n",font.getName(),count);
                 for (int cc = 0; cc < count; cc++){
                     System.out.printf("\tTable '%s'.\n",font.getTableName(cc));
+                    switch (font.getTableType(cc)){
+
+                    case fv3.font.ttf.Name.TYPE:{
+                        fv3.font.ttf.Name table = (fv3.font.ttf.Name)font.getTable(cc);
+                        if (null != table.copyright)
+                            System.out.printf("\t\tCopyright %s\n",table.copyright);
+                        if (null != table.family)
+                            System.out.printf("\t\tFamily %s\n",table.family);
+                        if (null != table.subfamily)
+                            System.out.printf("\t\tSub-Family %s\n",table.subfamily);
+                        if (null != table.uniqueid)
+                            System.out.printf("\t\tFullname %s\n",table.uniqueid);
+                        if (null != table.fullname)
+                            System.out.printf("\t\tFullname %s\n",table.fullname);
+                        if (null != table.version)
+                            System.out.printf("\t\tVersion %s\n",table.version);
+                        if (null != table.fontname)
+                            System.out.printf("\t\tFontname %s\n",table.fontname);
+                        if (null != table.trademark)
+                            System.out.printf("\t\tTrademark %s\n",table.trademark);
+                        if (null != table.manufacturer)
+                            System.out.printf("\t\tManufacturer %s\n",table.manufacturer);
+                        if (null != table.designer)
+                            System.out.printf("\t\tDesigner %s\n",table.designer);
+                        if (null != table.descriptor)
+                            System.out.printf("\t\tDescriptor %s\n",table.descriptor);
+                        if (null != table.vendorurl)
+                            System.out.printf("\t\tVendor-Url %s\n",table.vendorurl);
+                        if (null != table.designerurl)
+                            System.out.printf("\t\tDesigner-Url %s\n",table.designerurl);
+                        if (null != table.license)
+                            System.out.printf("\t\tLicense %s\n",table.license);
+                        if (null != table.licenseurl)
+                            System.out.printf("\t\tLicense-Url %s\n",table.licenseurl);
+                        break;
+                    }
+                    }
                 }
             }
             else {

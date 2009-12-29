@@ -42,6 +42,8 @@ public final class TTF
 
     public final Table[] tables;
 
+    public long modification, creation;
+
 
     public TTF(TTFFont font, TTFFontReader reader) {
         super();
@@ -108,7 +110,7 @@ public final class TTF
     }
     /**
      * Lookup by array index
-     * @param idx Dense index
+     * @param idx Dense index, or negative one for not found.
      */
     public String getName(int idx){
         int type = this.types[idx];
@@ -116,6 +118,18 @@ public final class TTF
             return this.getTableByType(type).getName();
         else
             return null;
+    }
+    /**
+     * Lookup by array index
+     * @param idx Dense index
+     * @return Sparse index, or zero for not found.
+     */
+    public int getType(int idx){
+        int type = this.types[idx];
+        if (-1 != type)
+            return this.getTableByType(type).getType();
+        else
+            return 0;
     }
     /**
      * Lookup by type value.  Each table class has a TYPE constant
@@ -127,6 +141,12 @@ public final class TTF
             return (null != this.tables[type]);
         else
             return false;
+    }
+    public boolean hasNotTableByType(int type){
+        if (-1 != type)
+            return (null == this.tables[type]);
+        else
+            return true;
     }
     /**
      * Lookup by type value.  Each table class has a TYPE constant

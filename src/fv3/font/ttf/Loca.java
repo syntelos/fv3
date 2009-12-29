@@ -37,12 +37,18 @@ public final class Loca
     public final static String DESC = "glyph location table";
 
 
+    public int glyphCount;
+
+
     protected Loca(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        this.glyphCount = this.length/2-1;
+        if (0 > this.glyphCount)
+            this.glyphCount = 0;
 
     }
     public String getName(){

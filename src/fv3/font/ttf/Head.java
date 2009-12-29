@@ -37,13 +37,47 @@ public final class Head
     public final static String DESC = "font header table";
 
 
+    public int flags, ffb[] = new int[4], macstyle;
+
+    public boolean optimized_for_cleartype, apply_lsb, index_to_loc_is_long;
+
+    public double emsize, ascent, descent;
+
+
     protected Head(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        reader.seek(this.offset+16);
+        this.flags = reader.readUint16();
+        this.optimized_for_cleartype = (0 != (this.flags & (1<<13)));
+        this.apply_lsb = (0 == (this.flags & 2));
+        this.emsize = reader.readUint16();
+        this.ascent = (0.8*this.emsize);
+        this.descent = (this.emsize-this.ascent);
 
+        if (tables.hasTableByType(Fftm.TYPE)){
+            reader.readDate();
+            reader.readDate();
+        }
+        else {
+            tables.modification = reader.readDate();
+            tables.creation = reader.readDate();
+        }
+        for (int cc = 0; cc < 4; cc++)
+            this.ffb[cc] = reader.readUint16();
+        this.macstyle = reader.readUint16();
+        for (int cc = 0; cc < 2; cc++)
+            reader.readUint16();
+        this.index_to_loc_is_long = (0 != reader.readUint16());
+        if (this.index_to_loc_is_long){
+            Loca loca = (Loca)tables.getTableByType(Loca.TYPE);
+            loca.glyphCount  = loca.length/4-1;
+            if (loca.glyphCount < 0)
+                loca.glyphCount = 0;
+        }
     }
     public String getName(){
         return NAME;

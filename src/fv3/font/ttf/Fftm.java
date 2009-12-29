@@ -43,7 +43,9 @@ public final class Fftm
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-
+        reader.seek(this.offset+12);
+        tables.modification = reader.readDate();
+        tables.creation = reader.readDate();
     }
     public String getName(){
         return NAME;

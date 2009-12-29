@@ -37,13 +37,79 @@ public final class Name
     public final static String DESC = "name table";
 
 
+    public String copyright, family, subfamily, uniqueid, fullname, version, 
+        fontname, trademark, manufacturer, designer, descriptor, vendorurl, 
+        designerurl, license, licenseurl;
+
+
     protected Name(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-
+        this.seekto(reader);
+        reader.readUint16();
+        int count = reader.readUint16();
+        int tabof = this.offset + reader.readUint16();
+        for (int cc = 0; cc < count; cc++){
+            int plat = reader.readUint16();
+            int spec = reader.readUint16();
+            int lang = reader.readUint16();
+            int name = reader.readUint16();
+            int strl = reader.readUint16();
+            int stro = tabof + reader.readUint16();
+            String string = reader.readString(plat,spec,stro,strl);
+            if (null != string){
+                switch (name){
+                case TTF_COPYRIGHT:
+                    this.copyright = string;
+                    break;
+                case TTF_FAMILY:
+                    this.family = string;
+                    break;
+                case TTF_SUBFAMILY:
+                    this.subfamily = string;
+                    break;
+                case TTF_UNIQUEID:
+                    this.uniqueid = string;
+                    break;
+                case TTF_FULLNAME:
+                    this.fullname = string;
+                    break;
+                case TTF_VERSION:
+                    this.version = string;
+                    break;
+                case TTF_POSTSCRIPTNAME:
+                    this.fontname = string;
+                    break;
+                case TTF_TRADEMARK:
+                    this.trademark = string;
+                    break;
+                case TTF_MANUFACTURER:
+                    this.manufacturer = string;
+                    break;
+                case TTF_DESIGNER:
+                    this.designer = string;
+                    break;
+                case TTF_DESCRIPTOR:
+                    this.descriptor = string;
+                    break;
+                case TTF_VENDORURL:
+                    this.vendorurl = string;
+                    break;
+                case TTF_DESIGNERURL:
+                    this.designerurl = string;
+                    break;
+                case TTF_LICENSE:
+                    this.license = string;
+                    break;
+                case TTF_LICENSEURL:
+                    this.licenseurl = string;
+                    break;
+                }
+            }
+        }
     }
     public String getName(){
         return NAME;

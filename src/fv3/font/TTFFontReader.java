@@ -21,6 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.BufferUnderflowException;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * 
@@ -29,6 +33,8 @@ import java.nio.BufferUnderflowException;
 public class TTFFontReader
     extends FontReader
 {
+    private final static long SfntDate1970 = 0x7c25b080;
+
 
 
     public TTFFontReader(String resource)
@@ -65,7 +71,7 @@ public class TTFFontReader
         double integer = (val>>16);
         double mantissa = ((val & 0xffff) / 65536.0);
 
-        return (integer + mantissa );
+        return (integer + mantissa);
     }
     public double read214() {
         int val = this.readUint16();
@@ -73,7 +79,83 @@ public class TTFFontReader
         double integer = ((val<<16)>>30);
         double mantissa = ((val & 0x3fff) / 16384.0);
 
-        return (integer + mantissa );
+        return (integer + mantissa);
+    }
+    public long readDate(){
+        return (this.readSint64() - SfntDate1970);
+    }
+    public String readString(int p, int s, int ofs, int len){
+        try {
+            Charset enc = Encoding(p,s);
+            this.seek(ofs);
+            ByteBuffer bary = ByteBuffer.allocate(len);
+            this.read(bary);
+            CharBuffer cary = enc.decode(bary);
+            return cary.toString();
+        }
+        catch (UnsupportedCharsetException unknown){
+
+            return null;
+        }
     }
 
+    public final static Charset Encoding(int platform, int specific){
+        switch (platform){
+        case 0:
+            switch (specific){
+            case 4:
+                return Charset.forName("UTF-16");
+            default:
+                return Charset.forName("UTF-8");
+            }
+        case 1:
+            switch (specific){
+            case 0:
+                return Charset.forName("Mac");
+            case 1:
+                return Charset.forName("Sjis");
+            case 2:
+                return Charset.forName("Big5hkscs");
+            case 3:
+                return Charset.forName("EUC-KR");
+            case 25:
+                return Charset.forName("EUC-CN");
+            default:
+                return Charset.forName("Unknown");
+            }
+        case 2:
+            switch (specific){
+            case 0:
+                return Charset.forName("ASCII");
+            case 1:
+                return Charset.forName("UTF-8");
+            case 2:
+                return Charset.forName("ISO8859-1");
+            default:
+                return Charset.forName("Unknown");
+            }
+        case 3:
+            switch (specific){
+            case 0:
+            case 1:
+                return Charset.forName("UTF-8");
+            case 2:
+                return Charset.forName("EUC-CN");
+            case 3:
+                return Charset.forName("Sjis");
+            case 4:
+                return Charset.forName("Big5hkscs");
+            case 5:
+                return Charset.forName("EUC-KR");
+            case 6:
+                return Charset.forName("Johab");
+            case 10:
+                return Charset.forName("UTF-16");
+            default:
+                return Charset.forName("Unknown");
+            }
+        default:
+            return Charset.forName("Unknown");
+        }
+    }
 }

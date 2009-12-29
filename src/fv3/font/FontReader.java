@@ -171,6 +171,14 @@ public class FontReader
 
         return ((a<<24)|(b<<16)|(c<<8)|d);
     }
+    public long readSint64()
+        throws BufferUnderflowException
+    {
+        long a = this.readUint32();
+        long b = this.readUint32();
+
+        return ((a<<32)|(b));
+    }
     public void close() throws IOException {
 
         this.buffer = null;
