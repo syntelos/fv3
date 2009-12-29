@@ -27,8 +27,7 @@ import fv3.font.TTFPath;
  * @author John Pritchard
  */
 public final class TTCF
-    extends Object
-    implements Cloneable
+    extends Header
 {
     private final static int NAME = (('n'<<24)|('a'<<16)|('m'<<8)|('e'));
 

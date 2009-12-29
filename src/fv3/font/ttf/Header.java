@@ -23,16 +23,23 @@ import fv3.font.TTFGlyph;
 import fv3.font.TTFPath;
 
 /**
- * 
+ * Base class for headers within {@link fv3.font.TTFFont}.
+ * @see CID
+ * @see TTCF
+ * @see TTF
+ * @see TYP1
  * @author John Pritchard
  */
-public final class TYP1
-    extends Header
+public abstract class Header
+    extends Object
+    implements Cloneable
 {
 
-    public TYP1(TTFFont font, TTFFontReader reader) {
+    protected Header() {
         super();
-        throw new UnsupportedOperationException("Unsupported font file format");
     }
 
+
+    public void init(TTFFont font, TTFFontReader reader){
+    }
 }

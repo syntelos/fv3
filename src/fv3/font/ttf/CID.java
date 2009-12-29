@@ -27,8 +27,7 @@ import fv3.font.TTFPath;
  * @author John Pritchard
  */
 public final class CID
-    extends Object
-    implements Cloneable
+    extends Header
 {
 
     public CID(TTFFont font, TTFFontReader reader) {

@@ -51,10 +51,6 @@ public class Glyph
         }
     }
     public void init(FontOptions opts) {
-
-    }
-    protected void read(FontReader reader){
-
     }
     public final double[] points(){
         double[] points = this.points;

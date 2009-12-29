@@ -74,9 +74,11 @@ public final class Head
         this.index_to_loc_is_long = (0 != reader.readUint16());
         if (this.index_to_loc_is_long){
             Loca loca = (Loca)tables.getTableByType(Loca.TYPE);
-            loca.glyphCount  = loca.length/4-1;
-            if (loca.glyphCount < 0)
-                loca.glyphCount = 0;
+            if (null != loca){
+                loca.glyphCount  = loca.length/4-1;
+                if (loca.glyphCount < 0)
+                    loca.glyphCount = 0;
+            }
         }
     }
     public String getName(){

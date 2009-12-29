@@ -37,13 +37,80 @@ public final class Glyf
     public final static String DESC = "glyph outline table";
 
 
+    public int count, offsets[];
+
+
     protected Glyf(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        Head head = (Head)tables.getTableByType(Head.TYPE);
+        if (null != head){
+            this.count = 0;
+            {
+                Loca loca = (Loca)tables.getTableByType(Loca.TYPE);
+                Maxp maxp = (Maxp)tables.getTableByType(Maxp.TYPE);
+                if (null != loca){
+                    if (null != maxp){
+                        int mC = maxp.glyphCount;
+                        int lC = loca.glyphCount;
+                        if (mC == lC)
+                            this.count = lC;
+                        else if (0 == mC)
+                            this.count = lC;
+                        else if (0 == lC)
+                            this.count = mC;
+                        else
+                            throw new IllegalStateException(String.format("TFF missing glyph count from  '%s' and '%s'.",Loca.NAME,Maxp.NAME));
+                    }
+                    else {
+                        this.count = loca.glyphCount;
+                    }
+                }
+                else if (null != maxp)
+                    this.count = maxp.glyphCount;
+                else
+                    throw new IllegalStateException(String.format("TFF missing one of '%s' or '%s'.",Loca.NAME,Maxp.NAME));
+            }
+            /*
+             * Do read 'glyf', and then read each glyph...
+             */
+            if (0 != this.count){
 
+                this.seekto(reader);
+
+                this.offsets = new int[this.count+1];
+
+                if (head.index_to_loc_is_long){
+
+                    for (int cc = 0, cz = (this.count+1); cc < cz; cc++){
+
+                        this.offsets[cc] = reader.readUint32();
+                    }
+                }
+                else {
+                    for (int cc = 0, cz = (this.count+1); cc < cz; cc++){
+
+                        this.offsets[cc] = (2* reader.readUint16());
+                    }
+                }
+                /*
+                 * Read each glyph.
+                 */
+                for (int cc = 0; cc < this.count; cc++){
+                    int start = this.offsets[cc];
+                    int end = this.offsets[cc+1];
+                    if (end > start && end < this.length)
+                        font.readGlyph(this,cc,start,end,reader);
+                }
+            }
+            else
+                throw new IllegalStateException(String.format("TFF missing positive glyph count from one of '%s' or '%s'.",Loca.NAME,Maxp.NAME));
+        }
+        else
+            throw new IllegalStateException(String.format("TFF missing '%s'.",Head.NAME));
     }
     public String getName(){
         return NAME;

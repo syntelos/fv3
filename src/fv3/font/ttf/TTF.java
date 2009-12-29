@@ -33,27 +33,48 @@ import java.nio.charset.UnsupportedCharsetException;
  * @author John Pritchard
  */
 public final class TTF
-    extends Object
-    implements Cloneable
+    extends Header
 {
 
-
-    public final int count, types[];
-
+    /**
+     * Number of tables present
+     */
+    public final int count;
+    /**
+     * Count- many ordered index of TYPE's available indeces for
+     * 'tables'.
+     */
+    public final int types[];
+    /**
+     * {@link Table#COUNT} - many slots indexed by the TYPE constants
+     * defined in table classes, eg, {@link Name} or {@link Head}.  
+     * 
+     * Note that there's two extra slots on the tail for "unknown"
+     * types, assigned dynamically to instances of {@link
+     * Table$Unknown}.
+     */
     public final Table[] tables;
-
+    /**
+     * Java/Unix epoch milliseconds from {@link Fftm} or {@link Head}.
+     */
     public long modification, creation;
 
 
+    /**
+     * Called from {@link fv3.font.TTFFont}
+     */
     public TTF(TTFFont font, TTFFontReader reader) {
         super();
+        /*
+         * Read head
+         */
         this.count = reader.readUint16();
         this.types = new int[this.count];
         int searchRange = reader.readUint16();
         int entrySelector = reader.readUint16();
         int rangeShift = reader.readUint16();
-        int unknown = (Table.COUNT+1);
-        Table[] tables = new Table[unknown+1];
+        int unknown = Table.COUNT;
+        Table[] tables = new Table[unknown+2];
         for (int idx = 0; idx < this.count; idx++){
             int tag = reader.readUint32();
             int chk = reader.readUint32();
@@ -75,14 +96,32 @@ public final class TTF
             }
         }
         this.tables = tables;
-        for (int idx = 0; idx < Table.COUNT; idx++){
-            Table table = this.tables[idx];
-            if (null != table)
-                table.init(font,this,reader);
-        }
     }
 
 
+    /**
+     * Called from {@link fv3.font.TTFFont}
+     */
+    public void init(TTFFont font, TTFFontReader reader) {
+
+        /*
+         * Read tables...
+         * 
+         * ...in reverse order as a first approach to initializing
+         * 'Head' and 'Loca' before 'Glyf'.  Otherwise dependencies
+         * will need to be implemented, or a closer look into what's
+         * going on in other codebases that avoid the problem found
+         * (glyphCount not initialized in Loca or Maxp before Glyf
+         * requires it).
+         */
+        for (int idx = (this.count-1); -1 < idx; idx--){
+            int type = this.types[idx];
+            if (-1 != type){
+                Table table = this.tables[type];
+                table.init(font,this,reader);
+            }
+        }
+    }
     public int countTables(){
         return this.count;
     }
@@ -110,7 +149,7 @@ public final class TTF
     }
     /**
      * Lookup by array index
-     * @param idx Dense index, or negative one for not found.
+     * @param idx Dense index
      */
     public String getName(int idx){
         int type = this.types[idx];

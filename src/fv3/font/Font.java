@@ -70,10 +70,6 @@ public class Font
     public final FontOptions getOptions(){
         return this.options;
     }
-    protected Glyph createGlyph(){
-
-        return new Glyph(this);
-    }
     public final int getLength(){
         Glyph[] list = this.list;
         if (null == list)

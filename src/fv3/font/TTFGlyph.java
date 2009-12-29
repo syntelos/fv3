@@ -17,6 +17,10 @@
  */
 package fv3.font;
 
+import fv3.font.ttf.Glyf;
+import fv3.font.ttf.Head;
+import fv3.font.ttf.TTF;
+
 /**
  * This class may be subclassed with a {@link Font} subclass as for
  * implementing a text editor.
@@ -26,14 +30,29 @@ package fv3.font;
 public class TTFGlyph
     extends Glyph
 {
+    /**
+     * TTF file internal coordinate and dimension
+     */
+    public final int index, offset, length;
+
+    public double vwidth;
 
 
-    protected TTFGlyph(TTFFont font){
+    protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
         super(font);
+        this.index = index;
+        this.offset = (glyf.offset + offset);
+        this.length = (next-offset);
     }
 
 
-    protected void read(FontReader reader){
+
+    public void init(FontOptions opts) {
+
+    }
+    protected void read(TTFFontReader reader, Head head){
+        reader.seek(this.offset);
+        this.vwidth = head.emsize;
 
     }
 

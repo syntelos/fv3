@@ -18,6 +18,8 @@
 package fv3.font;
 
 import fv3.font.ttf.CID;
+import fv3.font.ttf.Glyf;
+import fv3.font.ttf.Head;
 import fv3.font.ttf.Table;
 import fv3.font.ttf.TTF;
 import fv3.font.ttf.TTCF;
@@ -85,7 +87,7 @@ public class TTFFont
             cid = new CID(this,reader);
             break;
         default:
-            throw new IllegalStateException(String.format("Bad file magic for '%s': %x.",name,magic));
+            throw new IllegalStateException(String.format("Unrecognized file format for '%s' (0x%x)",name,magic));
         }
 
         this.isTTF = isTTF;
@@ -96,6 +98,14 @@ public class TTFFont
         this.ttcf = ttcf;
         this.typ1 = typ1;
         this.cid = cid;
+        if (this.isTTF)
+            this.ttf.init(this,reader);
+        else if (this.isTTCF)
+            this.ttcf.init(this,reader);
+        else if (this.isTYP1)
+            this.typ1.init(this,reader);
+        else 
+            this.cid.init(this,reader);
     }
 
 
@@ -153,9 +163,20 @@ public class TTFFont
         else
             throw new IllegalStateException("Not TTF");
     }
-    protected Glyph createGlyph(){
+    public final Glyf getTableGlyf(){
+        return (Glyf)this.getTableByType(Glyf.TYPE);
+    }
+    public final Head getTableHead(){
+        return (Head)this.getTableByType(Head.TYPE);
+    }
+    public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
-        return new TTFGlyph(this);
+        TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
+        {
+            Head head = this.getTableHead();
+            glyph.read(reader,head);
+        }
+        this.add(glyph);
     }
 
 

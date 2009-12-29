@@ -108,21 +108,7 @@ public class FontReader
     }
 
 
-    public Glyph read(Font font){
-        if (null == this.buffer)
-            throw new IllegalStateException("Closed");
-        else {
-            try {
-                Glyph glyph = font.createGlyph();
-                glyph.read(this);
-                return glyph;
-            }
-            catch (java.nio.BufferUnderflowException end){
 
-                return null;
-            }
-        }
-    }
     public FontReader seek(int offset){
         this.buffer.position(offset);
         return this;
