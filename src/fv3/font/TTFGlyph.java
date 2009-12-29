@@ -35,7 +35,7 @@ public class TTFGlyph
      */
     public final int index, offset, length;
 
-    public double vwidth;
+    public double vwidth, lsidebearing;
 
 
     protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
@@ -53,7 +53,8 @@ public class TTFGlyph
     protected void read(TTFFontReader reader, Head head){
         reader.seek(this.offset);
         this.vwidth = head.emsize;
-
+        int pathCount = reader.readUint16();
+        this.lsidebearing = reader.readUint16();
     }
 
 }

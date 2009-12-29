@@ -50,7 +50,7 @@ public final class Hhea
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
         reader.seek(this.offset+4);
         this.ascent = reader.readUint16();
-        this.descent = reader.readUint16();
+        this.descent = (short)reader.readUint16();
         this.leading = reader.readUint16();
         this.advance = reader.readUint16();
         for (int cc = 0; cc < 11; cc++)
