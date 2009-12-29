@@ -31,7 +31,7 @@ public final class Tex
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('T'<<24)|('e'<<16)|('X'<<8);
+    public final static int ID = ('T'<<24)|('e'<<16)|('X'<<8)|(' ');
     public final static int TYPE = 60;
     public final static String NAME = "TeX";
     public final static String DESC = "TeX table";

@@ -103,49 +103,49 @@ public class TTFFont
         if (this.isTTCF)
             return this.ttcf.getLength();
         else
-            return 0;
+            throw new IllegalStateException("Not TTCF");
     }
     public String firstFaceName(){
         if (this.isTTCF)
             return this.ttcf.firstName();
         else
-            return null;
+            throw new IllegalStateException("Not TTCF");
     }
     public String getFaceName(int idx){
         if (this.isTTCF)
             return this.ttcf.getName(idx);
         else
-            return null;
+            throw new IllegalStateException("Not TTCF");
     }
     public int indexOfFaceName(String name){
         if (this.isTTCF)
             return this.ttcf.indexOfName(name);
         else
-            return -1;
+            throw new IllegalStateException("Not TTCF");
     }
     public int countTables(){
         if (this.isTTF)
-            return this.ttcf.getLength();
+            return this.ttf.countTables();
         else
-            return 0;
+            throw new IllegalStateException("Not TTF");
     }
     public Table getTable(int idx){
         if (this.isTTF)
             return this.ttf.getTable(idx);
         else
-            return null;
+            throw new IllegalStateException("Not TTF");
     }
     public String getTableName(int idx){
         if (this.isTTF)
             return this.ttf.getName(idx);
         else
-            return null;
+            throw new IllegalStateException("Not TTF");
     }
     public Table getTableByType(int type){
         if (this.isTTF)
             return this.ttf.getTableByType(type);
         else
-            return null;
+            throw new IllegalStateException("Not TTF");
     }
     protected Glyph createGlyph(){
 
@@ -166,7 +166,7 @@ public class TTFFont
                 }
             }
             else if (font.isTTF){
-                int count = font.countFaces();
+                int count = font.countTables();
                 System.out.printf("Found TTF font '%s' with %d tables.\n",font.getName(),count);
                 for (int cc = 0; cc < count; cc++){
                     System.out.printf("\tTable '%s'.\n",font.getTableName(cc));

@@ -50,24 +50,27 @@ public final class TTF
         int searchRange = reader.readUint16();
         int entrySelector = reader.readUint16();
         int rangeShift = reader.readUint16();
-        Table[] tables = new Table[Table.COUNT];
+        int unknown = (Table.COUNT+1);
+        Table[] tables = new Table[unknown+1];
         for (int idx = 0; idx < this.count; idx++){
             int tag = reader.readUint32();
             int chk = reader.readUint32();
             int ofs = reader.readUint32();
             int len = reader.readUint32();
+
             Table table = Table.Create(tag,ofs,len);
-            if (null != table){
-                int type = table.getType();
-                this.types[idx] = type;
-                if (null == tables[type])
-                    tables[type] = table;
-                else {
-                    throw new IllegalStateException(String.format("Duplicate table '%s'.",table.getName()));
-                }
+
+            if (null == table){
+                table = new Table.Unknown(tag,ofs,len,unknown++);
             }
-            else
-                this.types[idx] = -1;
+
+            int type = table.getType();
+            this.types[idx] = type;
+            if (null == tables[type])
+                tables[type] = table;
+            else {
+                throw new IllegalStateException(String.format("Duplicate table '%s'.",table.getName()));
+            }
         }
         this.tables = tables;
         for (int idx = 0; idx < Table.COUNT; idx++){
@@ -86,21 +89,33 @@ public final class TTF
      * @param idx Dense index
      */
     public boolean hasTable(int idx){
-        return this.hasTableByType(this.types[idx]);
+        int type = this.types[idx];
+        if (-1 != type)
+            return this.hasTableByType(type);
+        else
+            return false;
     }
     /**
      * Lookup by array index
      * @param idx Dense index
      */
     public Table getTable(int idx){
-        return this.getTableByType(this.types[idx]);
+        int type = this.types[idx];
+        if (-1 != type)
+            return this.getTableByType(type);
+        else
+            return null;
     }
     /**
      * Lookup by array index
      * @param idx Dense index
      */
     public String getName(int idx){
-        return this.getTableByType(this.types[idx]).getName();
+        int type = this.types[idx];
+        if (-1 != type)
+            return this.getTableByType(type).getName();
+        else
+            return null;
     }
     /**
      * Lookup by type value.  Each table class has a TYPE constant
@@ -122,6 +137,6 @@ public final class TTF
         if (-1 != type)
             return this.tables[type];
         else
-            return null;
+            throw new IllegalArgumentException(String.valueOf(type));
     }
 }

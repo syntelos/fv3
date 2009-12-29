@@ -31,7 +31,7 @@ public final class Os2
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('O'<<24)|('S'<<16)|('/'<<8)|('2');
+    public final static int ID = ('O'<<24)|('S'<<16)|('/'<<8)|('2')|(' ');
     public final static int TYPE = 51;
     public final static String NAME = "OS/2";
     public final static String DESC = "OS/2 and Windows specific metrics table";

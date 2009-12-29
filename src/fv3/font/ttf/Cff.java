@@ -31,7 +31,7 @@ public final class Cff
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('C'<<24)|('F'<<16)|('F'<<8);
+    public final static int ID = ('C'<<24)|('F'<<16)|('F'<<8)|(' ');
     public final static int TYPE = 8;
     public final static String NAME = "CFF";
     public final static String DESC = "PostScript font program Compact Font Format";

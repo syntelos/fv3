@@ -32,6 +32,43 @@ public abstract class Table
 {
     public final static int COUNT = 68;
 
+    /**
+     * 
+     */
+    public final static class Unknown
+        extends Table
+    {
+        public final int tag, type;
+
+        public final String name;
+
+
+        public Unknown(int tag, int ofs, int len, int type) {
+            super(ofs,len);
+            this.tag = tag;
+            this.type = type;
+            char a = (char)((tag>>24)&0xff);
+            char b = (char)((tag>>16)&0xff);
+            char c = (char)((tag>>8)&0xff);
+            char d = (char)(tag&0xff);
+
+            this.name = new String(new char[]{a,b,c,d});
+        }
+
+
+        public String getName(){
+            return this.name;
+        }
+        public int getTag(){
+            return this.tag;
+        }
+        public int getType(){
+            return this.type;
+        }
+        public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        }
+    }
+
 
     public final int offset, length;
 

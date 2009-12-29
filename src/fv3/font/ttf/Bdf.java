@@ -31,7 +31,7 @@ public final class Bdf
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('B'<<24)|('D'<<16)|('F'<<8);
+    public final static int ID = ('B'<<24)|('D'<<16)|('F'<<8)|(' ');
     public final static int TYPE = 4;
     public final static String NAME = "BDF";
     public final static String DESC = "BDF bitmap properties table";

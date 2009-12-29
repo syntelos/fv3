@@ -31,7 +31,7 @@ public final class Cid
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('C'<<24)|('I'<<16)|('D'<<8);
+    public final static int ID = ('C'<<24)|('I'<<16)|('D'<<8)|(' ');
     public final static int TYPE = 9;
     public final static String NAME = "CID";
     public final static String DESC = "Obsolete table for a type1 CID keyed font";

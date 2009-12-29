@@ -31,7 +31,7 @@ public final class Cvt
     extends Table
     implements Cloneable
 {
-    public final static int ID = ('c'<<24)|('v'<<16)|('t'<<8);
+    public final static int ID = ('c'<<24)|('v'<<16)|('t'<<8)|(' ');
     public final static int TYPE = 12;
     public final static String NAME = "cvt";
     public final static String DESC = "control value table";
