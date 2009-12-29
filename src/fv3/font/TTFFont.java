@@ -111,6 +111,151 @@ public class TTFFont
     }
 
 
+    public final double getEm(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.emsize;
+        else
+            return 0.0;
+    }
+    public final double getAscent(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.ascent;
+        else
+            return 0.0;
+    }
+    public final double getDescent(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.descent;
+        else
+            return 0.0;
+    }
+    public final double getLeading(){
+
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.leading;
+        else
+            return 0.0;
+    }
+    public final double getAdvance(){
+
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.advance;
+        else
+            return 0.0;
+    }
+    public final String getCopyright(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.copyright;
+        else
+            return null;
+    }
+    public final String getFamily(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.family;
+        else
+            return null;
+    }
+    public final String getSubfamily(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.subfamily;
+        else
+            return null;
+    }
+    public final String getUniqueId(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.uniqueid;
+        else
+            return null;
+    }
+    public final String getFullname(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.fullname;
+        else
+            return null;
+    }
+    public final String getVersion(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.version;
+        else
+            return null;
+    }
+    public final String getFontname(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.fontname;
+        else
+            return null;
+    }
+    public final String getTrademark(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.trademark;
+        else
+            return null;
+    }
+    public final String getManufacturer(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.manufacturer;
+        else
+            return null;
+    }
+    public final String getDesigner(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.designer;
+        else
+            return null;
+    }
+    public final String getDescriptor(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.descriptor;
+        else
+            return null;
+    }
+    public final String getVendorUrl(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.vendorurl;
+        else
+            return null;
+    }
+    public final String getDesignerUrl(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.designerurl;
+        else
+            return null;
+    }
+    public final String getLicense(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.license;
+        else
+            return null;
+    }
+    public final String getLicenseUrl(){
+        Name name = this.getTableName();
+        if (null != name)
+            return name.licenseurl;
+        else
+            return null;
+    }
     public final int countFaces(){
         if (this.isTTCF)
             return this.ttcf.getLength();
@@ -176,46 +321,6 @@ public class TTFFont
     }
     public final Name getTableName(){
         return (Name)this.getTableByType(Name.TYPE);
-    }
-    public final double getEm(){
-
-        Head head = this.getTableHead();
-        if (null != head)
-            return head.emsize;
-        else
-            return 0.0;
-    }
-    public final double getAscent(){
-
-        Head head = this.getTableHead();
-        if (null != head)
-            return head.ascent;
-        else
-            return 0.0;
-    }
-    public final double getDescent(){
-
-        Head head = this.getTableHead();
-        if (null != head)
-            return head.descent;
-        else
-            return 0.0;
-    }
-    public final double getLeading(){
-
-        Hhea hhea = this.getTableHhea();
-        if (null != hhea)
-            return hhea.leading;
-        else
-            return 0.0;
-    }
-    public final double getAdvance(){
-
-        Hhea hhea = this.getTableHhea();
-        if (null != hhea)
-            return hhea.advance;
-        else
-            return 0.0;
     }
     public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
