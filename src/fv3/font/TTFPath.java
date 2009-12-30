@@ -18,6 +18,7 @@
 package fv3.font;
 
 /**
+ * Quadratic
  * 
  * @author John Pritchard
  */
@@ -25,9 +26,49 @@ public class TTFPath
     extends Object
     implements Path
 {
+    public final boolean isCubic, isQuadratic; 
 
-    public TTFPath(){
+    public final double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
+
+    /**
+     * Quadratic
+     */
+    public TTFPath(double startX, double startY,
+                   double controlX, double controlY,
+                   double endX, double endY)
+    {
         super();
+        this.isQuadratic = true;
+        this.isCubic = false;
+        this.startX = startX;
+        this.startY = startY;
+        this.controlX = controlX;
+        this.controlY = controlY;
+        this.controlX2 = 0.0;
+        this.controlY2 = 0.0;
+        this.endX = endX;
+        this.endY = endY;
+    }
+
+    /**
+     * Cubic
+     */
+    public TTFPath(double startX, double startY,
+                   double controlX, double controlY,
+                   double controlX2, double controlY2,
+                   double endX, double endY)
+    {
+        super();
+        this.isQuadratic = false;
+        this.isCubic = true;
+        this.startX = startX;
+        this.startY = startY;
+        this.controlX = controlX;
+        this.controlY = controlY;
+        this.controlX2 = controlX2;
+        this.controlY2 = controlY2;
+        this.endX = endX;
+        this.endY = endY;
     }
 
     public void destroy(){

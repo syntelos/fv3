@@ -27,6 +27,13 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.UnsupportedCharsetException;
 
 /**
+ * <h3>TTF I/O Note</h3>
+ * 
+ * This package is using Sint32 where Uint32 is correct in terms of
+ * the specification of the file format.  As the I/O data interface is
+ * based on Sint32 addressing, the Sint32 is correct in this
+ * (operating) context.  The full width of the Sint32 is not employed,
+ * only zero- positive values are employed.
  * 
  * @author John Pritchard
  */
@@ -62,11 +69,11 @@ public class TTFFontReader
         case 3:
             return this.readUint24();
         default:
-            return this.readUint32();
+            return this.readSint32();
         }
     }
     public double read1616() {
-        int val = this.readUint32();
+        int val = this.readSint32();
 
         double integer = (val>>16);
         double mantissa = ((val & 0xffff) / 65536.0);

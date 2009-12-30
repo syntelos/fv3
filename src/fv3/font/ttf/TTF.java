@@ -54,10 +54,6 @@ public final class TTF
      * Table$Unknown}.
      */
     public final Table[] tables;
-    /**
-     * Java/Unix epoch milliseconds from {@link Fftm} or {@link Head}.
-     */
-    public long modification, creation;
 
 
     /**
@@ -76,10 +72,10 @@ public final class TTF
         int unknown = Table.COUNT;
         Table[] tables = new Table[unknown+2];
         for (int idx = 0; idx < this.count; idx++){
-            int tag = reader.readUint32();
-            int chk = reader.readUint32();
-            int ofs = reader.readUint32();
-            int len = reader.readUint32();
+            int tag = reader.readSint32();
+            int chk = reader.readSint32();
+            int ofs = reader.readSint32();
+            int len = reader.readSint32();
 
             Table table = Table.Create(tag,ofs,len);
 
@@ -104,23 +100,24 @@ public final class TTF
      */
     public void init(TTFFont font, TTFFontReader reader) {
 
-        /*
-         * Read tables...
-         * 
-         * ...in reverse order as a first approach to initializing
-         * 'Head' and 'Loca' before 'Glyf'.  Otherwise dependencies
-         * will need to be implemented, or a closer look into what's
-         * going on in other codebases that avoid the problem found
-         * (glyphCount not initialized in Loca or Maxp before Glyf
-         * requires it).
-         */
-        for (int idx = (this.count-1); -1 < idx; idx--){
-            int type = this.types[idx];
-            if (-1 != type){
-                Table table = this.tables[type];
-                table.init(font,this,reader);
-            }
-        }
+        Head head = this.getTableHead();
+        head.init(font,this,reader);
+
+        Hhea hhea = this.getTableHhea();
+        hhea.init(font,this,reader);
+
+        Maxp maxp = this.getTableMaxp();
+        maxp.init(font,this,reader);
+
+        Name name = this.getTableName();
+        name.init(font,this,reader);
+
+        Loca loca = this.getTableLoca();
+        loca.init(font,this,reader);
+
+        Cmap cmap = this.getTableCmap();
+        cmap.init(font,this,reader);
+
     }
     public int countTables(){
         return this.count;
@@ -169,6 +166,27 @@ public final class TTF
             return this.getTableByType(type).getType();
         else
             return 0;
+    }
+    public final Cmap getTableCmap(){
+        return (Cmap)this.getTableByType(Cmap.TYPE);
+    }
+    public final Glyf getTableGlyf(){
+        return (Glyf)this.getTableByType(Glyf.TYPE);
+    }
+    public final Head getTableHead(){
+        return (Head)this.getTableByType(Head.TYPE);
+    }
+    public final Hhea getTableHhea(){
+        return (Hhea)this.getTableByType(Hhea.TYPE);
+    }
+    public final Name getTableName(){
+        return (Name)this.getTableByType(Name.TYPE);
+    }
+    public final Loca getTableLoca(){
+        return (Loca)this.getTableByType(Loca.TYPE);
+    }
+    public final Maxp getTableMaxp(){
+        return (Maxp)this.getTableByType(Maxp.TYPE);
     }
     /**
      * Lookup by type value.  Each table class has a TYPE constant

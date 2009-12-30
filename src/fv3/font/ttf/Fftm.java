@@ -37,6 +37,9 @@ public final class Fftm
     public final static String DESC = "FontForge time stamp table";
 
 
+    public long created, modified;
+
+
     protected Fftm(int ofs, int len) {
         super(ofs,len);
     }
@@ -44,8 +47,8 @@ public final class Fftm
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
         reader.seek(this.offset+12);
-        tables.modification = reader.readDate();
-        tables.creation = reader.readDate();
+        this.modified = reader.readDate();
+        this.created = reader.readDate();
     }
     public String getName(){
         return NAME;

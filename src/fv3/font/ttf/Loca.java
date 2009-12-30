@@ -37,8 +37,6 @@ public final class Loca
     public final static String DESC = "glyph location table";
 
 
-    public int glyphCount;
-
 
     protected Loca(int ofs, int len) {
         super(ofs,len);
@@ -46,10 +44,55 @@ public final class Loca
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-        this.glyphCount = this.length/2-1;
-        if (0 > this.glyphCount)
-            this.glyphCount = 0;
+        Head head = tables.getTableHead();
+        if (null != head){
+            Maxp maxp = tables.getTableMaxp();
+            if (null != maxp){
+                int count = maxp.glyphCount;
+                if (0 < count){
+                    boolean longOffsets = head.indexToLocIsLong;
 
+                    int[] offsets = new int[count+1];
+
+                    this.seekto(reader);
+
+                    if (longOffsets){
+
+                        for (int cc = 0, cz = (count+1); cc < cz; cc++){
+
+                            offsets[cc] = reader.readSint32();
+                        }
+                    }
+                    else {
+                        for (int cc = 0, cz = (count+1); cc < cz; cc++){
+
+                            offsets[cc] = (reader.readUint16()<<1);
+                        }
+                    }
+                    /*
+                     * Read each glyph.
+                     */
+                    Glyf glyf = tables.getTableGlyf();
+                    if (null != glyf){
+                        int glyfBound = glyf.length;
+                        for (int cc = 0; cc < count; cc++){
+                            int start = offsets[cc];
+                            int end = offsets[cc+1];
+                            if (end > start && end < glyfBound)
+                                font.readGlyph(glyf,start,end,reader);
+                        }
+                    }
+                    else
+                        throw new IllegalStateException(String.format("TFF missing table '%s'.",Glyf.NAME));
+                }
+                else
+                    throw new IllegalStateException(String.format("TFF missing positive glyph count in '%s'.",Maxp.NAME));
+            }
+            else
+                throw new IllegalStateException(String.format("TFF missing table '%s'.",Maxp.NAME));
+        }
+        else
+            throw new IllegalStateException(String.format("TFF missing table '%s'.",Head.NAME));
     }
     public String getName(){
         return NAME;

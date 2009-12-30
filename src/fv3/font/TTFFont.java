@@ -18,9 +18,11 @@
 package fv3.font;
 
 import fv3.font.ttf.CID;
+import fv3.font.ttf.Cmap;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 import fv3.font.ttf.Hhea;
+import fv3.font.ttf.Loca;
 import fv3.font.ttf.Name;
 import fv3.font.ttf.Table;
 import fv3.font.ttf.TTF;
@@ -29,9 +31,19 @@ import fv3.font.ttf.TYP1;
 
 
 /**
- * Developed from reading Apple "TTRefMan", FreeType, FontForge and
- * SIL "Intro to".  Of these, the most directly useful was the
- * FontForge codebase, downstream of the FreeType codebase.
+ * Open Type / True Type Font (OTF/TTF) reader developed from <a
+ * href="http://developer.apple.com/textfonts/TTRefMan/RM01/Chap1.html">Apple's
+ * True Type Reference Manual</a>, and the <a
+ * href="http://fontforge.sf.net/">FontForge</a> codebase.
+ * 
+ * This is intended as a data source for compiling font shape data
+ * into generated code, as for fixed width fonts without hinting and
+ * kerning.
+ * 
+ * As of this writing, this class implements only the most essential
+ * OTF/TTF feature set for its intended purpose.  
+ * It does not implement TTCF, CID and Type1.
+ * 
  * 
  * @author John Pritchard
  */
@@ -67,7 +79,7 @@ public class TTFFont
         CID cid = null;
 
         int magic;
-        switch (magic = reader.readUint32()){
+        switch (magic = reader.readSint32()){
 
         case MAGIC_TTF1:
         case MAGIC_TTF2:
@@ -100,6 +112,9 @@ public class TTFFont
         this.ttcf = ttcf;
         this.typ1 = typ1;
         this.cid = cid;
+        /*
+         * Init
+         */
         if (this.isTTF)
             this.ttf.init(this,reader);
         else if (this.isTTCF)
@@ -310,6 +325,9 @@ public class TTFFont
         else
             throw new IllegalStateException("Not TTF");
     }
+    public final Cmap getTableCmap(){
+        return (Cmap)this.getTableByType(Cmap.TYPE);
+    }
     public final Glyf getTableGlyf(){
         return (Glyf)this.getTableByType(Glyf.TYPE);
     }
@@ -322,13 +340,15 @@ public class TTFFont
     public final Name getTableName(){
         return (Name)this.getTableByType(Name.TYPE);
     }
-    public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
+    public final Loca getTableLoca(){
+        return (Loca)this.getTableByType(Loca.TYPE);
+    }
+    public void readGlyph(Glyf glyf, int offset, int next, TTFFontReader reader){
 
-        TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
-        {
-            Head head = this.getTableHead();
-            glyph.read(reader,head);
-        }
+        TTFGlyph glyph = new TTFGlyph(this,glyf,offset,next);
+
+        glyph.read(reader);
+
         this.add(glyph);
     }
 
@@ -352,11 +372,6 @@ public class TTFFont
                     System.out.printf("\tTable '%s'.\n",font.getTableName(cc));
                     switch (font.getTableType(cc)){
 
-                    case fv3.font.ttf.Glyf.TYPE:{
-                        fv3.font.ttf.Glyf table = (fv3.font.ttf.Glyf)font.getTable(cc);
-                        System.out.printf("\t\tCount %d\n",table.count);
-                        break;
-                    }
                     case fv3.font.ttf.Head.TYPE:{
                         fv3.font.ttf.Head table = (fv3.font.ttf.Head)font.getTable(cc);
                         System.out.printf("\t\tEm-Size %f\n",table.emsize);
@@ -371,11 +386,6 @@ public class TTFFont
                         System.out.printf("\t\tLeading %f\n",table.leading);
                         System.out.printf("\t\tAdvance %f\n",table.advance);
                         System.out.printf("\t\tWidth-Count %d\n",table.widthCount);
-                        break;
-                    }
-                    case fv3.font.ttf.Loca.TYPE:{
-                        fv3.font.ttf.Loca table = (fv3.font.ttf.Loca)font.getTable(cc);
-                        System.out.printf("\t\tGlyph-Count %d\n",table.glyphCount);
                         break;
                     }
                     case fv3.font.ttf.Maxp.TYPE:{

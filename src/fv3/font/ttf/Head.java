@@ -37,9 +37,16 @@ public final class Head
     public final static String DESC = "font header table";
 
 
-    public int flags, ffb[] = new int[4], macstyle;
+    public int flags, style, lowestRecPPEM, fontDirectionHint;
 
-    public boolean optimized_for_cleartype, apply_lsb, index_to_loc_is_long;
+    public long created, modified;
+
+    /**
+     * Font bounding box
+     */
+    public double minX, maxX, minY, maxY;
+
+    public boolean optimized_for_cleartype, apply_lsb, indexToLocIsLong;
 
     public double emsize, ascent, descent;
 
@@ -58,28 +65,18 @@ public final class Head
         this.ascent = (0.8*this.emsize);
         this.descent = (this.emsize-this.ascent);
 
-        if (tables.hasTableByType(Fftm.TYPE)){
-            reader.readDate();
-            reader.readDate();
-        }
-        else {
-            tables.modification = reader.readDate();
-            tables.creation = reader.readDate();
-        }
-        for (int cc = 0; cc < 4; cc++)
-            this.ffb[cc] = reader.readUint16();
-        this.macstyle = reader.readUint16();
-        for (int cc = 0; cc < 2; cc++)
-            reader.readUint16();
-        this.index_to_loc_is_long = (0 != reader.readUint16());
-        if (this.index_to_loc_is_long){
-            Loca loca = (Loca)tables.getTableByType(Loca.TYPE);
-            if (null != loca){
-                loca.glyphCount  = loca.length/4-1;
-                if (loca.glyphCount < 0)
-                    loca.glyphCount = 0;
-            }
-        }
+        this.modified = reader.readDate();
+        this.created = reader.readDate();
+
+        this.minX = reader.readSint16();
+        this.minY = reader.readSint16();
+        this.maxX = reader.readSint16();
+        this.maxY = reader.readSint16();
+
+        this.style = reader.readUint16();
+        this.lowestRecPPEM = reader.readUint16();
+        this.fontDirectionHint = reader.readSint16();
+        this.indexToLocIsLong = (0 != reader.readUint16());
     }
     public String getName(){
         return NAME;

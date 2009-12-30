@@ -113,6 +113,20 @@ public class Glyph
         else
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
     }
+    public final Path first(){
+        Path[] list = this.list;
+        if (null == list)
+            return null;
+        else
+            return list[0];
+    }
+    public final Path last(){
+        Path[] list = this.list;
+        if (null == list)
+            return null;
+        else
+            return list[list.length-1];
+    }
     protected final void add(Path path){
         if (null != path){
             Path[] list = this.list;

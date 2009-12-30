@@ -41,26 +41,26 @@ public final class TTCF
 
     public TTCF(TTFFont font, TTFFontReader reader) {
         super();
-        this.version = reader.readUint32();
-        this.count = reader.readUint32();
+        this.version = reader.readSint32();
+        this.count = reader.readSint32();
         this.offsets = new int[this.count];
         for (int cc = 0; cc < this.count; cc++){
-            this.offsets[cc] = reader.readUint32();
+            this.offsets[cc] = reader.readSint32();
         }
         this.names = new String[this.count];
         for (int cc = 0; cc < this.count; cc++){
             reader.seek(this.offsets[cc]);
-            reader.readUint32();  // version
+            reader.readSint32();  // version
             int num = reader.readUint16();
             reader.readUint16();  // srange
             reader.readUint16();  // esel
             reader.readUint16();  // rshift
             int chofs = 0, chlen = 0;
             for (int nn = 0; nn < num; nn++){
-                int tag = reader.readUint32();
-                reader.readUint32();  // checksum
-                chofs = reader.readUint32();
-                chlen = reader.readUint32();
+                int tag = reader.readSint32();
+                reader.readSint32();  // checksum
+                chofs = reader.readSint32();
+                chlen = reader.readSint32();
                 if (NAME == tag)
                     break;
             }

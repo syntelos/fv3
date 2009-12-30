@@ -108,10 +108,23 @@ public class FontReader
     }
 
 
-
+    public boolean eof(){
+        return (0 >= this.buffer.remaining());
+    }
     public FontReader seek(int offset){
         this.buffer.position(offset);
         return this;
+    }
+    public FontReader skip(int many){
+        if (0 < many)
+            try {
+                return this.seek(this.buffer.position()+many);
+            }
+            catch (IllegalArgumentException exc){
+                throw new IllegalArgumentException(String.valueOf(many),exc);
+            }
+        else
+            return this;
     }
     public FontReader read(byte[] bary, int ofs, int len){
         this.buffer.get(bary,ofs,len);
@@ -130,6 +143,11 @@ public class FontReader
     {
         return (this.buffer.get() & 0xff);
     }
+    public byte readSint8()
+        throws BufferUnderflowException
+    {
+        return this.buffer.get();
+    }
     public int readUint16()
         throws BufferUnderflowException
     {
@@ -137,6 +155,14 @@ public class FontReader
         int b = (this.buffer.get() & 0xff);
 
         return ((a<<8)|b);
+    }
+    public short readSint16()
+        throws BufferUnderflowException
+    {
+        int a = (this.buffer.get() & 0xff);
+        int b = (this.buffer.get() & 0xff);
+
+        return (short)((a<<8)|b);
     }
     public int readUint24()
         throws BufferUnderflowException
@@ -147,7 +173,17 @@ public class FontReader
 
         return ((a<<16)|(b<<8)|c);
     }
-    public int readUint32()
+    public long readUint32()
+        throws BufferUnderflowException
+    {
+        long a = (this.buffer.get() & 0xff);
+        long b = (this.buffer.get() & 0xff);
+        long c = (this.buffer.get() & 0xff);
+        long d = (this.buffer.get() & 0xff);
+
+        return ((a<<24)|(b<<16)|(c<<8)|d);
+    }
+    public int readSint32()
         throws BufferUnderflowException
     {
         int a = (this.buffer.get() & 0xff);
