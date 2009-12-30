@@ -65,8 +65,8 @@ public final class Head
         this.ascent = (0.8*this.emsize);
         this.descent = (this.emsize-this.ascent);
 
-        this.modified = reader.readDate();
         this.created = reader.readDate();
+        this.modified = reader.readDate();
 
         this.minX = reader.readSint16();
         this.minY = reader.readSint16();
@@ -76,7 +76,16 @@ public final class Head
         this.style = reader.readUint16();
         this.lowestRecPPEM = reader.readUint16();
         this.fontDirectionHint = reader.readSint16();
-        this.indexToLocIsLong = (0 != reader.readUint16());
+        switch (reader.readUint16()){
+        case 0:
+            this.indexToLocIsLong = false;
+            break;
+        case 1:
+            this.indexToLocIsLong = true;
+            break;
+        default:
+            throw new IllegalStateException();
+        }
     }
     public String getName(){
         return NAME;

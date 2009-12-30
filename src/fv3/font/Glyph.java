@@ -141,4 +141,55 @@ public class Glyph
             }
         }
     }
+    public String toString(){
+        return this.toString("; ");
+    }
+    public String toString(String infix){
+        return this.toString("Glyph(","; ",")");
+    }
+    public final String toString(String prefix, String infix, String suffix){
+        StringBuilder string = new StringBuilder();
+        if (null != prefix)
+            string.append(prefix);
+        Path[] list = this.list;
+        if (null != list){
+            for (int cc = 0, count = list.length; cc < count; cc++){
+                if (0 != cc)
+                    string.append(infix);
+                string.append(list[cc]);
+            }
+        }
+        if (null != suffix)
+            string.append(suffix);
+        return string.toString();
+    }
+
+    public final static class Iterator
+        extends Object
+        implements java.util.Iterator<Glyph>
+    {
+
+        private final Glyph[] list;
+        private final int count;
+        private int index;
+
+        public Iterator(Glyph[] list){
+            super();
+            this.list = list;
+            this.count = ((null != list)?(list.length):(0));
+        }
+
+        public boolean hasNext(){
+            return (this.index < this.count);
+        }
+        public Glyph next(){
+            if (this.index < this.count)
+                return this.list[this.index++];
+            else
+                throw new java.util.NoSuchElementException();
+        }
+        public void remove(){
+            throw new UnsupportedOperationException();
+        }
+    }
 }

@@ -28,7 +28,8 @@ package fv3.font;
  */
 public class Font
     extends Object
-    implements Cloneable
+    implements Cloneable,
+               Iterable<Glyph>
 {
 
     private final String name;
@@ -123,6 +124,9 @@ public class Font
             return false;
         else 
             return (((Font)o).name.equals(name));
+    }
+    public java.util.Iterator<Glyph> iterator(){
+        return new Glyph.Iterator(this.list);
     }
     private final static String Clean(String name){
         if (null != name){

@@ -343,9 +343,9 @@ public class TTFFont
     public final Loca getTableLoca(){
         return (Loca)this.getTableByType(Loca.TYPE);
     }
-    public void readGlyph(Glyf glyf, int offset, int next, TTFFontReader reader){
+    public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
-        TTFGlyph glyph = new TTFGlyph(this,glyf,offset,next);
+        TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
 
         glyph.read(reader);
 
@@ -372,6 +372,12 @@ public class TTFFont
                     System.out.printf("\tTable '%s'.\n",font.getTableName(cc));
                     switch (font.getTableType(cc)){
 
+                    case fv3.font.ttf.Glyf.TYPE:{
+                        for (Glyph glyph: font)
+                            System.out.printf("\t\t%s\n",glyph.toString(",\n\t\t      "));
+
+                        break;
+                    }
                     case fv3.font.ttf.Head.TYPE:{
                         fv3.font.ttf.Head table = (fv3.font.ttf.Head)font.getTable(cc);
                         System.out.printf("\t\tEm-Size %f\n",table.emsize);

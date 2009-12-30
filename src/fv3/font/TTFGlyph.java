@@ -155,6 +155,15 @@ public class TTFGlyph
         boolean more(){
             return (0 != (this.flags & MORE_COMPONENTS));
         }
+        public String toString(){
+            
+            if (0 != (this.flags & ARGS_ARE_XY_VALUES)){
+                return String.format("Compound( 0x%x, %d, %f, %f, %f, %f, %f, %f)",this.flags,this.index,this.a,this.b,this.c,this.d,this.e,this.f);
+            }
+            else {
+                return String.format("Compound( 0x%x, %d, %d, %d)",this.flags,this.index,this.matchCompound,this.matchComponent);
+            }
+        }
     }
 
     private final static int Start = 0, Control = 1, End = 2, End2 = 3;
@@ -162,7 +171,7 @@ public class TTFGlyph
     /**
      * TTF file internal coordinate and dimension
      */
-    public final int offset, length;
+    public final int index, offset, length;
 
     /**
      * Glyph bounding box
@@ -172,14 +181,20 @@ public class TTFGlyph
     public Compound[] compound;
 
 
-    protected TTFGlyph(TTFFont font, Glyf glyf, int offset, int next){
+    protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
         super(font);
+        this.index = index;
         this.offset = (glyf.offset + offset);
         this.length = (next-offset);
     }
 
 
-
+    public final boolean isSimple(){
+        return (null == this.compound);
+    }
+    public final boolean isCompound(){
+        return (null != this.compound);
+    }
     public void init(FontOptions opts) {
 
     }
@@ -365,4 +380,23 @@ public class TTFGlyph
         }
     }
 
+    public String toString(String infix){
+        infix += "       ";
+        String prefix = ("TTFGlyph( "+this.index+", ");
+
+        if (null != this.compound){
+            StringBuilder string = new StringBuilder();
+            string.append(index);
+            Compound[] compound = this.compound;
+            for (int cc = 0, count = compound.length; cc < count; cc++){
+                if (0 != cc)
+                    string.append(infix);
+                string.append(compound[cc].toString());
+            }
+            string.append(")");
+            return string.toString();
+        }
+        else
+            return super.toString(prefix,infix,")");
+    }
 }

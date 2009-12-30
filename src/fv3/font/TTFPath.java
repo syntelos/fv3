@@ -76,4 +76,10 @@ public class TTFPath
     public double[] points(){
         return null;
     }
+    public String toString(){
+        if (this.isQuadratic)
+            return String.format("TTFPath(%f, %f, %f, %f, %f, %f)", this.startX, this.startY, this.controlX, this.controlY, this.endX, this.endY);
+        else
+            return String.format("TTFPath(%f, %f, %f, %f, %f, %f, %f, %f)", this.startX, this.startY, this.controlX, this.controlY, this.controlX2, this.controlY2, this.endX, this.endY);
+    }
 }
