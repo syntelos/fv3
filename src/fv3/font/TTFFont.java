@@ -37,8 +37,8 @@ import fv3.font.ttf.TYP1;
  * href="http://fontforge.sf.net/">FontForge</a> codebase.
  * 
  * This is intended as a data source for compiling font shape data
- * into generated code, as for fixed width fonts without hinting and
- * kerning.
+ * into generated code.  The first goal for {@link TTFFont} is for
+ * fixed width fonts without hinting.
  * 
  * As of this writing, this class implements only the most essential
  * OTF/TTF feature set for its intended purpose.  

@@ -76,17 +76,17 @@ public class TTFFontReader
         int val = this.readSint32();
 
         double integer = (val>>16);
-        double mantissa = ((val & 0xffff) / 65536.0);
+        double fraction = ((val & 0xffff) / 65536.0);
 
-        return (integer + mantissa);
+        return (integer + fraction);
     }
     public double read214() {
         int val = this.readUint16();
 
         double integer = ((val<<16)>>30);
-        double mantissa = ((val & 0x3fff) / 16384.0);
+        double fraction = ((val & 0x3fff) / 16384.0);
 
-        return (integer + mantissa);
+        return (integer + fraction);
     }
     public long readDate(){
         return (this.readSint64() - SfntDate1970);
@@ -145,7 +145,7 @@ public class TTFFontReader
             switch (specific){
             case 0:
             case 1:
-                return Charset.forName("UTF-8");
+                return Charset.forName("UTF-16");
             case 2:
                 return Charset.forName("EUC-CN");
             case 3:
@@ -157,12 +157,63 @@ public class TTFFontReader
             case 6:
                 return Charset.forName("Johab");
             case 10:
-                return Charset.forName("UTF-16");
+                return Charset.forName("UTF-32");
             default:
                 return Charset.forName("Unknown");
             }
         default:
             return Charset.forName("Unknown");
+        }
+    }
+
+    public final static double F214(int bits){
+        double integer = ((bits<<16)>>30);
+        double fraction = ((bits & 0x3fff) / 16384.0);
+        return (integer+fraction);
+    }
+
+    public static class TestF2DOT14 {
+
+        public static TestF2DOT14[] List = {
+            new TestF2DOT14(1.99993896484375,  0x7fff),
+            new TestF2DOT14(1.75,      0x7000),
+            new TestF2DOT14(6.103515625E-5,  0x0001),
+            new TestF2DOT14(0.0,       0x0000),
+            new TestF2DOT14(-6.103515625E-5, 0xffff),
+            new TestF2DOT14(-2.0,      0x8000)
+        };
+
+
+        public final double R;
+
+        public final int B;
+
+
+        TestF2DOT14(double R, int B){
+            super();
+            this.R = R;
+            this.B = B;
+        }
+
+        public boolean evaluate(){
+
+            return (this.R == TTFFontReader.F214(this.B));
+        }
+        public double value(){
+
+            return TTFFontReader.F214(this.B);
+        }
+        public String toString(){
+            return String.format("R:%f, B:%x",this.R, this.B);
+        }
+    }
+
+    public final static void main(String[] argv){
+        for (TestF2DOT14 test: TestF2DOT14.List){
+            if (test.evaluate())
+                System.out.println("OK "+test);
+            else
+                System.out.println("ER "+test.value()+" != "+test);
         }
     }
 }

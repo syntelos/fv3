@@ -366,7 +366,7 @@ public class TTFGlyph
         else if (0 == nContours){
             throw new UnsupportedOperationException("[TODO] Control point.");
         }
-        else {
+        else if (-1 == nContours){
             int index = 0;
             this.compound = new Compound[]{new Compound(reader)};
             while (this.compound[index].more()){
@@ -378,6 +378,8 @@ public class TTFGlyph
                 this.compound = copier;
             }
         }
+        else
+            throw new UnsupportedOperationException(String.format("Unrecognized contour indicator (%d).",nContours));
     }
 
     public String toString(String infix){
