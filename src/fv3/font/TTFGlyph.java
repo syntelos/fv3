@@ -388,7 +388,7 @@ public class TTFGlyph
 
         if (null != this.compound){
             StringBuilder string = new StringBuilder();
-            string.append(index);
+            string.append(prefix);
             Compound[] compound = this.compound;
             for (int cc = 0, count = compound.length; cc < count; cc++){
                 if (0 != cc)

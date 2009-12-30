@@ -93,11 +93,13 @@ public class TTFFontReader
     }
     public String readString(int p, int s, int ofs, int len){
         try {
+            int position = this.buffer.position();
             Charset enc = Encoding(p,s);
-            this.seek(ofs);
+            this.buffer.position(ofs);
             ByteBuffer bary = ByteBuffer.allocate(len);
             this.read(bary);
             CharBuffer cary = enc.decode(bary);
+            this.buffer.position(position);
             return cary.toString();
         }
         catch (UnsupportedCharsetException unknown){
@@ -105,41 +107,43 @@ public class TTFFontReader
             return null;
         }
     }
+    private final static Charset CharsetUnknown = Charset.forName("UTF-16");
 
     public final static Charset Encoding(int platform, int specific){
+        System.err.println("Encoding("+platform+", "+specific+")");
         switch (platform){
         case 0:
             switch (specific){
             case 4:
-                return Charset.forName("UTF-16");
+                return Charset.forName("UTF-32");
             default:
-                return Charset.forName("UTF-8");
+                return Charset.forName("UTF-16");
             }
         case 1:
             switch (specific){
             case 0:
-                return Charset.forName("Mac");
+                return Charset.forName("UTF-16");
             case 1:
                 return Charset.forName("Sjis");
             case 2:
-                return Charset.forName("Big5hkscs");
+                return Charset.forName("Big5");
             case 3:
                 return Charset.forName("EUC-KR");
             case 25:
                 return Charset.forName("EUC-CN");
             default:
-                return Charset.forName("Unknown");
+                return CharsetUnknown;
             }
         case 2:
             switch (specific){
             case 0:
-                return Charset.forName("ASCII");
+                return Charset.forName("US-ASCII");
             case 1:
-                return Charset.forName("UTF-8");
+                return Charset.forName("UTF-16");
             case 2:
                 return Charset.forName("ISO8859-1");
             default:
-                return Charset.forName("Unknown");
+                return CharsetUnknown;
             }
         case 3:
             switch (specific){
@@ -151,7 +155,7 @@ public class TTFFontReader
             case 3:
                 return Charset.forName("Sjis");
             case 4:
-                return Charset.forName("Big5hkscs");
+                return Charset.forName("Big5");
             case 5:
                 return Charset.forName("EUC-KR");
             case 6:
@@ -159,10 +163,10 @@ public class TTFFontReader
             case 10:
                 return Charset.forName("UTF-32");
             default:
-                return Charset.forName("Unknown");
+                return CharsetUnknown;
             }
         default:
-            return Charset.forName("Unknown");
+            return CharsetUnknown;
         }
     }
 

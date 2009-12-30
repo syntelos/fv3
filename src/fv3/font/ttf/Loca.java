@@ -78,8 +78,7 @@ public final class Loca
                         for (int cc = 0; cc < count; cc++){
                             int start = offsets[cc];
                             int end = offsets[cc+1];
-                            if (end > start && end < glyfBound)
-                                font.readGlyph(glyf,cc,start,end,reader);
+                            font.readGlyph(glyf,cc,start,end,reader);
                         }
                     }
                     else
