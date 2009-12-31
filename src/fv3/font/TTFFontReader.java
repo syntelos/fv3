@@ -110,7 +110,7 @@ public class TTFFontReader
     private final static Charset CharsetUnknown = Charset.forName("UTF-16");
 
     public final static Charset Encoding(int platform, int specific){
-        System.err.println("Encoding("+platform+", "+specific+")");
+
         switch (platform){
         case 0:
             switch (specific){
@@ -170,13 +170,14 @@ public class TTFFontReader
         }
     }
 
-    public final static double F214(int bits){
-        double integer = ((bits<<16)>>30);
-        double fraction = ((bits & 0x3fff) / 16384.0);
-        return (integer+fraction);
-    }
 
     public static class TestF2DOT14 {
+
+        public final static double F214(int bits){
+            double integer = ((bits<<16)>>30);
+            double fraction = ((bits & 0x3fff) / 16384.0);
+            return (integer+fraction);
+        }
 
         public static TestF2DOT14[] List = {
             new TestF2DOT14(1.99993896484375,  0x7fff),
@@ -201,11 +202,11 @@ public class TTFFontReader
 
         public boolean evaluate(){
 
-            return (this.R == TTFFontReader.F214(this.B));
+            return (this.R == F214(this.B));
         }
         public double value(){
 
-            return TTFFontReader.F214(this.B);
+            return F214(this.B);
         }
         public String toString(){
             return String.format("R:%f, B:%x",this.R, this.B);
@@ -213,11 +214,15 @@ public class TTFFontReader
     }
 
     public final static void main(String[] argv){
+        int errors = 0;
         for (TestF2DOT14 test: TestF2DOT14.List){
             if (test.evaluate())
                 System.out.println("OK "+test);
-            else
+            else {
                 System.out.println("ER "+test.value()+" != "+test);
+                errors += 1;
+            }
         }
+        System.exit(errors);
     }
 }

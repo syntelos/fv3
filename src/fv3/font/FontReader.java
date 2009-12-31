@@ -108,6 +108,9 @@ public class FontReader
     }
 
 
+    public int tell(){
+        return this.buffer.position();
+    }
     public boolean eof(){
         return (0 >= this.buffer.remaining());
     }

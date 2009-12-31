@@ -166,12 +166,12 @@ public class TTFGlyph
         }
     }
 
-    private final static int Start = 0, Control = 1, End = 2, End2 = 3;
+    private final static int Init = 0, Control = 1, End = 2, End2 = 3;
 
     /**
-     * TTF file internal coordinate and dimension
+     * TTF internal coordinates and dimensions
      */
-    public final int index, offset, length;
+    public final int index, offset, length, exclusive;
 
     /**
      * Glyph bounding box
@@ -186,6 +186,7 @@ public class TTFGlyph
         this.index = index;
         this.offset = (glyf.offset + offset);
         this.length = (next-offset);
+        this.exclusive = (this.offset + this.length);
     }
 
 
@@ -195,191 +196,218 @@ public class TTFGlyph
     public final boolean isCompound(){
         return (null != this.compound);
     }
-    public void init(FontOptions opts) {
-
-    }
     protected void read(TTFFontReader reader){
-        reader.seek(this.offset);
+        if (0 == this.length)
+            return;
+        else {
+            reader.seek(this.offset);
 
-        int nContours = reader.readSint16();
-        this.minX = reader.readSint16();
-        this.minY = reader.readSint16();
-        this.maxX = reader.readSint16();
-        this.maxY = reader.readSint16();
-        if (0 < nContours){
+            int nContours = reader.readSint16();
+            this.minX = reader.readSint16();
+            this.minY = reader.readSint16();
+            this.maxX = reader.readSint16();
+            this.maxY = reader.readSint16();
 
-            reader.skip( (nContours-1)<<1);
-            //             int[] contourIndex = new int[nContours];
-            //             {
-            //                 for (int cc = 0; cc < nContours; cc++)
-            //                     contourIndex[cc] = reader.readUint16();
-            //             }
-            int nPoints = reader.readUint16()+1;
+            if (0 < nContours){
 
-            reader.skip(reader.readUint16());
-            //             int hintCount = reader.readUint16();
-            //             int[] hints = new int[hintCount];
-            //             {
-            //                 for (int cc = 0; cc < hintCount; cc++)
-            //                     hints[cc] = reader.readUint8();
-            //             }
 
-            //             int nPoints = (contourIndex[nContours-1])+1;
+                reader.skip( (nContours-1)<<1);
+                //             int[] contourIndex = new int[nContours];
+                //             {
+                //                 for (int cc = 0; cc < nContours; cc++){
+                //                     contourIndex[cc] = reader.readUint16();
+                //                     if (0 != cc && contourIndex[cc] < contourIndex[cc-1] )
+                //                         throw new IllegalStateException(String.format("In Glyph %d: Path indeces error (%d < %d)", this.index, contourIndex[cc-1], contourIndex[cc]));
+                //                 }
+                //             }
+                //             int nPoints = (contourIndex[nContours-1])+1;
+                int nPoints = reader.readUint16()+1;
 
-            int[] flags = new int[nPoints];
-            {
-                for (int cc = 0; cc < nPoints; cc++){
-                    flags[cc] = reader.readUint8();
-                    if (0 != (flags[cc] & REPEAT)){
-                        int dz = reader.readUint8();
-                        if ( (cc + dz) > nPoints)
-                            dz = nPoints- cc- 1;
-                        for (int dd = 0; dd < dz; dd++){
-                            flags[cc+dd+1] = flags[cc];
+                reader.skip(reader.readUint16());
+                //             int hintCount = reader.readUint16();
+                //             int[] hints = new int[hintCount];
+                //             {
+                //                 for (int cc = 0; cc < hintCount; cc++)
+                //                     hints[cc] = reader.readUint8();
+                //             }
+
+                int[] flags = new int[nPoints];
+                {
+                    for (int cc = 0; cc < nPoints; cc++){
+                        flags[cc] = reader.readUint8();
+                        if (0 != (flags[cc] & REPEAT)){
+                            int dz = reader.readUint8();
+                            if ( (cc + dz) > nPoints){
+                                String erm = String.format("In Glyph %d: Flag count is wrong (or total is): %d %d\n", this.index, (cc+dz), nPoints );
+                                throw new IllegalStateException(erm);
+                            }
+                            else {
+                                for (int dd = 0; dd < dz; dd++){
+                                    flags[cc+dd+1] = flags[cc];
+                                }
+                                cc += dz;
+                            }
                         }
-                        cc += dz;
                     }
                 }
-            }
-            double points[] = new double[(nPoints<<1)];
-            {
-                double last = 0.0;
-                int x, y;
-                for (int cc = 0; cc < nPoints; cc++){
-                    x = (cc<<1);
-                    if (0 != (flags[cc] & X_SHORT)){
-                        int off = reader.readUint8();
-                        if (0 != (flags[cc] & X_SAME))
-                            points[x] = (last - off);
-                        else
+                double points[] = new double[(nPoints<<1)];
+                {
+                    double last = 0.0;
+                    int x, y;
+                    for (int cc = 0; cc < nPoints; cc++){
+                        x = (cc<<1);
+                        if (0 != (flags[cc] & X_SHORT)){
+                            int off = reader.readUint8();
+                            if (0 == (flags[cc] & X_SAME))
+                                off = -off;
+
                             points[x] = (last + off);
-                    }
-                    else if (0 != (flags[cc] & X_SAME)){
-                        points[x] = last;
-                    }
-                    else
-                        points[x] = (last + reader.readUint16());
-
-                    last = points[x];
-                }
-                last = 0.0;
-
-                for (int cc = 0; cc < nPoints; cc++){
-                    y = (cc<<1)+1;
-                    if (0 != (flags[cc] & Y_SHORT)){
-                        int off = reader.readUint8();
-                        if (0 != (flags[cc] & Y_SAME))
-                            points[y] = (last - off);
+                        }
+                        else if (0 != (flags[cc] & X_SAME)){
+                            points[x] = last;
+                        }
                         else
+                            points[x] = (last + reader.readSint16());
+
+                        last = points[x];
+                    }
+                    last = 0.0;
+
+                    for (int cc = 0; cc < nPoints; cc++){
+                        y = (cc<<1)+1;
+                        if (0 != (flags[cc] & Y_SHORT)){
+                            int off = reader.readUint8();
+                            if (0 == (flags[cc] & Y_SAME))
+                                off = -off;
+
                             points[y] = (last + off);
-                    }
-                    else if (0 != (flags[cc] & Y_SAME)){
-                        points[y] = last;
-                    }
-                    else
-                        points[y] = (last + reader.readUint16());
-
-                    last = points[y];
-                }
-            }
-            {
-                int x, y;
-
-                double startX = 0.0, startY = 0.0;
-                double controlX = 0.0, controlY = 0.0;
-                double controlX2 = 0.0, controlY2 = 0.0;
-                double endX = 0.0, endY = 0.0;
-
-                int path = Start;
-
-                for (int cc = 0; cc < nPoints; cc++){
-                    x = (cc<<1);
-                    y = (x+1);
-                    if (0 != (flags[cc] & ON_CURVE)){
-                        switch (path){
-                        case Start:
-                        case Control:
-                            startX = points[x];
-                            startY = points[y];
-
-                            path = Control;
-                            break;
-
-                        case End:
-                            endX = points[x];
-                            endY = points[y];
-
-                            this.add(new TTFPath(startX, startY, controlX, controlY, endX, endY));
-
-                            path = Control;
-
-                            startX = endX;
-                            startY = endY;
-                            controlX = 0.0;
-                            controlY = 0.0;
-                            controlX2 = 0.0;
-                            controlY2 = 0.0;
-                            endX = 0.0;
-                            endY = 0.0;
-                            break;
-                        case End2:
-                            endX = points[x];
-                            endY = points[y];
-
-                            this.add(new TTFPath(startX, startY, controlX, controlY, controlX2, controlY2, endX, endY));
-
-                            path = Control;
-
-                            startX = endX;
-                            startY = endY;
-                            controlX = 0.0;
-                            controlY = 0.0;
-                            controlX2 = 0.0;
-                            controlY2 = 0.0;
-                            endX = 0.0;
-                            endY = 0.0;
-                            break;
                         }
-                    }
-                    else {
-                        switch (path){
-                        case Start:
-                            throw new IllegalStateException();
-
-                        case Control:
-                            controlX = points[x];
-                            controlY = points[y];
-
-                            path = End;
-                            break;
-                        case End:
-                            controlX2 = points[x];
-                            controlY2 = points[y];
-
-                            path = End2;
-                            break;
+                        else if (0 != (flags[cc] & Y_SAME)){
+                            points[y] = last;
                         }
+                        else
+                            points[y] = (last + reader.readSint16());
+
+                        last = points[y];
                     }
                 }
+                {
+                    int x, y;
+
+                    double startX = 0.0, startY = 0.0;
+                    double controlX = 0.0, controlY = 0.0;
+                    double controlX2 = 0.0, controlY2 = 0.0;
+                    double endX = 0.0, endY = 0.0;
+
+                    int Path = Init;
+
+                    for (int cc = 0; cc < nPoints; cc++){
+                        x = (cc<<1);
+                        y = (x+1);
+                        if (0 != (flags[cc] & ON_CURVE)){
+                            switch (Path){
+                            case Init:
+                                startX = points[x];
+                                startY = points[y];
+
+                                Path = Control;
+                                break;
+                            case Control:
+                                endX = points[x];
+                                endY = points[y];
+
+                                this.add(new TTFPath(startX, startY, endX, endY));
+
+                                //Path = Control;
+
+                                startX = endX;
+                                startY = endY;
+                                controlX = 0.0;
+                                controlY = 0.0;
+                                controlX2 = 0.0;
+                                controlY2 = 0.0;
+                                endX = 0.0;
+                                endY = 0.0;
+                                break;
+
+                            case End:
+                                endX = points[x];
+                                endY = points[y];
+
+                                this.add(new TTFPath(startX, startY, controlX, controlY, endX, endY));
+
+                                Path = Control;
+
+                                startX = endX;
+                                startY = endY;
+                                controlX = 0.0;
+                                controlY = 0.0;
+                                controlX2 = 0.0;
+                                controlY2 = 0.0;
+                                endX = 0.0;
+                                endY = 0.0;
+                                break;
+                            case End2:
+                                endX = points[x];
+                                endY = points[y];
+
+                                this.add(new TTFPath(startX, startY, controlX, controlY, controlX2, controlY2, endX, endY));
+
+                                Path = Control;
+
+                                startX = endX;
+                                startY = endY;
+                                controlX = 0.0;
+                                controlY = 0.0;
+                                controlX2 = 0.0;
+                                controlY2 = 0.0;
+                                endX = 0.0;
+                                endY = 0.0;
+                                break;
+                            }
+                        }
+                        else {
+                            switch (Path){
+                            case Init:
+                                throw new IllegalStateException(String.format("Reached INIT/OFF in Glyph %d",this.index));
+
+                            case Control:
+                                controlX = points[x];
+                                controlY = points[y];
+
+                                Path = End;
+                                break;
+                            case End:
+                                controlX2 = points[x];
+                                controlY2 = points[y];
+
+                                Path = End2;
+                                break;
+                            case End2:
+                                throw new IllegalStateException(String.format("Reached END2/OFF in Glyph %d",this.index));
+                            }
+                        }
+                    }
+                }
             }
-        }
-        else if (0 == nContours){
-            throw new UnsupportedOperationException("[TODO] Control point.");
-        }
-        else if (-1 == nContours){
-            int index = 0;
-            this.compound = new Compound[]{new Compound(reader)};
-            while (this.compound[index].more()){
-                Compound add = new Compound(reader);
-                index += 1;
-                Compound[] copier = new Compound[index+1];
-                System.arraycopy(this.compound,0,copier,0,index);
-                copier[index] = add;
-                this.compound = copier;
+            else if (0 == nContours){
+                throw new UnsupportedOperationException("[TODO] Control point.");
             }
+            else if (-1 == nContours){
+                int index = 0;
+                this.compound = new Compound[]{new Compound(reader)};
+                while (this.compound[index].more()){
+                    Compound add = new Compound(reader);
+                    index += 1;
+                    Compound[] copier = new Compound[index+1];
+                    System.arraycopy(this.compound,0,copier,0,index);
+                    copier[index] = add;
+                    this.compound = copier;
+                }
+            }
+            else
+                throw new UnsupportedOperationException(String.format("Unrecognized contour indicator (%d).",nContours));
         }
-        else
-            throw new UnsupportedOperationException(String.format("Unrecognized contour indicator (%d).",nContours));
     }
 
     public String toString(String infix){

@@ -26,9 +26,29 @@ public class TTFPath
     extends Object
     implements Path
 {
-    public final boolean isCubic, isQuadratic; 
+    public final boolean isStraight, isCubic, isQuadratic; 
 
     public final double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
+
+    /**
+     * Straight line
+     */
+    public TTFPath(double startX, double startY,
+                   double endX, double endY)
+    {
+        super();
+        this.isStraight = true;
+        this.isQuadratic = false;
+        this.isCubic = false;
+        this.startX = startX;
+        this.startY = startY;
+        this.controlX = 0.0;
+        this.controlY = 0.0;
+        this.controlX2 = 0.0;
+        this.controlY2 = 0.0;
+        this.endX = endX;
+        this.endY = endY;
+    }
 
     /**
      * Quadratic
@@ -38,6 +58,7 @@ public class TTFPath
                    double endX, double endY)
     {
         super();
+        this.isStraight = false;
         this.isQuadratic = true;
         this.isCubic = false;
         this.startX = startX;
@@ -59,6 +80,7 @@ public class TTFPath
                    double endX, double endY)
     {
         super();
+        this.isStraight = false;
         this.isQuadratic = false;
         this.isCubic = true;
         this.startX = startX;
@@ -71,13 +93,19 @@ public class TTFPath
         this.endY = endY;
     }
 
+
+    public void init(Font font, Glyph glyph, FontOptions opts){
+
+    }
     public void destroy(){
     }
     public double[] points(){
         return null;
     }
     public String toString(){
-        if (this.isQuadratic)
+        if (this.isStraight)
+            return String.format("TTFPath(%f, %f, %f, %f)", this.startX, this.startY, this.endX, this.endY);
+        else if (this.isQuadratic)
             return String.format("TTFPath(%f, %f, %f, %f, %f, %f)", this.startX, this.startY, this.controlX, this.controlY, this.endX, this.endY);
         else
             return String.format("TTFPath(%f, %f, %f, %f, %f, %f, %f, %f)", this.startX, this.startY, this.controlX, this.controlY, this.controlX2, this.controlY2, this.endX, this.endY);

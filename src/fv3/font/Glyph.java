@@ -25,6 +25,7 @@ package fv3.font;
  */
 public class Glyph
     extends Object
+    implements Iterable<Path>
 {
 
     protected Font font;
@@ -36,7 +37,10 @@ public class Glyph
 
     protected Glyph(Font font){
         super();
-        this.font = font;
+        if (null != font)
+            this.font = font;
+        else
+            throw new IllegalArgumentException();
     }
 
 
@@ -51,6 +55,18 @@ public class Glyph
         }
     }
     public void init(FontOptions opts) {
+        if (null != opts){
+            Font font = this.font;
+            if (null != font){
+                for (Path p: this){
+                    p.init(font,this,opts);
+                }
+            }
+            else 
+                throw new IllegalStateException("Destroyed");
+        }
+        else
+            throw new IllegalArgumentException();
     }
     public final double[] points(){
         double[] points = this.points;
@@ -162,6 +178,9 @@ public class Glyph
         if (null != suffix)
             string.append(suffix);
         return string.toString();
+    }
+    public java.util.Iterator<Path> iterator(){
+        return new Path.Iterator(this.list);
     }
 
     public final static class Iterator

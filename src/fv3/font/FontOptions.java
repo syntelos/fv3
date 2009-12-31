@@ -26,18 +26,15 @@ public class FontOptions
     extends Object
 {
 
-    public final double height, width;
+    public final double width, height;
 
-    public final boolean italic, bold;
 
-    public FontOptions(double h, double w, boolean i, boolean b){
+    public FontOptions(double w, double h){
         super();
-        this.height = h;
         this.width = w;
-        this.italic = i;
-        this.bold = b;
+        this.height = h;
     }
     public FontOptions(){
-        this(24,12,false,false);
+        this(12,24);
     }
 }

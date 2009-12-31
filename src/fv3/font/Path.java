@@ -37,4 +37,35 @@ public interface Path {
 
     public void destroy();
 
+    public void init(Font font, Glyph glyph, FontOptions opts);
+
+
+    public final static class Iterator
+        extends Object
+        implements java.util.Iterator<Path>
+    {
+
+        private final Path[] list;
+        private final int count;
+        private int index;
+
+        public Iterator(Path[] list){
+            super();
+            this.list = list;
+            this.count = ((null != list)?(list.length):(0));
+        }
+
+        public boolean hasNext(){
+            return (this.index < this.count);
+        }
+        public Path next(){
+            if (this.index < this.count)
+                return this.list[this.index++];
+            else
+                throw new java.util.NoSuchElementException();
+        }
+        public void remove(){
+            throw new UnsupportedOperationException();
+        }
+    }
 }
