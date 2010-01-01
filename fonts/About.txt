@@ -1,9 +1,9 @@
 
-These fonts are for testing.  Please refer to their respective copyrights and licenses for more information.
+Please refer to their respective copyrights and licenses for more information.
 
 To do so, run
 
-   java -cp fv3-X.Y.Z.jar fv3.font.TTFFont <filename.ttf>
+   java -cp fv3-<version>.jar fv3.font.TTFFont <filename.(ttf|otf)>
 
 
 
