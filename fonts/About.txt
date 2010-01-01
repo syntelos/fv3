@@ -1,0 +1,13 @@
+
+These fonts are for testing.  Please refer to their respective copyrights and licenses for more information.
+
+To do so, run
+
+   java -cp fv3-X.Y.Z.jar fv3.font.TTFFont <filename.ttf>
+
+
+
+If you're a copyright holder, please send mail to jdp@syntelos.org 
+for any reason at all.  If you don't like your font here, I'll delete it.
+Many thanks!
+
