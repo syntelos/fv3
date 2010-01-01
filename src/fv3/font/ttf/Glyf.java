@@ -41,8 +41,6 @@ public final class Glyf
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
-        if (null == font.getTableLoca())
-            throw new IllegalStateException(String.format("TFF missing table '%s'.",Loca.NAME));
     }
     public String getName(){
         return NAME;

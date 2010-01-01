@@ -81,12 +81,12 @@ public class Font
     public final Glyph get(int idx){
         Glyph[] list = this.list;
         if (null == list)
-            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
+            return null;
 
         else if (-1 < idx && idx < list.length)
             return list[idx];
         else
-            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
+            return null;
     }
     protected final Font add(Glyph glyph){
         if (null != glyph){

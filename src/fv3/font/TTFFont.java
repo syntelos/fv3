@@ -126,6 +126,13 @@ public class TTFFont
     }
 
 
+    public TTFGlyph lookup(char ch){
+        Cmap cmap = this.getTableCmap();
+        if (null != cmap)
+            return cmap.lookup(this,ch);
+        else
+            return null;
+    }
     public final double getEm(){
 
         Head head = this.getTableHead();

@@ -208,4 +208,15 @@ public class FontReader
 
         this.buffer = null;
     }
+    public final static String Bitstring(int bits, int size){
+        StringBuilder string = new StringBuilder();
+        for (int sh = (size-1); -1 < sh; sh--){
+            boolean bit = (1 == ((bits>>sh)&1));
+            if (bit)
+                string.append('1');
+            else
+                string.append('0');
+        }
+        return string.toString();
+    }
 }

@@ -22,6 +22,8 @@ import fv3.font.TTFFontReader;
 import fv3.font.TTFGlyph;
 import fv3.font.TTFPath;
 
+import java.nio.charset.UnsupportedCharsetException;
+
 /**
  * character code mapping table
  * 
@@ -37,13 +39,51 @@ public final class Cmap
     public final static String DESC = "character code mapping table";
 
 
+
+    public CmapTable unicode;
+
+
     protected Cmap(int ofs, int len) {
         super(ofs,len);
     }
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        this.seekto(reader);
+        int version = reader.readUint16();
+        int nTables = reader.readUint16();
+        CmapTable map;
+        for (int cc = 0; cc < nTables; cc++){
+            try {
+                map = new CmapTable(this,reader);
+                if (map.isUnicode){
+                    if (map.isUnicodeGeneral){
+                        this.unicode = map;
+                        break;
+                    }
+                    else if (null == this.unicode)
+                        this.unicode = map;
+                }
+            }
+            catch (UnsupportedCharsetException exc){
+            }
+        }
 
+        if (null == this.unicode)
+            throw new IllegalStateException("Unicode font map not found.");
+        else {
+            this.unicode.read(this,reader);
+        }
+    }
+    public TTFGlyph init2(TTFGlyph glyph){
+        this.unicode.init2(glyph);
+        return glyph;
+    }
+    protected void init2(TTFFont font){
+        this.unicode.init2(font);
+    }
+    public TTFGlyph lookup(TTFFont font, char ch){
+        return this.unicode.lookup(font,ch);
     }
     public String getName(){
         return NAME;

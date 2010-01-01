@@ -17,6 +17,7 @@
  */
 package fv3.font;
 
+import fv3.font.ttf.Cmap;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 import fv3.font.ttf.TTF;
@@ -30,10 +31,10 @@ import fv3.font.ttf.TTF;
 public class TTFGlyph
     extends Glyph
 {
-    private final static int REPEAT   = 8;
-    private final static int ON_CURVE = 1;
-    private final static int X_SHORT  = 2;
-    private final static int Y_SHORT  = 4;
+    private final static int ON_CURVE = 0x01;
+    private final static int X_SHORT  = 0x02;
+    private final static int Y_SHORT  = 0x04;
+    private final static int REPEAT   = 0x08;
     private final static int X_SAME   = 0x10;
     private final static int Y_SAME   = 0x20;
 
@@ -178,6 +179,8 @@ public class TTFGlyph
      */
     public double minX, maxX, minY, maxY;
 
+    public char character;
+
     public Compound[] compound;
 
 
@@ -211,17 +214,17 @@ public class TTFGlyph
             if (0 < nContours){
 
 
-                reader.skip( (nContours-1)<<1);
-                //             int[] contourIndex = new int[nContours];
-                //             {
-                //                 for (int cc = 0; cc < nContours; cc++){
-                //                     contourIndex[cc] = reader.readUint16();
-                //                     if (0 != cc && contourIndex[cc] < contourIndex[cc-1] )
-                //                         throw new IllegalStateException(String.format("In Glyph %d: Path indeces error (%d < %d)", this.index, contourIndex[cc-1], contourIndex[cc]));
-                //                 }
-                //             }
-                //             int nPoints = (contourIndex[nContours-1])+1;
-                int nPoints = reader.readUint16()+1;
+                int[] contourIndex = new int[nContours];
+                {
+                    for (int cc = 0; cc < nContours; cc++){
+                        contourIndex[cc] = reader.readUint16();
+                        if (0 != cc && contourIndex[cc] < contourIndex[cc-1] ){
+                            throw new IllegalStateException(String.format("In Glyph %d(%c): Path indeces error (%d < %d)", this.index, contourIndex[cc-1], contourIndex[cc]));
+                        }
+                    }
+                }
+                int nPoints = (contourIndex[nContours-1])+1;
+
 
                 reader.skip(reader.readUint16());
                 //             int hintCount = reader.readUint16();
@@ -238,7 +241,7 @@ public class TTFGlyph
                         if (0 != (flags[cc] & REPEAT)){
                             int dz = reader.readUint8();
                             if ( (cc + dz) > nPoints){
-                                String erm = String.format("In Glyph %d: Flag count is wrong (or total is): %d %d\n", this.index, (cc+dz), nPoints );
+                                String erm = String.format("In Glyph %d(%c): Flag count is wrong (or total is): %d %d\n", this.index, (cc+dz), nPoints );
                                 throw new IllegalStateException(erm);
                             }
                             else {
@@ -292,6 +295,8 @@ public class TTFGlyph
                     }
                 }
                 {
+                    int contour = 0;
+                    int contourEnd = contourIndex[contour];
                     int x, y;
 
                     double startX = 0.0, startY = 0.0;
@@ -302,6 +307,10 @@ public class TTFGlyph
                     int Path = Init;
 
                     for (int cc = 0; cc < nPoints; cc++){
+                        if (cc > contourEnd){
+                            contour += 1;
+                            contourEnd = contourIndex[contour];
+                        }
                         x = (cc<<1);
                         y = (x+1);
                         if (0 != (flags[cc] & ON_CURVE)){
@@ -316,7 +325,8 @@ public class TTFGlyph
                                 endX = points[x];
                                 endY = points[y];
 
-                                this.add(new TTFPath(startX, startY, endX, endY));
+                                this.add(new TTFPath(contour, this.getLength(),
+                                                     startX, startY, endX, endY));
 
                                 //Path = Control;
 
@@ -334,7 +344,8 @@ public class TTFGlyph
                                 endX = points[x];
                                 endY = points[y];
 
-                                this.add(new TTFPath(startX, startY, controlX, controlY, endX, endY));
+                                this.add(new TTFPath(contour, this.getLength(),
+                                                     startX, startY, controlX, controlY, endX, endY));
 
                                 Path = Control;
 
@@ -351,7 +362,9 @@ public class TTFGlyph
                                 endX = points[x];
                                 endY = points[y];
 
-                                this.add(new TTFPath(startX, startY, controlX, controlY, controlX2, controlY2, endX, endY));
+                                this.add(new TTFPath(contour, this.getLength(),
+                                                     startX, startY, controlX, controlY, 
+                                                     controlX2, controlY2, endX, endY));
 
                                 Path = Control;
 
@@ -368,8 +381,11 @@ public class TTFGlyph
                         }
                         else {
                             switch (Path){
-                            case Init:
-                                throw new IllegalStateException(String.format("Reached INIT/OFF in Glyph %d",this.index));
+                            case Init:{
+                                Cmap cmap = ((TTFFont)this.font).getTableCmap();
+                                cmap.init2(this);
+                                throw new IllegalStateException(String.format("Reached INIT/OFF in Glyph %d(%c)",this.index, this.character));
+                            }
 
                             case Control:
                                 controlX = points[x];
@@ -383,8 +399,11 @@ public class TTFGlyph
 
                                 Path = End2;
                                 break;
-                            case End2:
-                                throw new IllegalStateException(String.format("Reached END2/OFF in Glyph %d",this.index));
+                            case End2:{
+                                Cmap cmap = ((TTFFont)this.font).getTableCmap();
+                                cmap.init2(this);
+                                throw new IllegalStateException(String.format("Reached END2/OFF in Glyph %d(%c) at (%d/%d) with flags '%s'.",this.index,this.character,cc,nPoints,FontReader.Bitstring(flags[cc],8)));
+                            }
                             }
                         }
                     }

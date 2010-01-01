@@ -28,18 +28,23 @@ public class TTFPath
 {
     public final boolean isStraight, isCubic, isQuadratic; 
 
+    public final int contour, index;
+
     public final double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
 
     /**
      * Straight line
      */
-    public TTFPath(double startX, double startY,
+    public TTFPath(int contour, int index,
+                   double startX, double startY,
                    double endX, double endY)
     {
         super();
         this.isStraight = true;
         this.isQuadratic = false;
         this.isCubic = false;
+        this.contour = contour;
+        this.index = index;
         this.startX = startX;
         this.startY = startY;
         this.controlX = 0.0;
@@ -53,7 +58,8 @@ public class TTFPath
     /**
      * Quadratic
      */
-    public TTFPath(double startX, double startY,
+    public TTFPath(int contour, int index,
+                   double startX, double startY,
                    double controlX, double controlY,
                    double endX, double endY)
     {
@@ -61,6 +67,8 @@ public class TTFPath
         this.isStraight = false;
         this.isQuadratic = true;
         this.isCubic = false;
+        this.contour = contour;
+        this.index = index;
         this.startX = startX;
         this.startY = startY;
         this.controlX = controlX;
@@ -74,7 +82,8 @@ public class TTFPath
     /**
      * Cubic
      */
-    public TTFPath(double startX, double startY,
+    public TTFPath(int contour, int index,
+                   double startX, double startY,
                    double controlX, double controlY,
                    double controlX2, double controlY2,
                    double endX, double endY)
@@ -83,6 +92,8 @@ public class TTFPath
         this.isStraight = false;
         this.isQuadratic = false;
         this.isCubic = true;
+        this.contour = contour;
+        this.index = index;
         this.startX = startX;
         this.startY = startY;
         this.controlX = controlX;

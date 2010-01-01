@@ -112,12 +112,13 @@ public final class TTF
         Name name = this.getTableName();
         name.init(font,this,reader);
 
-        Loca loca = this.getTableLoca();
-        loca.init(font,this,reader);
-
         Cmap cmap = this.getTableCmap();
         cmap.init(font,this,reader);
 
+        Loca loca = this.getTableLoca();
+        loca.init(font,this,reader);
+
+        cmap.init2(font);
     }
     public int countTables(){
         return this.count;
