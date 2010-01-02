@@ -86,7 +86,7 @@ public final class CmapTable
             if (null != glyphIndexArray){
                 int index = ch;
                 int glyfx = glyphIndexArray[index];
-                return (TTFGlyph)font.get(glyfx);
+                return font.get(glyfx);
             }
             return null;
         }
@@ -103,28 +103,27 @@ public final class CmapTable
 
                         if (Integer.MIN_VALUE == offset && 0xffff == start)
 
-                            return null;
+                            return font.get(0);
 
                         else if (Integer.MIN_VALUE == offset){
 
                             delta = this.glyphIndexDelta[index];
                             glyfx = (delta + search);
 
-                            return (TTFGlyph)font.get(glyfx);
+                            return font.get(glyfx);
                         }
                         else if (Integer.MAX_VALUE != offset){
 
                             glyfx = (search + offset - start);
                             if (-1 < glyfx){
                                 glyfx = this.glyphIndexArray[glyfx];
-                                return (TTFGlyph)font.get(glyfx);
+                                return font.get(glyfx);
                             }
-                            else {
-                                return null;
-                            }
+                            else 
+                                return font.get(0);
                         }
                         else
-                            return null;
+                            return font.get(0);
                     }
                 }
             } 
@@ -141,7 +140,7 @@ public final class CmapTable
                 for (int cc = 0, count = glyphIndexArray.length; cc < count; cc++){
                     int glyfx = glyphIndexArray[cc];
                     if (-1 < glyfx){
-                        TTFGlyph glyph = (TTFGlyph)font.get(glyfx);
+                        TTFGlyph glyph = font.get(glyfx);
                         if (null != glyph)
                             glyph.character = (char)cc;
                     }
@@ -170,7 +169,7 @@ public final class CmapTable
 
                     for (int search = start; search <= end; search++){
                         glyfx = (search + delta);
-                        TTFGlyph glyph = (TTFGlyph)font.get(glyfx);
+                        TTFGlyph glyph = font.get(glyfx);
                         if (null != glyph)
                             glyph.character = (char)search;
                     }
@@ -181,7 +180,7 @@ public final class CmapTable
                         glyfx = (search + offset - start);
                         if (-1 < glyfx){
                             glyfx = this.glyphIndexArray[glyfx];
-                            TTFGlyph glyph = (TTFGlyph)font.get(glyfx);
+                            TTFGlyph glyph = font.get(glyfx);
                             if (null != glyph)
                                 glyph.character = (char)search;
                         }
