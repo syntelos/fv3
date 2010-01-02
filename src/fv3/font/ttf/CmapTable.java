@@ -257,15 +257,11 @@ public final class CmapTable
             int glyphIndexArrayLen = ((this.length - (16 + (8*segCount))) >>1);
 
             this.glyphIndexArray = new int[glyphIndexArrayLen];
-
-            if (1 == (reader.tell() & 1))
-                throw new IllegalStateException("Unexpected glyph table offset (pos) found in TTF file.");
-            else {
+            {
                 for (int cc = 0; cc < glyphIndexArrayLen; cc++){
                     this.glyphIndexArray[cc] = reader.readUint16();
                 }
             }
-
             break;
         }
         case 6:{
