@@ -444,8 +444,8 @@ public class TTFGlyph
     }
 
     public String toString(String infix){
-        infix += "       ";
-        String prefix = ("TTFGlyph( "+this.index+", ");
+        infix += "                     ";
+        String prefix = ("TTFGlyph( "+this.index+", '"+CharacterToString(this.character)+"', ");
 
         if (null != this.compound){
             StringBuilder string = new StringBuilder();
@@ -461,5 +461,12 @@ public class TTFGlyph
         }
         else
             return super.toString(prefix,infix,")");
+    }
+
+    public final static String CharacterToString(char ch){
+        if (' ' <= ch && '~' >= ch)
+            return String.valueOf(ch);
+        else
+            return "0x"+Integer.toHexString(ch);
     }
 }
