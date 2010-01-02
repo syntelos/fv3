@@ -394,7 +394,7 @@ public class TTFGlyph
                                          */
                                         endX = (controlX2 - controlX)/2.0;
                                         endY = (controlY2 - controlY)/2.0; 
-                                        System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
+                                        //System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
                                         /*
                                          */
                                         this.add(new TTFPath(contour, this.getLength(), true,
