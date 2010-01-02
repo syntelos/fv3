@@ -444,7 +444,7 @@ public class TTFGlyph
     }
 
     public String toString(String infix){
-        infix += "                     ";
+        infix += "            ";
         String prefix = ("TTFGlyph( "+this.index+", '"+CharacterToString(this.character)+"', ");
 
         if (null != this.compound){
