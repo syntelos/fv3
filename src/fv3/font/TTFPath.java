@@ -26,7 +26,7 @@ public class TTFPath
     extends Object
     implements Path
 {
-    public final boolean isStraight, isCubic, isQuadratic; 
+    public final boolean isStraight, isCubic, isQuadratic, isSynthetic; 
 
     public final int contour, index;
 
@@ -43,6 +43,7 @@ public class TTFPath
         this.isStraight = true;
         this.isQuadratic = false;
         this.isCubic = false;
+        this.isSynthetic = false;
         this.contour = contour;
         this.index = index;
         this.startX = startX;
@@ -58,7 +59,7 @@ public class TTFPath
     /**
      * Quadratic
      */
-    public TTFPath(int contour, int index,
+    public TTFPath(int contour, int index, boolean synthetic,
                    double startX, double startY,
                    double controlX, double controlY,
                    double endX, double endY)
@@ -67,6 +68,7 @@ public class TTFPath
         this.isStraight = false;
         this.isQuadratic = true;
         this.isCubic = false;
+        this.isSynthetic = synthetic;
         this.contour = contour;
         this.index = index;
         this.startX = startX;
@@ -92,6 +94,7 @@ public class TTFPath
         this.isStraight = false;
         this.isQuadratic = false;
         this.isCubic = true;
+        this.isSynthetic = false;
         this.contour = contour;
         this.index = index;
         this.startX = startX;

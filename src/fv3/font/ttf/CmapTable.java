@@ -115,9 +115,13 @@ public final class CmapTable
                         else if (Integer.MAX_VALUE != offset){
 
                             glyfx = (search + offset - start);
-                            glyfx = this.glyphIndexArray[glyfx];
-
-                            return (TTFGlyph)font.get(glyfx);
+                            if (-1 < glyfx){
+                                glyfx = this.glyphIndexArray[glyfx];
+                                return (TTFGlyph)font.get(glyfx);
+                            }
+                            else {
+                                return null;
+                            }
                         }
                         else
                             return null;
@@ -128,67 +132,6 @@ public final class CmapTable
         }
         }
         return null;
-    }
-    protected void init2(TTFGlyph glyph){
-        switch(this.format){
-        case 0:{
-            int[] glyphIndexArray = this.glyphIndexArray;
-            if (null != glyphIndexArray){
-                for (int cc = 0, count = glyphIndexArray.length; cc < count; cc++){
-                    int glyfx = glyphIndexArray[cc];
-                    if (glyfx == glyph.index){
-                        glyph.character = (char)cc;
-                        return;
-                    }
-                    else if (glyfx > glyph.index)
-                        break;
-                }
-            }
-            return;
-        }
-        case 4:{
-            int[] startChars = this.startChars;
-            int[] endChars = this.endChars;
-            int[] glyphIndexDelta = this.glyphIndexDelta;
-            int[] glyphIndexDeltaRangeOffset = this.glyphIndexDeltaRangeOffset;
-            int index = 0, count = startChars.length, search, start, end, offset, delta, glyfx;
-
-            for (; index < count; index++){
-
-                start = startChars[index];
-                search = start;
-                end = endChars[index];
-                offset = this.glyphIndexDeltaRangeOffset[index];
-
-                for (; search <= end; search++){
-
-                    if (Integer.MIN_VALUE == offset && 0xffff == start)
-                        continue;
-
-                    else if (Integer.MIN_VALUE == offset){
-
-                        delta = this.glyphIndexDelta[index];
-                        glyfx = (delta + search);
-                    }
-                    else if (Integer.MAX_VALUE != offset){
-
-                        glyfx = (search + offset - start);
-                        glyfx = this.glyphIndexArray[glyfx];
-                    }
-                    else
-                        continue;
-
-                    if (glyfx == glyph.index){
-                        glyph.character = (char)start;
-                        return;
-                    }
-                    else if (glyfx > glyph.index)
-                        break;
-                }
-            } 
-            return;
-        }
-        }
     }
     protected void init2(TTFFont font){
         switch(this.format){
@@ -211,9 +154,9 @@ public final class CmapTable
             int[] endChars = this.endChars;
             int[] glyphIndexDelta = this.glyphIndexDelta;
             int[] glyphIndexDeltaRangeOffset = this.glyphIndexDeltaRangeOffset;
-            int index = 0, count = startChars.length, start, end, offset, delta, glyfx;
+            int index = 0, segCount = startChars.length, start, end, offset, delta, glyfx;
 
-            for (; index < count; index++){
+            for (; index < segCount; index++){
 
                 start = startChars[index];
                 end = endChars[index];
@@ -236,10 +179,12 @@ public final class CmapTable
 
                     for (int search = start; search <= end; search++){
                         glyfx = (search + offset - start);
-                        glyfx = this.glyphIndexArray[glyfx];
-                        TTFGlyph glyph = (TTFGlyph)font.get(glyfx);
-                        if (null != glyph)
-                            glyph.character = (char)search;
+                        if (-1 < glyfx){
+                            glyfx = this.glyphIndexArray[glyfx];
+                            TTFGlyph glyph = (TTFGlyph)font.get(glyfx);
+                            if (null != glyph)
+                                glyph.character = (char)search;
+                        }
                     }
                 }
             } 

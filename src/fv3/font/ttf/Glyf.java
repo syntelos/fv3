@@ -17,8 +17,10 @@
  */
 package fv3.font.ttf;
 
+import fv3.font.FontOptions;
 import fv3.font.TTFFont;
 import fv3.font.TTFFontReader;
+import fv3.font.TTFGlyph;
 
 /**
  * glyph outline table
@@ -41,6 +43,11 @@ public final class Glyf
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        FontOptions options = font.options;
+        for (TTFGlyph glyph: font){
+            glyph.read(reader);
+            glyph.init(options);
+        }
     }
     public String getName(){
         return NAME;

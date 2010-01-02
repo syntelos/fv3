@@ -26,17 +26,17 @@ package fv3.font;
  * 
  * @author John Pritchard
  */
-public class Font
+public class Font<Glyph extends fv3.font.Glyph>
     extends Object
     implements Cloneable,
                Iterable<Glyph>
 {
 
-    private final String name;
+    public final String name;
 
-    private final FontOptions options;
+    public final FontOptions options;
 
-    private Glyph[] list;
+    private fv3.font.Glyph[] list;
 
 
     public Font(String name, FontReader reader) {
@@ -57,10 +57,10 @@ public class Font
         return (null != this.list);
     }
     public void destroy(){
-        Glyph[] glyphs = this.list;
+        fv3.font.Glyph[] glyphs = this.list;
         if (null != glyphs){
             this.list = null;
-            for (Glyph gly : glyphs){
+            for (fv3.font.Glyph gly : glyphs){
                 gly.destroy();
             }
         }
@@ -72,33 +72,31 @@ public class Font
         return this.options;
     }
     public final int getLength(){
-        Glyph[] list = this.list;
+        fv3.font.Glyph[] list = this.list;
         if (null == list)
             return 0;
         else
             return list.length;
     }
     public final Glyph get(int idx){
-        Glyph[] list = this.list;
+        fv3.font.Glyph[] list = this.list;
         if (null == list)
             return null;
 
         else if (-1 < idx && idx < list.length)
-            return list[idx];
+            return (Glyph)list[idx];
         else
             return null;
     }
     protected final Font add(Glyph glyph){
         if (null != glyph){
 
-            glyph.init(this.options);
-
-            Glyph[] list = this.list;
+            fv3.font.Glyph[] list = this.list;
             if (null == list)
-                this.list = new Glyph[]{glyph};
+                this.list = new fv3.font.Glyph[]{glyph};
             else {
                 int len = list.length;
-                Glyph[] copier = new Glyph[len+1];
+                fv3.font.Glyph[] copier = new fv3.font.Glyph[len+1];
                 System.arraycopy(list,0,copier,0,len);
                 copier[len] = glyph;
                 this.list = copier;
@@ -126,7 +124,7 @@ public class Font
             return (((Font)o).name.equals(name));
     }
     public java.util.Iterator<Glyph> iterator(){
-        return new Glyph.Iterator(this.list);
+        return new fv3.font.Glyph.Iterator<Glyph>(this.list);
     }
     private final static String Clean(String name){
         if (null != name){

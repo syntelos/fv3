@@ -40,16 +40,16 @@ public interface Path {
     public void init(Font font, Glyph glyph, FontOptions opts);
 
 
-    public final static class Iterator
+    public final static class Iterator<Path extends fv3.font.Path>
         extends Object
         implements java.util.Iterator<Path>
     {
 
-        private final Path[] list;
+        private final fv3.font.Path[] list;
         private final int count;
         private int index;
 
-        public Iterator(Path[] list){
+        public Iterator(fv3.font.Path[] list){
             super();
             this.list = list;
             this.count = ((null != list)?(list.length):(0));
@@ -60,7 +60,7 @@ public interface Path {
         }
         public Path next(){
             if (this.index < this.count)
-                return this.list[this.index++];
+                return (Path)this.list[this.index++];
             else
                 throw new java.util.NoSuchElementException();
         }

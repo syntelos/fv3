@@ -23,14 +23,14 @@ package fv3.font;
  * 
  * @author John Pritchard
  */
-public class Glyph
+public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
     extends Object
     implements Iterable<Path>
 {
 
     protected Font font;
 
-    protected Path[] list;
+    protected fv3.font.Path[] list;
 
     protected double[] points;
 
@@ -46,10 +46,10 @@ public class Glyph
 
     public void destroy(){
         this.font = null;
-        Path[] paths = this.list;
+        fv3.font.Path[] paths = this.list;
         if (null != paths){
             this.list = null;
-            for (Path p : paths){
+            for (fv3.font.Path p : paths){
                 p.destroy();
             }
         }
@@ -71,9 +71,9 @@ public class Glyph
     public final double[] points(){
         double[] points = this.points;
         if (null == points){
-            Path[] paths = this.list;
+            fv3.font.Path[] paths = this.list;
             if (null != paths){
-                Path path;
+                fv3.font.Path path;
                 double[] pointset;
                 for (int cc = 0, count = paths.length; cc < count; cc++){
                     path = paths[cc];
@@ -113,44 +113,44 @@ public class Glyph
         return this.font;
     }
     public final int getLength(){
-        Path[] list = this.list;
+        fv3.font.Path[] list = this.list;
         if (null == list)
             return 0;
         else
             return list.length;
     }
     public final Path get(int idx){
-        Path[] list = this.list;
+        fv3.font.Path[] list = this.list;
         if (null == list)
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
 
         else if (-1 < idx && idx < list.length)
-            return list[idx];
+            return (Path)list[idx];
         else
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
     }
     public final Path first(){
-        Path[] list = this.list;
+        fv3.font.Path[] list = this.list;
         if (null == list)
             return null;
         else
-            return list[0];
+            return (Path)list[0];
     }
     public final Path last(){
-        Path[] list = this.list;
+        fv3.font.Path[] list = this.list;
         if (null == list)
             return null;
         else
-            return list[list.length-1];
+            return (Path)list[list.length-1];
     }
     protected final void add(Path path){
         if (null != path){
-            Path[] list = this.list;
+            fv3.font.Path[] list = this.list;
             if (null == list)
-                this.list = new Path[]{path};
+                this.list = new fv3.font.Path[]{path};
             else {
                 int len = list.length;
-                Path[] copier = new Path[len+1];
+                fv3.font.Path[] copier = new fv3.font.Path[len+1];
                 System.arraycopy(list,0,copier,0,len);
                 copier[len] = path;
                 this.list = copier;
@@ -167,7 +167,7 @@ public class Glyph
         StringBuilder string = new StringBuilder();
         if (null != prefix)
             string.append(prefix);
-        Path[] list = this.list;
+        fv3.font.Path[] list = this.list;
         if (null != list){
             for (int cc = 0, count = list.length; cc < count; cc++){
                 if (0 != cc)
@@ -180,19 +180,19 @@ public class Glyph
         return string.toString();
     }
     public java.util.Iterator<Path> iterator(){
-        return new Path.Iterator(this.list);
+        return new fv3.font.Path.Iterator<Path>(this.list);
     }
 
-    public final static class Iterator
+    public final static class Iterator<Glyph extends fv3.font.Glyph>
         extends Object
         implements java.util.Iterator<Glyph>
     {
 
-        private final Glyph[] list;
+        private final fv3.font.Glyph[] list;
         private final int count;
         private int index;
 
-        public Iterator(Glyph[] list){
+        public Iterator(fv3.font.Glyph[] list){
             super();
             this.list = list;
             this.count = ((null != list)?(list.length):(0));
@@ -203,7 +203,7 @@ public class Glyph
         }
         public Glyph next(){
             if (this.index < this.count)
-                return this.list[this.index++];
+                return (Glyph)this.list[this.index++];
             else
                 throw new java.util.NoSuchElementException();
         }

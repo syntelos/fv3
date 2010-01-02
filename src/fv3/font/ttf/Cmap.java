@@ -75,10 +75,6 @@ public final class Cmap
             this.unicode.read(this,reader);
         }
     }
-    public TTFGlyph init2(TTFGlyph glyph){
-        this.unicode.init2(glyph);
-        return glyph;
-    }
     protected void init2(TTFFont font){
         this.unicode.init2(font);
     }

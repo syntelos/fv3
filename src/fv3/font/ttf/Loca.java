@@ -70,15 +70,14 @@ public final class Loca
                         }
                     }
                     /*
-                     * Read each glyph.
+                     * Store offsets.
                      */
                     Glyf glyf = tables.getTableGlyf();
                     if (null != glyf){
-                        int glyfBound = glyf.length;
                         for (int cc = 0; cc < count; cc++){
                             int start = offsets[cc];
                             int end = offsets[cc+1];
-                            font.readGlyph(glyf,cc,start,end,reader);
+                            font.createGlyph(glyf,cc,start,end,reader);
                         }
                     }
                     else

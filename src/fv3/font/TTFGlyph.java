@@ -29,7 +29,7 @@ import fv3.font.ttf.TTF;
  * @author John Pritchard
  */
 public class TTFGlyph
-    extends Glyph
+    extends Glyph<TTFFont,TTFPath>
 {
     private final static int ON_CURVE = 0x01;
     private final static int X_SHORT  = 0x02;
@@ -167,7 +167,7 @@ public class TTFGlyph
         }
     }
 
-    private final static int Init = 0, Control = 1, End = 2, End2 = 3;
+    private final static int Start = 0, Control = 1, End = 2;
 
     /**
      * TTF internal coordinates and dimensions
@@ -199,7 +199,7 @@ public class TTFGlyph
     public final boolean isCompound(){
         return (null != this.compound);
     }
-    protected void read(TTFFontReader reader){
+    public void read(TTFFontReader reader){
         if (0 == this.length)
             return;
         else {
@@ -295,117 +295,131 @@ public class TTFGlyph
                     }
                 }
                 {
-                    int contour = 0;
-                    int contourEnd = contourIndex[contour];
-                    int x, y;
+                    int Path = Start;
+                    int cc = 0;
+                    if (cc < nPoints){
+                        int contour = 0;
+                        int contourEnd = contourIndex[contour];
 
-                    double startX = 0.0, startY = 0.0;
-                    double controlX = 0.0, controlY = 0.0;
-                    double controlX2 = 0.0, controlY2 = 0.0;
-                    double endX = 0.0, endY = 0.0;
-
-                    int Path = Init;
-
-                    for (int cc = 0; cc < nPoints; cc++){
-                        if (cc > contourEnd){
-                            contour += 1;
-                            contourEnd = contourIndex[contour];
-                        }
-                        x = (cc<<1);
-                        y = (x+1);
                         if (0 != (flags[cc] & ON_CURVE)){
-                            switch (Path){
-                            case Init:
-                                startX = points[x];
-                                startY = points[y];
+                            int x = (cc<<1);
+                            int y = (x+1);
+                            double startX = points[x];
+                            double startY = points[y];
+                            double controlX = 0.0, controlY = 0.0;
+                            double controlX2 = 0.0, controlY2 = 0.0;
+                            double endX = 0.0, endY = 0.0;
 
-                                Path = Control;
-                                break;
-                            case Control:
-                                endX = points[x];
-                                endY = points[y];
+                            for (cc++; cc < nPoints; cc++){
 
-                                this.add(new TTFPath(contour, this.getLength(),
-                                                     startX, startY, endX, endY));
+                                if (cc > contourEnd){
+                                    contour += 1;
+                                    contourEnd = contourIndex[contour];
+                                }
+                                x = (cc<<1);
+                                y = (x+1);
+                                if (0 != (flags[cc] & ON_CURVE)){
+                                    switch (Path){
+                                    case Start:
+                                        endX = points[x];
+                                        endY = points[y];
 
-                                //Path = Control;
+                                        this.add(new TTFPath(contour, this.getLength(),
+                                                             startX, startY, endX, endY));
 
-                                startX = endX;
-                                startY = endY;
-                                controlX = 0.0;
-                                controlY = 0.0;
-                                controlX2 = 0.0;
-                                controlY2 = 0.0;
-                                endX = 0.0;
-                                endY = 0.0;
-                                break;
+                                        Path = Start;
 
-                            case End:
-                                endX = points[x];
-                                endY = points[y];
+                                        startX = endX;
+                                        startY = endY;
+                                        controlX = 0.0;
+                                        controlY = 0.0;
+                                        controlX2 = 0.0;
+                                        controlY2 = 0.0;
+                                        endX = 0.0;
+                                        endY = 0.0;
+                                        break;
+                                    case Control:
+                                        endX = points[x];
+                                        endY = points[y];
 
-                                this.add(new TTFPath(contour, this.getLength(),
-                                                     startX, startY, controlX, controlY, endX, endY));
+                                        this.add(new TTFPath(contour, this.getLength(), true,
+                                                             startX, startY, controlX, controlY, endX, endY));
 
-                                Path = Control;
+                                        Path = Start;
 
-                                startX = endX;
-                                startY = endY;
-                                controlX = 0.0;
-                                controlY = 0.0;
-                                controlX2 = 0.0;
-                                controlY2 = 0.0;
-                                endX = 0.0;
-                                endY = 0.0;
-                                break;
-                            case End2:
-                                endX = points[x];
-                                endY = points[y];
+                                        startX = endX;
+                                        startY = endY;
+                                        controlX = 0.0;
+                                        controlY = 0.0;
+                                        controlX2 = 0.0;
+                                        controlY2 = 0.0;
+                                        endX = 0.0;
+                                        endY = 0.0;
+                                        break;
 
-                                this.add(new TTFPath(contour, this.getLength(),
-                                                     startX, startY, controlX, controlY, 
-                                                     controlX2, controlY2, endX, endY));
+                                    default:
+                                        throw new IllegalStateException(String.format("Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,Path,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
+                                    }
+                                }
+                                else {
+                                    switch (Path){
+                                    case Start:
+                                        controlX = points[x];
+                                        controlY = points[y];
 
-                                Path = Control;
+                                        Path = Control;
 
-                                startX = endX;
-                                startY = endY;
-                                controlX = 0.0;
-                                controlY = 0.0;
-                                controlX2 = 0.0;
-                                controlY2 = 0.0;
-                                endX = 0.0;
-                                endY = 0.0;
-                                break;
+                                        break;
+                                    case Control:
+                                        /*
+                                         * The famous TTF point injection
+                                         */
+                                        controlX2 = points[x];
+                                        controlY2 = points[y];
+                                        /*
+                                         * The approach taken is from
+                                         * fontforge.  It seems an
+                                         * effective punt as it needs
+                                         * to work for a series of
+                                         * control points -- and where
+                                         * I've seen this
+                                         * (e.g. NEUROPOL '?') I've
+                                         * seen shallow curves.
+                                         * 
+                                         * Therefore I've marked them
+                                         * "synthetic", and the next
+                                         * pass (path init2) will be a
+                                         * better place to sort this
+                                         * out.
+                                         */
+                                        endX = (controlX2 - controlX)/2.0;
+                                        endY = (controlY2 - controlY)/2.0; 
+                                        System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
+                                        /*
+                                         */
+                                        this.add(new TTFPath(contour, this.getLength(), true,
+                                                             startX, startY, controlX, controlY, endX, endY));
+
+                                        Path = Control;
+
+                                        startX = endX;
+                                        startY = endY;
+                                        controlX = controlX2;
+                                        controlY = controlY2;
+                                        controlX2 = 0.0;
+                                        controlY2 = 0.0;
+                                        endX = 0.0;
+                                        endY = 0.0;
+                                        break;
+
+                                    default:
+                                        throw new IllegalStateException(String.format("Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,Path,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
+                                    }
+                                }
                             }
                         }
-                        else {
-                            switch (Path){
-                            case Init:{
-                                Cmap cmap = ((TTFFont)this.font).getTableCmap();
-                                cmap.init2(this);
-                                throw new IllegalStateException(String.format("Reached INIT/OFF in Glyph %d(%c)",this.index, this.character));
-                            }
-
-                            case Control:
-                                controlX = points[x];
-                                controlY = points[y];
-
-                                Path = End;
-                                break;
-                            case End:
-                                controlX2 = points[x];
-                                controlY2 = points[y];
-
-                                Path = End2;
-                                break;
-                            case End2:{
-                                Cmap cmap = ((TTFFont)this.font).getTableCmap();
-                                cmap.init2(this);
-                                throw new IllegalStateException(String.format("Reached END2/OFF in Glyph %d(%c) at (%d/%d) with flags '%s'.",this.index,this.character,cc,nPoints,FontReader.Bitstring(flags[cc],8)));
-                            }
-                            }
-                        }
+                        else
+                            throw new IllegalStateException(String.format("Glyph %d(%c) Starts Off Path?",this.index, this.character));
                     }
                 }
             }

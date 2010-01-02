@@ -119,6 +119,10 @@ public final class TTF
         loca.init(font,this,reader);
 
         cmap.init2(font);
+
+        Glyf glyf = this.getTableGlyf();
+        glyf.init(font,this,reader);
+
     }
     public int countTables(){
         return this.count;

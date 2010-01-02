@@ -48,7 +48,7 @@ import fv3.font.ttf.TYP1;
  * @author John Pritchard
  */
 public class TTFFont
-    extends Font
+    extends Font<TTFGlyph>
 {
     private final static int MAGIC_TTCF = ('t'<<24)|('t'<<16)|('c'<<8)|('f');
     private final static int MAGIC_TYP1 = ('t'<<24)|('y'<<16)|('p'<<8)|('1');
@@ -350,11 +350,9 @@ public class TTFFont
     public final Loca getTableLoca(){
         return (Loca)this.getTableByType(Loca.TYPE);
     }
-    public void readGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
+    public void createGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
         TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
-
-        glyph.read(reader);
 
         this.add(glyph);
     }
