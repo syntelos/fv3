@@ -181,6 +181,8 @@ public class TTFGlyph
                     if (cc < nPoints){
                         int contour = 0;
                         int contourEnd = contourIndex[contour];
+                        boolean contourNew = true;
+                        TTFPath first = null, last = null;
 
                         if (0 != (flags[cc] & ON_CURVE)){
                             int x = (cc<<1);
@@ -196,6 +198,8 @@ public class TTFGlyph
                                 if (cc > contourEnd){
                                     contour += 1;
                                     contourEnd = contourIndex[contour];
+                                    contourNew = true;
+                                    this.add(last = new TTFPath(first,last));
                                 }
 
                                 x = (cc<<1);
@@ -206,8 +210,13 @@ public class TTFGlyph
                                         endX = points[x];
                                         endY = points[y];
 
-                                        this.add(new TTFPath(contour, this.getLength(),
-                                                             startX, startY, endX, endY));
+                                        this.add(last = new TTFPath(contour, this.getLength(),
+                                                                    startX, startY, endX, endY));
+
+                                        if (contourNew){
+                                            first = last;
+                                            contourNew = false;
+                                        }
 
                                         Path = Start;
 
@@ -224,8 +233,13 @@ public class TTFGlyph
                                         endX = points[x];
                                         endY = points[y];
 
-                                        this.add(new TTFPath(contour, this.getLength(), true,
-                                                             startX, startY, controlX, controlY, endX, endY));
+                                        this.add(last = new TTFPath(contour, this.getLength(), true,
+                                                                    startX, startY, controlX, controlY, endX, endY));
+
+                                        if (contourNew){
+                                            first = last;
+                                            contourNew = false;
+                                        }
 
                                         Path = Start;
 
@@ -283,8 +297,13 @@ public class TTFGlyph
                                         //System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
                                         /*
                                          */
-                                        this.add(new TTFPath(contour, this.getLength(), true,
-                                                             startX, startY, controlX, controlY, endX, endY));
+                                        this.add(last = new TTFPath(contour, this.getLength(), true,
+                                                                    startX, startY, controlX, controlY, endX, endY));
+
+                                        if (contourNew){
+                                            first = last;
+                                            contourNew = false;
+                                        }
 
                                         Path = Control;
 

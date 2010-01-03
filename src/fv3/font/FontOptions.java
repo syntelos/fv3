@@ -18,7 +18,8 @@
 package fv3.font;
 
 /**
- * 
+ * Font glyph normal dimensions requested by the caller.  When width
+ * or height are zero, no scaling is performed.
  * 
  * @author John Pritchard
  */
@@ -31,7 +32,7 @@ public class FontOptions
 
     public FontOptions(double w, double h, double d){
         super();
-        if (0.0 < w && 0.0 < h && 0.0 <= d){
+        if (0.0 <= w && 0.0 <= h && 0.0 <= d){
             this.width = w;
             this.height = h;
             this.depth = d;
@@ -39,7 +40,10 @@ public class FontOptions
         else
             throw new IllegalArgumentException();
     }
+    public FontOptions(double w, double h){
+        this(w,h,0);
+    }
     public FontOptions(){
-        this(12,24,0);
+        this(0,0,0);
     }
 }

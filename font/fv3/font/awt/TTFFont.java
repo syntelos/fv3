@@ -39,8 +39,8 @@ public class TTFFont
     }
 
 
-    public Path2D.Double getPath(int idx){
-        TTFGlyph glyph = (TTFGlyph)this.get(idx);
+    public Path2D.Double getPath(char ch){
+        TTFGlyph glyph = (TTFGlyph)this.get(ch);
         if (null != glyph)
             return glyph.getPath();
         else

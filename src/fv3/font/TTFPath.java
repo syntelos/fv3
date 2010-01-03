@@ -32,6 +32,8 @@ public class TTFPath
 
     public final double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
 
+    private double[] points;
+
     /**
      * Straight line
      */
@@ -54,6 +56,28 @@ public class TTFPath
         this.controlY2 = 0.0;
         this.endX = endX;
         this.endY = endY;
+    }
+
+    /**
+     * Straight line
+     */
+    public TTFPath(TTFPath first, TTFPath last)
+    {
+        super();
+        this.isStraight = true;
+        this.isQuadratic = false;
+        this.isCubic = false;
+        this.isSynthetic = true;
+        this.contour = first.contour;
+        this.index = last.index;
+        this.startX = last.endX;
+        this.startY = last.endY;
+        this.controlX = 0.0;
+        this.controlY = 0.0;
+        this.controlX2 = 0.0;
+        this.controlY2 = 0.0;
+        this.endX = first.startX;
+        this.endY = first.startY;
     }
 
     /**
@@ -109,12 +133,100 @@ public class TTFPath
 
 
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
+        double scale = font.getScale();
+        if (this.isStraight){
+            double x0 = (this.startX * scale);
+            double y0 = (this.startY * scale);
+            double x3 = (this.endX * scale);
+            double y3 = (this.endY * scale);
+            if (x0 != x3 || y0 != y3){
+                double[] points = new double[4];
+                points[0] = x0;
+                points[1] = y0;
+                points[2] = x3;
+                points[3] = y3;
+                this.points = points;
+            }
+        }
+        else if (this.isQuadratic){
+            double em = font.getEm();
+            double dt = (em/12.0);
 
+            double x0 = (this.startX * scale);
+            double y0 = (this.startY * scale);
+            double x1 = (this.controlX * scale);
+            double y1 = (this.controlY * scale);
+            double x3 = (this.endX * scale);
+            double y3 = (this.endY * scale);
+
+            double x_b = 1 * x0 - 2 * x1 + 1 * x3;
+            double x_c = -2 * x0 + 2 * x1;
+            double x_d = x0;
+            double y_b = 1 * y0 - 2 * y1 + 1 * y3;
+            double y_c = -2 * y0 + 2 * y1;
+            double y_d = y0;
+
+            double[] points = new double[26];
+            int xp = 0;
+            int yp = 1;
+            points[xp] = x0;
+            points[yp] = y0;
+            xp += 2;
+            xp += 2;
+
+            for (double t = dt; t < em; t += dt, xp += 2, yp += 2){
+
+                double x = (((((x_b * t) / em) + x_c) * t) / em) + x_d;
+                double y = (((((y_b * t) / em) + y_c) * t) / em) + y_d;
+
+                points[xp] = x;
+                points[yp] = y;
+            }
+            this.points = points;
+        }
+        else {
+            double em = font.getEm();
+            double dt = (em/12.0);
+
+            double x0 = (this.startX * scale);
+            double y0 = (this.startY * scale);
+            double x1 = (this.controlX * scale);
+            double y1 = (this.controlY * scale);
+            double x2 = (this.controlX2 * scale);
+            double y2 = (this.controlY2 * scale);
+            double x3 = (this.endX * scale);
+            double y3 = (this.endY * scale);
+            double x_a = -x0 + 3 * x1 - 3 * x2 + x3;
+            double x_b = 3 * x0 - 6 * x1 + 3 * x2;
+            double x_c = -3 * x0 + 3 * x1;
+            double x_d = x0;
+            double y_a = -y0 + 3 * y1 - 3 * y2 + y3;
+            double y_b = 3 * y0 - 6 * y1 + 3 * y2;
+            double y_c = -3 * y0 + 3 * y1;
+            double y_d = y0;
+
+            double[] points = new double[26];
+            int xp = 0;
+            int yp = 1;
+            points[xp] = x0;
+            points[yp] = y0;
+            xp += 2;
+            xp += 2;
+
+            for (double t = dt; t < em; t += dt, xp += 2, yp += 2){
+
+                double x = ((((((((x_a * t) / em) + x_b) * t) / em) + x_c) * t) / em) + x_d;
+                double y = ((((((((y_a * t) / em) + y_b) * t) / em) + y_c) * t) / em) + y_d;
+
+                points[xp] = x;
+                points[yp] = y;
+            }
+        }
     }
     public void destroy(){
     }
     public double[] points(){
-        return null;
+        return this.points;
     }
     public String toString(){
         if (this.isStraight)

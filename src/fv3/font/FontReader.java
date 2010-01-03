@@ -42,7 +42,7 @@ public class FontReader
     public static ByteBuffer Resource(String name)
         throws IOException
     {
-        InputStream in = FontReader.class.getResourceAsStream("/fonts/"+name+".cff");
+        InputStream in = FontReader.class.getResourceAsStream(name);
 
         if (in == null)
             throw new IOException(String.format("Resource not found '%s'",name));

@@ -72,6 +72,8 @@ public class TTFFont
 
     private lxl.Index map;
 
+    private double scale;
+
 
     public TTFFont(String name, TTFFontReader reader) {
         this(name,reader,(new FontOptions()));
@@ -132,12 +134,20 @@ public class TTFFont
     }
 
 
-    public TTFGlyph lookup(char ch){
+    public TTFGlyph get(char ch){
         lxl.Index map = this.map;
         if (null != map)
             return this.get(map.get(new Character(ch)));
         else
-            return null;
+            throw new IllegalStateException("Glyphs not mapped.");
+    }
+    public final double getScale(){
+        double scale = this.scale;
+        if (0.0 == scale){
+            scale = this.getTableHead().scale(this.options);
+            this.scale = scale;
+        }
+        return scale;
     }
     public final double getEm(){
 

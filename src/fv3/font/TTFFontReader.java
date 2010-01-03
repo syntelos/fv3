@@ -44,10 +44,10 @@ public class TTFFontReader
 
 
 
-    public TTFFontReader(String resource)
+    public TTFFontReader(String name)
         throws IOException
     {
-        super(resource);
+        super("/fonts/"+name+".ttf");
     }
     public TTFFontReader(ByteBuffer in){
         super(in);

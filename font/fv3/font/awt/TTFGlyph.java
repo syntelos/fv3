@@ -24,8 +24,6 @@ import fv3.font.ttf.Glyf;
 import java.awt.geom.Path2D;
 
 /**
- * The objective here is to replicate the GL lineset, not exploiting
- * the Java2D QUADTO.
  * 
  * @author jdp
  */
@@ -49,21 +47,16 @@ public class TTFGlyph
     }
     public void init(FontOptions options) {
         super.init(options);
-        Path2D.Double path = new Path2D.Double();
+        Path2D.Double path2d = new Path2D.Double();
+        for (TTFPath path: this)
         {
-            /*
-             * Placeholder only compiles (i.e. this is not correct)
-             */
-            double[] points = this.points();
-            if (null != points){
-                for (int pc = 0, pz = (points.length>>1); pc < pz; pc++){
-                    int x = (pc<<1);
-                    int y = (x+1);
-                    if (0 == pc)
-                        path.moveTo(points[y],points[y]);
-                    else
-                        path.lineTo(points[x],points[y]);
-                }
+            if (path.isStraight){
+                path2d.moveTo(path.startX,path.startY);
+                path2d.lineTo(path.endX,path.endY);
+            }
+            else {
+                path2d.moveTo(path.startX,path.startY);
+                path2d.quadTo(path.controlX,path.controlY,path.endX,path.endY);
             }
         }
         this.path = path;

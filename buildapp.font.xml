@@ -46,7 +46,8 @@
     <delete file="${target.jar}"/>
     <copy todir="${bin}/fonts">
       <fileset dir="fonts">
-        <include name="**/*.cff" />
+        <include name="**/*.ttf" />
+        <include name="**/*.otf" />
       </fileset>
     </copy>
     <jar jarfile="${target.jar}" basedir="${bin}" >

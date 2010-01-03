@@ -18,6 +18,7 @@
 package fv3.font.test;
 
 import fv3.font.awt.TTFFont;
+import fv3.font.FontOptions;
 import fv3.font.TTFFontReader;
 
 import java.awt.Color;
@@ -35,7 +36,7 @@ public class Main
 {
 
     public static void main(String[] argv){
-        String name = "typeright";
+        String name = "NEUROPOL";
         try {
             TTFFontReader reader = new TTFFontReader(name);
             try {
@@ -60,6 +61,7 @@ public class Main
 
     public Main(TTFFont font){
         super(font.getName());
+        this.addWindowListener(this);
         this.screen = new Screen(this);
         this.font = font;
         Rectangle window = this.screen.window;
@@ -71,33 +73,30 @@ public class Main
     public void update(Graphics g){
         this.update( (Graphics2D)g);
     }
+    public void paint(Graphics g){
+        this.update( (Graphics2D)g);
+    }
     public void update(Graphics2D g){
         g.setColor(Color.white);
         Rectangle bounds = this.getBounds();
         g.fillRect(0,0,bounds.width,bounds.height);
+        /*
+         */
         g.setColor(Color.black);
+
         TTFFont font = this.font;
-        double x = 0, y = 0, width = bounds.width, height = bounds.height;
-        for (int glc = 0, glz = font.getLength(); glc < glz; glc++){
-            Path2D.Double glyph = font.getPath(glc);
-            if (null != glyph){
-                Rectangle2D.Double glyphBounds = (Rectangle2D.Double)glyph.getBounds2D();
-                Graphics2D glyphGraphics = (Graphics2D)g.create();
-                glyphGraphics.translate(x,y);
-                glyphGraphics.draw(glyph);
-                x += glyphBounds.width;
-                if (x >= width){
-                    x = 0.0;
-                    y += glyphBounds.height;
-                    if (y >= height)
-                        break;
-                }
-            }
-        }
+        Path2D.Double glyph = font.getPath('A');
+        if (null != glyph){
+             g.drawString("Glyph 'A' ",10,40);
+             g.draw(glyph);
+         }
+         else
+             g.drawString("Glyph 'A' not found.",10,40);
     }
     public void windowOpened(WindowEvent e) {}
     public void windowClosing(WindowEvent e) {
         this.hide();
+        this.dispose();
     }
     public void windowClosed(WindowEvent e) {
         System.exit(0);

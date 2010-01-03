@@ -17,10 +17,13 @@
  */
 package fv3.font.ttf;
 
+import fv3.font.FontOptions;
 import fv3.font.TTFFont;
 import fv3.font.TTFFontReader;
 import fv3.font.TTFGlyph;
 import fv3.font.TTFPath;
+
+import java.lang.Math;
 
 /**
  * font header table
@@ -93,5 +96,17 @@ public final class Head
     }
     public int getType(){
         return TYPE;
+    }
+    public double scale(FontOptions options){
+
+        if (0 == options.width || 0 == options.height)
+            return 1.0;
+        else {
+            double x = (this.maxX - this.minX);
+            double y = (this.maxY - this.minY);
+            double sx = (options.width / x);
+            double sy = (options.height / y);
+            return Math.max(sx,sy);
+        }
     }
 }
