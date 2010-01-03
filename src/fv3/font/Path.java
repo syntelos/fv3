@@ -22,7 +22,8 @@ package fv3.font;
  * 
  * @author John Pritchard
  */
-public interface Path {
+public interface Path<Font extends fv3.font.Font, Glyph extends fv3.font.Glyph>
+{
 
     /**
      * The first point coordinate in a path may be identical to the

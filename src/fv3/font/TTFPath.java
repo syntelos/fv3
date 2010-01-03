@@ -24,7 +24,7 @@ package fv3.font;
  */
 public class TTFPath
     extends Object
-    implements Path
+    implements Path<TTFFont,TTFGlyph>
 {
     public final boolean isStraight, isCubic, isQuadratic, isSynthetic; 
 
@@ -108,7 +108,7 @@ public class TTFPath
     }
 
 
-    public void init(Font font, Glyph glyph, FontOptions opts){
+    public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
 
     }
     public void destroy(){
