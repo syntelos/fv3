@@ -87,6 +87,10 @@
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
+      <manifest>
+        <attribute name="Main-Class" value="fv3.font.TTFFont"/>
+      </manifest>
+      <zipgroupfileset dir="lib" includes="**/lxl-*.jar"/>
     </jar>
     <delete dir="${bin}"/>
     <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">

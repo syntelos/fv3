@@ -66,6 +66,8 @@ public class TTFFont
     private final TYP1 typ1;
     private final CID cid;
 
+    private lxl.Index map;
+
 
     public TTFFont(String name, TTFFontReader reader) {
         this(name,reader,(new FontOptions()));
@@ -127,9 +129,9 @@ public class TTFFont
 
 
     public TTFGlyph lookup(char ch){
-        Cmap cmap = this.getTableCmap();
-        if (null != cmap)
-            return cmap.lookup(this,ch);
+        lxl.Index map = this.map;
+        if (null != map)
+            return this.get(map.get(new Character(ch)));
         else
             return null;
     }
@@ -355,6 +357,16 @@ public class TTFFont
         TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
 
         this.add(glyph);
+    }
+    public void mapGlyphs(){
+        this.map = new lxl.Index(this.getLength());
+    }
+    public void mapGlyph(int index, char ch){
+        TTFGlyph glyph = this.get(index);
+        if (null != glyph){
+            glyph.character = ch;
+            this.map.add(new Character(ch),index);
+        }
     }
 
 

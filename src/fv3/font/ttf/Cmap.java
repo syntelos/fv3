@@ -72,14 +72,8 @@ public final class Cmap
         if (null == this.unicode)
             throw new IllegalStateException("Unicode font map not found.");
         else {
-            this.unicode.read(this,reader);
+            this.unicode.init(font,reader);
         }
-    }
-    protected void init2(TTFFont font){
-        this.unicode.init2(font);
-    }
-    public TTFGlyph lookup(TTFFont font, char ch){
-        return this.unicode.lookup(font,ch);
     }
     public String getName(){
         return NAME;
