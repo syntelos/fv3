@@ -22,8 +22,12 @@ import fv3.font.ttf.Cmap;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 import fv3.font.ttf.Hhea;
+import fv3.font.ttf.Hmtx;
 import fv3.font.ttf.Loca;
+import fv3.font.ttf.Maxp;
 import fv3.font.ttf.Name;
+import fv3.font.ttf.Os2;
+import fv3.font.ttf.Post;
 import fv3.font.ttf.Table;
 import fv3.font.ttf.TTF;
 import fv3.font.ttf.TTCF;
@@ -143,19 +147,51 @@ public class TTFFont
         else
             return 0.0;
     }
-    public final double getAscent(){
+    public final double getMinX(){
 
         Head head = this.getTableHead();
         if (null != head)
-            return head.ascent;
+            return head.minX;
+        else
+            return 0.0;
+    }
+    public final double getMinY(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.minY;
+        else
+            return 0.0;
+    }
+    public final double getMaxX(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.maxX;
+        else
+            return 0.0;
+    }
+    public final double getMaxY(){
+
+        Head head = this.getTableHead();
+        if (null != head)
+            return head.maxY;
+        else
+            return 0.0;
+    }
+    public final double getAscent(){
+
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.ascent;
         else
             return 0.0;
     }
     public final double getDescent(){
 
-        Head head = this.getTableHead();
-        if (null != head)
-            return head.descent;
+        Hhea hhea = this.getTableHhea();
+        if (null != hhea)
+            return hhea.descent;
         else
             return 0.0;
     }
@@ -164,14 +200,6 @@ public class TTFFont
         Hhea hhea = this.getTableHhea();
         if (null != hhea)
             return hhea.leading;
-        else
-            return 0.0;
-    }
-    public final double getAdvance(){
-
-        Hhea hhea = this.getTableHhea();
-        if (null != hhea)
-            return hhea.advance;
         else
             return 0.0;
     }
@@ -346,11 +374,23 @@ public class TTFFont
     public final Hhea getTableHhea(){
         return (Hhea)this.getTableByType(Hhea.TYPE);
     }
-    public final Name getTableName(){
-        return (Name)this.getTableByType(Name.TYPE);
+    public final Hmtx getTableHmtx(){
+        return (Hmtx)this.getTableByType(Hmtx.TYPE);
     }
     public final Loca getTableLoca(){
         return (Loca)this.getTableByType(Loca.TYPE);
+    }
+    public final Maxp getTableMaxp(){
+        return (Maxp)this.getTableByType(Maxp.TYPE);
+    }
+    public final Name getTableName(){
+        return (Name)this.getTableByType(Name.TYPE);
+    }
+    public final Os2 getTableOs2(){
+        return (Os2)this.getTableByType(Os2.TYPE);
+    }
+    public final Post getTablePost(){
+        return (Post)this.getTableByType(Post.TYPE);
     }
     public void createGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
 
@@ -390,16 +430,18 @@ public class TTFFont
                     switch (font.getTableType(cc)){
 
                     case fv3.font.ttf.Glyf.TYPE:{
-                        for (Glyph glyph: font)
-                            System.out.printf("\t\t%s\n",glyph.toString(",\n\t\t      "));
+                        for (TTFGlyph glyph: font)
+                            System.out.printf("\t\t%s\n",glyph.toString());// ",\n\t\t      "
 
                         break;
                     }
                     case fv3.font.ttf.Head.TYPE:{
                         fv3.font.ttf.Head table = (fv3.font.ttf.Head)font.getTable(cc);
                         System.out.printf("\t\tEm-Size %f\n",table.emsize);
-                        System.out.printf("\t\tAscent %f\n",table.ascent);
-                        System.out.printf("\t\tDescent %f\n",table.descent);
+                        System.out.printf("\t\tMin-X %f\n",table.minX);
+                        System.out.printf("\t\tMin-Y %f\n",table.minY);
+                        System.out.printf("\t\tMax-X %f\n",table.maxX);
+                        System.out.printf("\t\tMax-Y %f\n",table.maxY);
                         break;
                     }
                     case fv3.font.ttf.Hhea.TYPE:{
@@ -407,8 +449,10 @@ public class TTFFont
                         System.out.printf("\t\tAscent %f\n",table.ascent);
                         System.out.printf("\t\tDescent %f\n",table.descent);
                         System.out.printf("\t\tLeading %f\n",table.leading);
-                        System.out.printf("\t\tAdvance %f\n",table.advance);
-                        System.out.printf("\t\tWidth-Count %d\n",table.widthCount);
+                        System.out.printf("\t\tAdvance-Width-Max %f\n",table.advanceWidthMax);
+                        System.out.printf("\t\tMin-Left-Side-Bearing %f\n",table.minLeftSideBearing);
+                        System.out.printf("\t\tMin-Right-Side-Bearing %f\n",table.minRightSideBearing);
+                        System.out.printf("\t\tX-Max-Extent %f\n",table.xMaxExtent);
                         break;
                     }
                     case fv3.font.ttf.Maxp.TYPE:{
@@ -448,6 +492,30 @@ public class TTFFont
                             System.out.printf("\t\tLicense %s\n",table.license);
                         if (null != table.licenseurl)
                             System.out.printf("\t\tLicense-Url %s\n",table.licenseurl);
+                        break;
+                    }
+                    case fv3.font.ttf.Os2.TYPE:{
+                        fv3.font.ttf.Os2 table = (fv3.font.ttf.Os2)font.getTable(cc);
+                        System.out.printf("\t\tAch-Vend-ID %s\n",table.achVendID);
+                        System.out.printf("\t\tUs-Weight-Class %d\n",table.usWeightClass);
+                        System.out.printf("\t\tUs-Width-Class %d\n",table.usWidthClass);
+                        System.out.printf("\t\tFs-Type %d\n",table.fsType);
+                        System.out.printf("\t\tFs-Family-Class %d\n",table.fsFamilyClass);
+                        System.out.printf("\t\tFs-Selection %d\n",table.fsSelection);
+                        System.out.printf("\t\tFs-First-Char-Index %d\n",table.fsFirstCharIndex);
+                        System.out.printf("\t\tFs-Last-Char-Index %d\n",table.fsLastCharIndex);
+                        System.out.printf("\t\tX-Average-Char-Width %f\n",table.xAverageCharWidth);
+                        System.out.printf("\t\tY-Subscript-X-Size %f\n",table.ySubscriptXSize);
+                        System.out.printf("\t\tY-Subscript-Y-Size %f\n",table.ySubscriptYSize);
+                        System.out.printf("\t\tY-Subscript-X-Offset %f\n",table.ySubscriptXOffset);
+                        System.out.printf("\t\tY-Subscript-Y-Offset %f\n",table.ySubscriptYOffset);
+                        System.out.printf("\t\tY-Superscript-X-Size %f\n",table.ySuperscriptXSize);
+                        System.out.printf("\t\tY-Superscript-Y-Size %f\n",table.ySuperscriptYSize);
+                        System.out.printf("\t\tY-Superscript-X-Offset %f\n",table.ySuperscriptXOffset);
+                        System.out.printf("\t\tY-Superscript-Y-Offset %f\n",table.ySuperscriptYOffset);
+                        System.out.printf("\t\tY-Strikeout-Size %f\n",table.yStrikeoutSize);
+                        System.out.printf("\t\tY-Strikeout-Position %f\n",table.yStrikeoutPosition);
+
                         break;
                     }
                     }

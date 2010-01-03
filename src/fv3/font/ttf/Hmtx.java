@@ -43,6 +43,7 @@ public final class Hmtx
 
 
     public void init(TTFFont font, TTF tables, TTFFontReader reader){
+        Hhea hhea = tables.getTableHhea();
 
     }
     public String getName(){

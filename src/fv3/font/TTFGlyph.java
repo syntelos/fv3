@@ -18,6 +18,7 @@
 package fv3.font;
 
 import fv3.font.ttf.Cmap;
+import fv3.font.ttf.CompoundGlyph;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 import fv3.font.ttf.TTF;
@@ -38,141 +39,14 @@ public class TTFGlyph
     private final static int X_SAME   = 0x10;
     private final static int Y_SAME   = 0x20;
 
-    /**
-     * Compound glyph specification.
-     */
-    public final static class Compound {
-        private final static int ARG_1_AND_2_ARE_WORDS    = (1);
-        private final static int ARGS_ARE_XY_VALUES       = (1<<1);
-        private final static int ROUND_XY_TO_GRID         = (1<<2);
-        private final static int WE_HAVE_A_SCALE          = (1<<3);
-        private final static int MORE_COMPONENTS          = (1<<5);
-        private final static int WE_HAVE_AN_X_AND_Y_SCALE = (1<<6);
-        private final static int WE_HAVE_A_TWO_BY_TWO     = (1<<7);
-        private final static int WE_HAVE_INSTRUCTIONS     = (1<<8);
-        private final static int USE_MY_METRICS           = (1<<9);
-        private final static int OVERLAP_COMPOUND         = (1<<10);
-
-        private final static double EPSILON = 33.0/65536.0;
-
-        public final int flags, index, matchCompound, matchComponent;
-
-        public final double a, b, c, d, e, f, m, n, am, cm, bn, dn;
-
-
-        Compound(TTFFontReader reader){
-            super();
-
-            this.flags = reader.readUint16();
-            this.index = reader.readUint16();
-
-            int arg1, arg2;
-
-            if (0 != (this.flags & ARG_1_AND_2_ARE_WORDS)){
-                arg1 = reader.readSint16();
-                arg2 = reader.readSint16();
-            }
-            else {
-                arg1 = reader.readSint8();
-                arg2 = reader.readSint8();
-            }
-
-            if (0 != (this.flags & WE_HAVE_A_SCALE)){
-                double s = reader.read214();
-                this.a = s;
-                this.b = 0.0;
-                this.c = 0.0;
-                this.d = s;
-            }
-            else if (0 != (this.flags & WE_HAVE_AN_X_AND_Y_SCALE)){
-                this.a = reader.read214();
-                this.b = 0.0;
-                this.c = 0.0;
-                this.d = reader.read214();
-            }
-            else if (0 != (this.flags & WE_HAVE_A_TWO_BY_TWO)){
-                this.a = reader.read214();
-                this.b = reader.read214();
-                this.c = reader.read214();
-                this.d = reader.read214();
-            }
-            else {
-                this.a = 1.0;
-                this.b = 0.0;
-                this.c = 0.0;
-                this.d = 1.0;
-            }
-
-            if ( 0 != (this.flags & ARGS_ARE_XY_VALUES)){
-                double m = Math.max(Math.abs(a),Math.abs(b));
-                double n = Math.max(Math.abs(c),Math.abs(d));
-                if (Math.abs(Math.abs(this.a) - Math.abs(this.c)) <= EPSILON)
-                    m *= 2.0;
-
-                if (Math.abs(Math.abs(c) - Math.abs(d)) <= EPSILON)
-                    n *= 2.0;
-
-                this.m = m;
-                this.n = n;
-                this.am = (this.a/this.m);
-                this.cm = (this.c/this.m);
-                this.bn = (this.b/this.n);
-                this.dn = (this.d/this.n);
-                this.e = arg1;
-                this.f = arg2;
-                this.matchCompound = -1;
-                this.matchComponent = -1;
-            }
-            else {
-                this.m = 0.0;
-                this.n = 0.0;
-                this.am = 0.0;
-                this.cm = 0.0;
-                this.bn = 0.0;
-                this.dn = 0.0;
-                this.e = 0.0;
-                this.f = 0.0;
-                this.matchCompound = arg1;
-                this.matchComponent = arg2;
-            }
-        }
-
-
-        public boolean hasMatchIndeces(){
-
-            return (0 == (this.flags & ARGS_ARE_XY_VALUES));
-        }
-        public boolean hasTransform(){
-
-            return (0 != (this.flags & ARGS_ARE_XY_VALUES));
-        }
-        public double[] transform(double[] dst, double[] src){
-            for (int x = 0, y = 1, z = src.length; y < z; x += 2, y += 2){
-                dst[x] = (this.m * ((this.am * src[x]) + (this.cm * src[y]) + this.e));
-                dst[y] = (this.n * ((this.bn * src[x]) + (this.dn * src[y]) + this.f));
-            }
-            return dst;
-        }
-        boolean more(){
-            return (0 != (this.flags & MORE_COMPONENTS));
-        }
-        public String toString(){
-            
-            if (0 != (this.flags & ARGS_ARE_XY_VALUES)){
-                return String.format("Compound( 0x%x, %d, %f, %f, %f, %f, %f, %f)",this.flags,this.index,this.a,this.b,this.c,this.d,this.e,this.f);
-            }
-            else {
-                return String.format("Compound( 0x%x, %d, %d, %d)",this.flags,this.index,this.matchCompound,this.matchComponent);
-            }
-        }
-    }
-
     private final static int Start = 0, Control = 1, End = 2;
 
     /**
      * TTF internal coordinates and dimensions
      */
     public final int index, offset, length, exclusive;
+
+    private int nContours, nPoints;
 
     /**
      * Glyph bounding box
@@ -181,7 +55,7 @@ public class TTFGlyph
 
     public char character;
 
-    public Compound[] compound;
+    public CompoundGlyph[] compound;
 
 
     protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
@@ -206,11 +80,14 @@ public class TTFGlyph
             reader.seek(this.offset);
 
             int nContours = reader.readSint16();
-            this.minX = reader.readSint16();
-            this.minY = reader.readSint16();
-            this.maxX = reader.readSint16();
-            this.maxY = reader.readSint16();
+            {
+                this.nContours = nContours;
 
+                this.minX = reader.readSint16();
+                this.minY = reader.readSint16();
+                this.maxX = reader.readSint16();
+                this.maxY = reader.readSint16();
+            }
             if (0 < nContours){
 
 
@@ -224,8 +101,11 @@ public class TTFGlyph
                     }
                 }
                 int nPoints = (contourIndex[nContours-1])+1;
+                {
+                    this.nPoints = nPoints;
+                }
 
-
+                ///
                 reader.skip(reader.readUint16());
                 //             int hintCount = reader.readUint16();
                 //             int[] hints = new int[hintCount];
@@ -233,6 +113,7 @@ public class TTFGlyph
                 //                 for (int cc = 0; cc < hintCount; cc++)
                 //                     hints[cc] = reader.readUint8();
                 //             }
+                ///
 
                 int[] flags = new int[nPoints];
                 {
@@ -316,6 +197,7 @@ public class TTFGlyph
                                     contour += 1;
                                     contourEnd = contourIndex[contour];
                                 }
+
                                 x = (cc<<1);
                                 y = (x+1);
                                 if (0 != (flags[cc] & ON_CURVE)){
@@ -377,23 +259,27 @@ public class TTFGlyph
                                         controlX2 = points[x];
                                         controlY2 = points[y];
                                         /*
-                                         * The approach taken is from
-                                         * fontforge.  It seems an
-                                         * effective punt as it needs
-                                         * to work for a series of
-                                         * control points -- and where
-                                         * I've seen this
-                                         * (e.g. NEUROPOL '?') I've
-                                         * seen shallow curves.
+                                         * The approach taken is from fontforge.  It is
+                                         * incorrect, according to the spec.
                                          * 
-                                         * Therefore I've marked them
-                                         * "synthetic", and the next
-                                         * pass (path init2) will be a
-                                         * better place to sort this
-                                         * out.
+                                         * The solution here needs to work for any series of Off
+                                         * Curve (Control) points.
+                                         * 
+                                         * I've marked these paths "synthetic".  There's lots
+                                         * of them.
+                                         * 
+                                         * There's two possibilities for this strategy.  One is
+                                         * that after reviewing a large number of fonts in
+                                         * the wild, George found only shallow paths at these
+                                         * places.  (FontForge incorporates a substantial
+                                         * number of case studies). Another possibility might
+                                         * be that this strategy minimizes it's own impact
+                                         * on the path from the creation of On Curve
+                                         * points.  And then another combines both.
                                          */
                                         endX = (controlX2 - controlX)/2.0;
                                         endY = (controlY2 - controlY)/2.0; 
+
                                         //System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
                                         /*
                                          */
@@ -428,11 +314,11 @@ public class TTFGlyph
             }
             else if (-1 == nContours){
                 int index = 0;
-                this.compound = new Compound[]{new Compound(reader)};
+                this.compound = new CompoundGlyph[]{new CompoundGlyph(reader)};
                 while (this.compound[index].more()){
-                    Compound add = new Compound(reader);
+                    CompoundGlyph add = new CompoundGlyph(reader);
                     index += 1;
-                    Compound[] copier = new Compound[index+1];
+                    CompoundGlyph[] copier = new CompoundGlyph[index+1];
                     System.arraycopy(this.compound,0,copier,0,index);
                     copier[index] = add;
                     this.compound = copier;
@@ -443,14 +329,19 @@ public class TTFGlyph
         }
     }
 
+    public String toString(){
+
+        return String.format("TTFGlyph( %4d, %6s, %3d, %3d)",this.index,CharacterToString(this.character,'\''),this.nPoints,this.nContours);
+    }
+
     public String toString(String infix){
         infix += "            ";
-        String prefix = ("TTFGlyph( "+this.index+", '"+CharacterToString(this.character)+"', ");
+        String prefix = ("TTFGlyph( "+this.index+", '"+CharacterToString(this.character,'\'')+"', ");
 
         if (null != this.compound){
             StringBuilder string = new StringBuilder();
             string.append(prefix);
-            Compound[] compound = this.compound;
+            CompoundGlyph[] compound = this.compound;
             for (int cc = 0, count = compound.length; cc < count; cc++){
                 if (0 != cc)
                     string.append(infix);
@@ -463,10 +354,18 @@ public class TTFGlyph
             return super.toString(prefix,infix,")");
     }
 
-    public final static String CharacterToString(char ch){
-        if (' ' <= ch && '~' >= ch)
-            return String.valueOf(ch);
+    public final static String CharacterToString(char ch, char quote){
+        if (' ' <= ch && '~' >= ch){
+            StringBuilder string = new StringBuilder();
+            string.append(quote);
+            if (quote == ch)
+                string.append('\\');
+
+            string.append(ch);
+            string.append(quote);
+            return string.toString();
+        }
         else
-            return "0x"+Integer.toHexString(ch);
+            return "0x"+Integer.toHexString(ch).toUpperCase();
     }
 }

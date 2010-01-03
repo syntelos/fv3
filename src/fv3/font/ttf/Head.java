@@ -48,7 +48,7 @@ public final class Head
 
     public boolean optimized_for_cleartype, apply_lsb, indexToLocIsLong;
 
-    public double emsize, ascent, descent;
+    public double emsize;
 
 
     protected Head(int ofs, int len) {
@@ -62,8 +62,6 @@ public final class Head
         this.optimized_for_cleartype = (0 != (this.flags & (1<<13)));
         this.apply_lsb = (0 == (this.flags & 2));
         this.emsize = reader.readUint16();
-        this.ascent = (0.8*this.emsize);
-        this.descent = (this.emsize-this.ascent);
 
         this.created = reader.readDate();
         this.modified = reader.readDate();

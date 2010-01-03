@@ -37,9 +37,11 @@ public final class Hhea
     public final static String DESC = "horizontal header table";
 
 
-    public double ascent, descent, leading, advance;
+    public double ascent, descent, leading, advanceWidthMax, 
+        minLeftSideBearing, minRightSideBearing, xMaxExtent, 
+        caretSlopeRise, caretSlopeRun, caretOffset;
 
-    public int widthCount;
+    public int numOfLongHorMetrics;
 
 
     protected Hhea(int ofs, int len) {
@@ -51,11 +53,19 @@ public final class Hhea
         reader.seek(this.offset+4);
         this.ascent = reader.readUint16();
         this.descent = reader.readSint16();
-        this.leading = reader.readUint16();
-        this.advance = reader.readUint16();
-        for (int cc = 0; cc < 11; cc++)
-            reader.readUint16();
-        this.widthCount = reader.readUint16();
+        if (0.0 > this.descent)
+            this.descent = -descent;
+
+        this.leading = reader.readSint16();
+        this.advanceWidthMax = reader.readUint16();
+        this.minLeftSideBearing = reader.readSint16();
+        this.minRightSideBearing = reader.readSint16();
+        this.xMaxExtent = reader.readSint16();
+        this.caretSlopeRise = reader.readSint16();
+        this.caretSlopeRun = reader.readSint16();
+        this.caretOffset = reader.readSint16();
+        reader.skip(10);
+        this.numOfLongHorMetrics = reader.readUint16();
     }
     public String getName(){
         return NAME;

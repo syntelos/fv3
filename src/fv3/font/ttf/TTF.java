@@ -106,8 +106,15 @@ public final class TTF
         Hhea hhea = this.getTableHhea();
         hhea.init(font,this,reader);
 
+        Hmtx hmtx = this.getTableHmtx();
+        hmtx.init(font,this,reader);
+
         Maxp maxp = this.getTableMaxp();
         maxp.init(font,this,reader);
+
+        Os2 os2 = this.getTableOs2();
+        if (null != os2)
+            os2.init(font,this,reader);
 
         Name name = this.getTableName();
         name.init(font,this,reader);
@@ -121,6 +128,8 @@ public final class TTF
         Glyf glyf = this.getTableGlyf();
         glyf.init(font,this,reader);
 
+        Post post = this.getTablePost();
+        post.init(font,this,reader);
     }
     public int countTables(){
         return this.count;
@@ -182,14 +191,23 @@ public final class TTF
     public final Hhea getTableHhea(){
         return (Hhea)this.getTableByType(Hhea.TYPE);
     }
-    public final Name getTableName(){
-        return (Name)this.getTableByType(Name.TYPE);
+    public final Hmtx getTableHmtx(){
+        return (Hmtx)this.getTableByType(Hmtx.TYPE);
     }
     public final Loca getTableLoca(){
         return (Loca)this.getTableByType(Loca.TYPE);
     }
     public final Maxp getTableMaxp(){
         return (Maxp)this.getTableByType(Maxp.TYPE);
+    }
+    public final Name getTableName(){
+        return (Name)this.getTableByType(Name.TYPE);
+    }
+    public final Os2 getTableOs2(){
+        return (Os2)this.getTableByType(Os2.TYPE);
+    }
+    public final Post getTablePost(){
+        return (Post)this.getTableByType(Post.TYPE);
     }
     /**
      * Lookup by type value.  Each table class has a TYPE constant
