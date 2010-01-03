@@ -17,9 +17,9 @@
  */
 package fv3.font.awt;
 
-import fv3.font.CFFFontReader;
-import fv3.font.cff.DisplayOptions;
-import fv3.font.cff.InstructionStream;
+import fv3.font.TTFFontReader;
+import fv3.font.FontOptions;
+import fv3.font.ttf.Glyf;
 
 import java.awt.geom.Path2D;
 
@@ -27,23 +27,29 @@ import java.awt.geom.Path2D;
  * 
  * @author jdp
  */
-public class CFFFont
-    extends fv3.font.CFFFont
+public class TTFFont
+    extends fv3.font.TTFFont
 {
 
-    public CFFFont(String name, CFFFontReader reader){
+    public TTFFont(String name, TTFFontReader reader){
         super(name,reader);
     }
-    public CFFFont(String name, CFFFontReader reader, DisplayOptions opts){
+    public TTFFont(String name, TTFFontReader reader, FontOptions opts){
         super(name,reader,opts);
     }
 
 
-    protected fv3.font.CFFGlyph create(InstructionStream in){
-        return new CFFGlyph(this,in);
+    public Path2D.Double getPath(int idx){
+        TTFGlyph glyph = (TTFGlyph)this.get(idx);
+        if (null != glyph)
+            return glyph.getPath();
+        else
+            return null;
     }
-    public Path2D.Double getPath(int ch){
-        CFFGlyph glyph = (CFFGlyph)this.get(ch);
-        return glyph.getPath();
+    public void createGlyph(Glyf glyf, int index, int offset, int next, TTFFontReader reader){
+
+        TTFGlyph glyph = new TTFGlyph(this,glyf,index,offset,next);
+
+        this.add(glyph);
     }
 }

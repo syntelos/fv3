@@ -26,15 +26,20 @@ public class FontOptions
     extends Object
 {
 
-    public final double width, height;
+    public final double width, height, depth;
 
 
-    public FontOptions(double w, double h){
+    public FontOptions(double w, double h, double d){
         super();
-        this.width = w;
-        this.height = h;
+        if (0.0 < w && 0.0 < h && 0.0 <= d){
+            this.width = w;
+            this.height = h;
+            this.depth = d;
+        }
+        else
+            throw new IllegalArgumentException();
     }
     public FontOptions(){
-        this(12,24);
+        this(12,24,0);
     }
 }

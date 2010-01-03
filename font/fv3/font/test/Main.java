@@ -17,8 +17,8 @@
  */
 package fv3.font.test;
 
-import fv3.font.awt.CFFFont;
-import fv3.font.CFFFontReader;
+import fv3.font.awt.TTFFont;
+import fv3.font.TTFFontReader;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -37,9 +37,9 @@ public class Main
     public static void main(String[] argv){
         String name = "typeright";
         try {
-            CFFFontReader reader = new CFFFontReader(name);
+            TTFFontReader reader = new TTFFontReader(name);
             try {
-                CFFFont font = new CFFFont(name,reader);
+                TTFFont font = new TTFFont(name,reader);
                 Main main = new Main(font);
             }
             finally {
@@ -53,12 +53,12 @@ public class Main
     }
 
 
-    private final CFFFont font ;
+    private final TTFFont font ;
 
     private final Screen screen;
 
 
-    public Main(CFFFont font){
+    public Main(TTFFont font){
         super(font.getName());
         this.screen = new Screen(this);
         this.font = font;
@@ -76,20 +76,22 @@ public class Main
         Rectangle bounds = this.getBounds();
         g.fillRect(0,0,bounds.width,bounds.height);
         g.setColor(Color.black);
-        CFFFont font = this.font;
+        TTFFont font = this.font;
         double x = 0, y = 0, width = bounds.width, height = bounds.height;
         for (int glc = 0, glz = font.getLength(); glc < glz; glc++){
             Path2D.Double glyph = font.getPath(glc);
-            Rectangle2D.Double glyphBounds = (Rectangle2D.Double)glyph.getBounds2D();
-            Graphics2D glyphGraphics = (Graphics2D)g.create();
-            glyphGraphics.translate(x,y);
-            glyphGraphics.draw(glyph);
-            x += glyphBounds.width;
-            if (x >= width){
-                x = 0.0;
-                y += glyphBounds.height;
-                if (y >= height)
-                    break;
+            if (null != glyph){
+                Rectangle2D.Double glyphBounds = (Rectangle2D.Double)glyph.getBounds2D();
+                Graphics2D glyphGraphics = (Graphics2D)g.create();
+                glyphGraphics.translate(x,y);
+                glyphGraphics.draw(glyph);
+                x += glyphBounds.width;
+                if (x >= width){
+                    x = 0.0;
+                    y += glyphBounds.height;
+                    if (y >= height)
+                        break;
+                }
             }
         }
     }
