@@ -74,11 +74,11 @@ public class Main
 
     private Rectangle display;
 
-    private AffineTransform flip;
+    private AffineTransform norm, flip;
 
-    private int index;
+    private int index, descPage;
 
-    private String title;
+    private String title, desc[];
 
     private TTFGlyph glyph;
 
@@ -99,6 +99,7 @@ public class Main
         this.large = new Font(Font.MONOSPACED,Font.BOLD,28);
         this.gridBg = new Color(0.7f,0.0f,0.0f,0.7f);
         this.gridFg = new Color(1.0f,0.0f,0.0f,1.0f);
+        this.norm = new AffineTransform();
     }
 
 
@@ -137,9 +138,59 @@ public class Main
         if (null != glyph){
             char ch = glyph.character;
             this.title = String.format("Glyph '%c' 0x%x @ Index %d",ch,(int)ch,this.index);
+            this.desc = glyph.getPath2dDescription();
+            this.descPage = 0;
+        }
+        else {
+            this.title = String.format("Glyph not found @ Index %d",this.index);
+            this.desc = null;
+            this.descPage = 0;
+        }
+    }
+    private boolean _desc(int dp){
+        if (dp != this.descPage){
+            this.descPage = dp;
+            return true;
         }
         else
-            this.title = String.format("Glyph not found @ Index %d",this.index);
+            return false;
+    }
+    protected int descLen(){
+        String[] desc = this.desc;
+        if (null == desc)
+            return 0;
+        else
+            return desc.length;
+    }
+    protected boolean descHome(){
+        return this._desc(0);
+    }
+    protected boolean descPgUp(){
+        int dp = (this.descPage - 10);
+        if (0 > dp)
+            return this._desc(0);
+        else
+            return this._desc(dp);
+    }
+    protected boolean descPgDn(){
+        int len = this.descLen();
+        if (0 == len)
+            return this._desc(0);
+        else {
+            int dp = (this.descPage + 10);
+            if (dp > len)
+                return this._desc(len-10);
+            else
+                return this._desc(dp);
+        }
+    }
+    protected boolean descEnd(){
+        int len = this.descLen();
+        if (0 == len)
+            return this._desc(0);
+        else {
+            return this._desc(len-10);
+        }
     }
     public void update(Graphics g){
         this.update( (Graphics2D)g);
@@ -148,12 +199,6 @@ public class Main
         this.update( (Graphics2D)g);
     }
     public void update(Graphics2D g){
-        g.setColor(Color.white);
-        Rectangle bounds = this.getBounds();
-        g.fillRect(0,0,bounds.width,bounds.height);
-        /*
-         */
-
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -163,24 +208,57 @@ public class Main
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                            RenderingHints.VALUE_ANTIALIAS_ON);
 
-
-        g.setColor(this.gridFg);
-
-        g.setFont(this.large);
-
-        g.drawString(title,20,60);
-
+        /*
+         * 
+         */
+        g.setColor(Color.white);
+        Rectangle bounds = this.getBounds();
+        g.fillRect(0,0,bounds.width,bounds.height);
+        /*
+         * 
+         */
         TTFGlyph glyph = this.glyph;
 
         if (null != glyph){
 
-            g.transform(this.flip);
+            //
+            g.setTransform(this.flip);
 
             glyph.drawGrid(g,this.small,this.micro,this.gridBg,this.gridFg);
+
+            //
+            g.setTransform(this.norm);
+
+            g.setColor(this.gridFg);
+
+            g.setFont(this.large);
+
+            g.drawString(title,20,60);
+
+            if (null != this.desc){
+                g.setFont(this.small);
+                g.setColor(this.gridBg);
+
+                int x = 40, y = 100;
+                for (int cc = this.descPage, count = this.desc.length; cc < count; cc++){
+                    g.drawString(this.desc[cc],x,y);
+                    y += 20;
+                }
+            }
+            //
+            g.setTransform(this.flip);
 
             g.setColor(Color.black);
 
             glyph.drawOutline(g);
+        }
+        else {
+
+            g.setColor(this.gridFg);
+
+            g.setFont(this.large);
+
+            g.drawString(title,20,60);
         }
     }
     public void windowOpened(WindowEvent e){
@@ -211,14 +289,26 @@ public class Main
         if (e.isActionKey()){
             switch (e.getKeyCode()){
             case KeyEvent.VK_HOME:
+                if (this.descHome())
+                    this.repaint();
+                break;
             case KeyEvent.VK_PAGE_UP:
+                if (this.descPgUp())
+                    this.repaint();
+                break;
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_UP:
                 this.dec();
                 this.repaint();
                 break;
             case KeyEvent.VK_END:
+                if (this.descEnd())
+                    this.repaint();
+                break;
             case KeyEvent.VK_PAGE_DOWN:
+                if (this.descPgDn())
+                    this.repaint();
+                break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_DOWN:
                 this.inc();
@@ -243,6 +333,14 @@ public class Main
     public void mouseExited(MouseEvent e){
     }
     public void mouseWheelMoved(MouseWheelEvent e){
+        if (0 > e.getWheelRotation()){
+            if (this.descPgUp())
+                this.repaint();
+        }
+        else {
+            if (this.descPgDn())
+                this.repaint();
+        }
     }
     public void mouseDragged(MouseEvent e){
     }

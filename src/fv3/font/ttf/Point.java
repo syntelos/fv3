@@ -43,4 +43,31 @@ public final class Point {
         this.index = glyph.getLength();
         return this;
     }
+    public String stringMoveTo(double startX, double startY){
+
+        if (-1 != this.start)
+            return String.format("Path: %3d; Contour: %2d; LineTo(%d:{%f,%f});",this.index,this.contour,this.start,startX,startY);
+        else
+            return String.format("Path: %3d; Contour: %2d; LineTo({%f,%f});",this.index,this.contour,startX,startY);
+    }
+    public String stringLineTo(double endX, double endY){
+
+        if (-1 != this.end)
+            return String.format("Path: %3d; Contour: %2d; LineTo(%d:{%f,%f});",this.index,this.contour,this.end,endX,endY);
+        else
+            return String.format("Path: %3d; Contour: %2d; LineTo({%f,%f});",this.index,this.contour,endX,endY);
+    }
+    public String stringQuadTo(double controlX, double controlY, double endX, double endY){
+
+        if (-1 != this.control){
+            if (-1 != this.end)
+                return String.format("Path: %3d; Contour: %2d; QuadTo(%d:{%f,%f},%d:{%f,%f});",this.index,this.contour,this.control,controlX,controlY,this.end,endX,endY);
+            else
+                return String.format("Path: %3d; Contour: %2d; QuadTo(%d:{%f,%f},{%f,%f});",this.index,this.contour,this.control,controlX,controlY,endX,endY);
+        }
+        else if (-1 != this.end)
+            return String.format("Path: %3d; Contour: %2d; QuadTo({%f,%f},%d:{%f,%f});",this.index,this.contour,controlX,controlY,this.end,endX,endY);
+        else
+            return String.format("Path: %3d; Contour: %2d; QuadTo({%f,%f},{%f,%f});",this.index,this.contour,controlX,controlY,endX,endY);
+    }
 }

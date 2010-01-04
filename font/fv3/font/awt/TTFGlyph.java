@@ -47,6 +47,10 @@ public class TTFGlyph
 
     protected Path2D.Double path2d, grid2d;
 
+    private int path2count;
+
+    private String[] path2desc;
+
 
     protected TTFGlyph(TTFFont font, Glyf table, int index, int offset, int next){
         super(font,table,index,offset,next);
@@ -78,19 +82,42 @@ public class TTFGlyph
         g.setColor(bg);
 
         Line2D line;
-        for (double x = minX; x <= maxX; x += dt){
+
+        int block;
+        int blockX0 = 0, blockY0 = 0, blockX1 = 0, blockY1 = 0;
+
+        block = 0;
+        for (double x = minX; x <= maxX; x += dt, block++){
 
             line = new Line2D.Double(x,minY,x,maxY);
 
             g.draw(line);
-            g.drawString(String.format("%4.1f",x),(float)(x),(float)(maxY+PadV));
+            if (100.0 >= x)
+                g.drawString(String.format("%4.1f",x),(float)(x),(float)(maxY+PadV));
+
+            if (5 == block)
+                blockX0 = (int)Math.ceil(x);
+            else
+                blockX1 = (int)Math.ceil(x);
         }
-        for (double y = minY; y <= maxY; y += dt){
+        block = 0;
+        for (double y = minY; y <= maxY; y += dt, block++){
 
             line = new Line2D.Double(minX,y,maxX,y);
 
             g.draw(line);
-            g.drawString(String.format("%4.1f",y),(float)(maxX+Pad),(float)(y+Pad));
+            if (100.0 >= y)
+                g.drawString(String.format("%4.1f",y),(float)(maxX+Pad),(float)(y+Pad));
+
+            if (3 == block)
+                blockY0 = (int)Math.ceil(y);
+            else
+                blockY1 = (int)Math.ceil(y);
+        }
+
+        if (0 != blockX0 && 0 != blockY0){
+            g.setColor(Color.white);
+            g.fillRect(blockX0,blockY0,blockX1,blockY1);
         }
 
         g.setFont(micro);
@@ -249,11 +276,59 @@ public class TTFGlyph
         }
         return grid2d;
     }
+    public String[] getPath2dDescription(){
+        String[] path2desc = this.path2desc;
+        if (null == path2desc){
+            int pc = 0;
+            path2desc = new String[this.path2count];
+
+            double scale = this.font.getScale();
+
+            TTFPath last = null;
+            double x0, y0, x1, y1, x2, y2;
+            for (TTFPath path: this){
+                x0 = path.startX;
+                y0 = path.startY;
+                x1 = path.controlX;
+                y1 = path.controlY;
+                x2 = path.endX;
+                y2 = path.endY;
+
+                if (null != last){
+                    if (last.endX != x0 || last.endY != y0){
+                        x0 *= scale;
+                        y0 *= scale;
+                        path2desc[pc++] = path.point.stringMoveTo(x0,y0);
+                    }
+                }
+                else {
+                    x0 *= scale;
+                    y0 *= scale;
+                    path2desc[pc++] = path.point.stringMoveTo(x0,y0);
+                }
+
+                if (path.isStraight){
+                    x2 *= scale;
+                    y2 *= scale;
+                    path2desc[pc++] = path.point.stringLineTo(x2,y2);
+                }
+                else {
+                    x1 *= scale;
+                    y1 *= scale;
+                    x2 *= scale;
+                    y2 *= scale;
+                    path2desc[pc++] = path.point.stringQuadTo(x1,y1,x2,y2);
+                }
+                last = path;
+            }
+            this.path2desc = path2desc;
+        }
+        return path2desc;
+    }
     public void init(FontOptions options) {
         super.init(options);
         double scale = this.font.getScale();
-        boolean debug = ('A' == this.character);
-
+        this.path2count = 0;
         Path2D.Double path2d = new Path2D.Double();
         TTFPath last = null;
         double x0, y0, x1, y1, x2, y2;
@@ -271,24 +346,21 @@ public class TTFGlyph
                     x0 *= scale;
                     y0 *= scale;
                     path2d.moveTo(x0,y0);
-                    if (debug)
-                        System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.point.contour,x0,y0);
+                    this.path2count++;
                 }
             }
             else {
                 x0 *= scale;
                 y0 *= scale;
                 path2d.moveTo(x0,y0);
-                if (debug)
-                    System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.point.contour,x0,y0);
+                this.path2count++;
             }
 
             if (path.isStraight){
                 x2 *= scale;
                 y2 *= scale;
                 path2d.lineTo(x2,y2);
-                if (debug)
-                    System.err.printf("Contour %d: LineTo(%f,%f);\n",path.point.contour,x2,y2);
+                this.path2count++;
             }
             else {
                 x1 *= scale;
@@ -296,8 +368,7 @@ public class TTFGlyph
                 x2 *= scale;
                 y2 *= scale;
                 path2d.quadTo(x1,y1,x2,y2);
-                if (debug)
-                    System.err.printf("Contour %d: QuadTo(%f,%f,%f,%f);\n",path.point.contour,x1,y1,x2,y2);
+                this.path2count++;
             }
             last = path;
         }
