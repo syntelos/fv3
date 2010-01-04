@@ -365,6 +365,9 @@ public class TTFGlyph
                                 }
                             }
                         }
+
+                        if (null != first && null != last)
+                            last = first.close(this,last);
                     }
                 }
             }

@@ -84,6 +84,8 @@ public class Main
 
     private Font large, small, micro;
 
+    private Color gridFg, gridBg;
+
 
     public Main(String name){
         super(name);
@@ -95,6 +97,8 @@ public class Main
         this.micro = new Font(Font.MONOSPACED,Font.PLAIN,8);
         this.small = new Font(Font.MONOSPACED,Font.PLAIN,12);
         this.large = new Font(Font.MONOSPACED,Font.BOLD,28);
+        this.gridBg = new Color(0.7f,0.0f,0.0f,0.7f);
+        this.gridFg = new Color(1.0f,0.0f,0.0f,1.0f);
     }
 
 
@@ -149,7 +153,6 @@ public class Main
         g.fillRect(0,0,bounds.width,bounds.height);
         /*
          */
-        g.setColor(Color.red);
 
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -161,6 +164,7 @@ public class Main
                            RenderingHints.VALUE_ANTIALIAS_ON);
 
 
+        g.setColor(this.gridFg);
 
         g.setFont(this.large);
 
@@ -172,7 +176,7 @@ public class Main
 
             g.transform(this.flip);
 
-            glyph.drawGrid(g,this.small,this.micro);
+            glyph.drawGrid(g,this.small,this.micro,this.gridBg,this.gridFg);
 
             g.setColor(Color.black);
 

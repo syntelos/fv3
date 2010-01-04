@@ -117,13 +117,19 @@ public class TTFPath
 
         if (this.point.contour == last.point.contour){
 
-            this.startX = last.endX;
+            if (0.0 == this.startX && 0.0 == this.startY){
 
-            this.startY = last.endY;
+                this.startX = last.endX;
+
+                this.startY = last.endY;
+            }
+            else if (0.0 == last.endX && 0.0 == last.endY){
+
+                last.endX = this.startX;
+
+                last.endY = this.startY;
+            }
         }
-        //         else
-        //             throw new IllegalStateException();
-
         return last;
     }
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){

@@ -22,6 +22,7 @@ import fv3.font.FontOptions;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -52,7 +53,7 @@ public class TTFGlyph
     }
 
 
-    public void drawGrid(Graphics2D g, Font small, Font micro){
+    public void drawGrid(Graphics2D g, Font small, Font micro, Color bg, Color fg){
 
         double scale = this.font.getScale();
 
@@ -74,6 +75,7 @@ public class TTFGlyph
             maxY = t;
 
         g.setFont(small);
+        g.setColor(bg);
 
         Line2D line;
         for (double x = minX; x <= maxX; x += dt){
@@ -92,6 +94,7 @@ public class TTFGlyph
         }
 
         g.setFont(micro);
+        g.setColor(fg);
 
         Ellipse2D on, off;
         double x0, y0, x1, y1, x2, y2;
