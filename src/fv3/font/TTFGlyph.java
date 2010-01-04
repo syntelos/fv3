@@ -292,29 +292,15 @@ public class TTFGlyph
                                     controlX2 = points[x];
                                     controlY2 = points[y];
                                     /*
-                                     * The approach taken is from fontforge.  It is
-                                     * incorrect, according to the spec.
-                                     * 
-                                     * The solution here needs to work for any series of Off
-                                     * Curve (Control) points.
-                                     * 
-                                     * I've marked these paths "synthetic".  There's lots
-                                     * of them.
-                                     * 
-                                     * There's two possibilities for this strategy.  One is
-                                     * that after reviewing a large number of fonts in
-                                     * the wild, George found only shallow paths at these
-                                     * places.  (FontForge incorporates a substantial
-                                     * number of case studies). Another possibility might
-                                     * be that this strategy minimizes it's own impact
-                                     * on the path from the creation of On Curve
-                                     * points.  And then another combines both.
+                                     * The approach taken is from
+                                     * fontforge.  It is incorrect
+                                     * according to the spec, but
+                                     * works.
                                      */
-                                    endX = (controlX2 - controlX)/2.0;
-                                    endY = (controlY2 - controlY)/2.0; 
+                                    endX = (controlX2 + controlX)/2.0;
+                                    endY = (controlY2 + controlY)/2.0; 
                                     /*
                                      */
-
                                     if (contourNew && null != first)
                                         last = first.close(this,last);
 

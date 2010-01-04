@@ -137,26 +137,12 @@ public class TTFPath
      * "this" is the first element of the contour.
      */
     TTFPath close(TTFGlyph glyph, TTFPath last){
-        boolean synthesize = false;
-        if (this.startX != last.endX){
-            if (0.0 == this.startX)
-                this.startX = last.endX;
-            else
-                synthesize = true;
-        }
-        if (this.startY != last.endY){
-            if (0.0 == this.startY)
-                this.startY = last.endY;
-            else
-                synthesize = true;
-        }
-        if (synthesize){
-            TTFPath synth = new TTFPath(this,last);
-            glyph.add(synth);
-            return synth;
-        }
-        else
-            return last;
+
+        this.startX = last.endX;
+
+        this.startY = last.endY;
+
+        return last;
     }
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
         double scale = font.getScale();

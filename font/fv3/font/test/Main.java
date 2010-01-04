@@ -207,9 +207,6 @@ public class Main
     public void keyReleased(KeyEvent e){
         if (e.isActionKey()){
             switch (e.getKeyCode()){
-            case KeyEvent.VK_ESCAPE:
-                this.repaint();
-                break;
             case KeyEvent.VK_HOME:
             case KeyEvent.VK_PAGE_UP:
             case KeyEvent.VK_LEFT:
@@ -223,6 +220,10 @@ public class Main
             case KeyEvent.VK_DOWN:
                 this.inc();
                 this.repaint();
+                break;
+            default:
+                this.hide();
+                this.dispose();
                 break;
             }
         }
