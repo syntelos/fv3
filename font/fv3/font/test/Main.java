@@ -82,7 +82,7 @@ public class Main
 
     private TTFGlyph glyph;
 
-    private Font large, small;
+    private Font large, small, micro;
 
 
     public Main(String name){
@@ -92,6 +92,7 @@ public class Main
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         this.addWindowListener(this);
+        this.micro = new Font(Font.MONOSPACED,Font.PLAIN,8);
         this.small = new Font(Font.MONOSPACED,Font.PLAIN,12);
         this.large = new Font(Font.MONOSPACED,Font.BOLD,28);
     }
@@ -169,11 +170,9 @@ public class Main
 
         if (null != glyph){
 
-            g.setFont(this.small);
-
             g.transform(this.flip);
 
-            glyph.drawGrid(g);
+            glyph.drawGrid(g,this.small,this.micro);
 
             g.setColor(Color.black);
 

@@ -21,6 +21,7 @@ import fv3.font.ttf.Cmap;
 import fv3.font.ttf.CompoundGlyph;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
+import fv3.font.ttf.Point;
 import fv3.font.ttf.TTF;
 
 /**
@@ -179,9 +180,11 @@ public class TTFGlyph
                     int cc = 0;
                     if (cc < nPoints){
                         int HavePoint;
+                        int LastPoint = (nPoints-1);
                         int contour = 0;
                         int contourEnd = contourIndex[contour];
                         boolean contourNew = true;
+                        boolean isLastPoint = (cc == LastPoint);
                         TTFPath first = null, last = null;
 
                         boolean onCurve = (0 != (flags[cc] & ON_CURVE)), onCurveLast;
@@ -193,15 +196,19 @@ public class TTFGlyph
                         double controlX2 = 0.0, controlY2 = 0.0;
                         double endX = 0.0, endY = 0.0;
 
+                        Point point = new Point(contour);
+
                         if (onCurve){
                             startX = points[x];
                             startY = points[y];
                             HavePoint = Start;
+                            point.start = cc;
                         }
                         else {
                             controlX = points[x];
                             controlY = points[y];
                             HavePoint = Control;
+                            point.control = cc;
                         }
 
                         for (cc++; cc < nPoints; cc++){
@@ -214,6 +221,7 @@ public class TTFGlyph
 
                             x = (cc<<1);
                             y = (x+1);
+                            isLastPoint = (cc == LastPoint);
                             onCurveLast = onCurve;
                             onCurve = (0 != (flags[cc] & ON_CURVE));
 
@@ -223,15 +231,26 @@ public class TTFGlyph
                                     endX = points[x];
                                     endY = points[y];
 
-                                    if (contourNew && null != first)
-                                        last = first.close(this,last);
+                                    point.end = cc;
 
-                                    this.add(last = new TTFPath(contour, this.getLength(),
+                                    if (contourNew){
+                                        if (null != first)
+                                            last = first.close(this,last);
+
+                                    }
+
+                                    this.add(last = new TTFPath(point.close(this),
                                                                 startX, startY, endX, endY));
+
+                                    point = new Point(contour);
 
                                     if (contourNew){
                                         first = last;
                                         contourNew = false;
+                                    }
+                                    else if (isLastPoint && null != first){
+
+                                        last = first.close(this,last);
                                     }
 
                                     HavePoint = Start;
@@ -249,15 +268,24 @@ public class TTFGlyph
                                     endX = points[x];
                                     endY = points[y];
 
+                                    point.end = cc;
+
                                     if (contourNew && null != first)
                                         last = first.close(this,last);
 
-                                    this.add(last = new TTFPath(contour, this.getLength(), false,
-                                                                startX, startY, controlX, controlY, endX, endY));
+                                    this.add(last = new TTFPath(point.close(this), false,
+                                                                startX, startY, controlX, controlY,
+                                                                endX, endY));
+
+                                    point = new Point(contour);
 
                                     if (contourNew){
                                         first = last;
                                         contourNew = false;
+                                    }
+                                    else if (isLastPoint && null != first){
+
+                                        last = first.close(this,last);
                                     }
 
                                     HavePoint = Start;
@@ -282,6 +310,8 @@ public class TTFGlyph
                                     controlX = points[x];
                                     controlY = points[y];
 
+                                    point.control = cc;
+
                                     HavePoint = Control;
 
                                     break;
@@ -301,11 +331,17 @@ public class TTFGlyph
                                     endY = (controlY2 + controlY)/2.0; 
                                     /*
                                      */
-                                    if (contourNew && null != first)
-                                        last = first.close(this,last);
+                                    if (contourNew){
+                                        if (null != first)
+                                            last = first.close(this,last);
+                                    }
 
-                                    this.add(last = new TTFPath(contour, this.getLength(), true,
-                                                                startX, startY, controlX, controlY, endX, endY));
+                                    this.add(last = new TTFPath(point.close(this), true,
+                                                                startX, startY, controlX, controlY,
+                                                                endX, endY));
+
+                                    point = new Point(contour);
+                                    point.control = cc;
 
                                     if (contourNew){
                                         first = last;

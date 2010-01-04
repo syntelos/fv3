@@ -22,6 +22,7 @@ import fv3.font.FontOptions;
 import fv3.font.ttf.Glyf;
 import fv3.font.ttf.Head;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -39,6 +40,8 @@ public class TTFGlyph
 
     private final static double ControlR = 3.0;
     private final static double ControlD = (2.0 * ControlR);
+    private final static float PathPointDX = 14f;
+    private final static float PathPointDY = 8f;
 
 
     protected Path2D.Double path2d, grid2d;
@@ -49,7 +52,7 @@ public class TTFGlyph
     }
 
 
-    public void drawGrid(Graphics2D g){
+    public void drawGrid(Graphics2D g, Font small, Font micro){
 
         double scale = this.font.getScale();
 
@@ -70,6 +73,7 @@ public class TTFGlyph
         for (double t = 0.0, z = (maxY + dt); t <= z; t += dt)
             maxY = t;
 
+        g.setFont(small);
 
         Line2D line;
         for (double x = minX; x <= maxX; x += dt){
@@ -87,52 +91,117 @@ public class TTFGlyph
             g.drawString(String.format("%4.1f",y),(float)(maxX+Pad),(float)(y+Pad));
         }
 
+        g.setFont(micro);
 
         Ellipse2D on, off;
         double x0, y0, x1, y1, x2, y2;
+        float x0p, y0p, x1p, y1p, x2p, y2p;
+
         for (int idx = 0, count = this.getLength(); idx < count; idx++){
 
             TTFPath path = this.get(idx);
 
             if (path.isStraight){
 
-                x0 = (path.startX * scale);
-                y0 = (path.startY * scale);
+                x0 = (path.startX * scale)-ControlR;
+                y0 = (path.startY * scale)-ControlR;
 
-                on = new Ellipse2D.Double(x0-ControlR, y0-ControlR, ControlD, ControlD);
+                on = new Ellipse2D.Double(x0, y0, ControlD, ControlD);
                 g.fill(on);
+                if (-1 != path.point.start){
+                    x0p = (float)(x0-PathPointDX);
+                    y0p = (float)(y0-PathPointDY);
 
-                x2 = (path.endX * scale);
-                y2 = (path.endY * scale);
+                    line = new Line2D.Double(x0,y0,x0p,y0p);
+                    g.draw(line);
+                    if (11.0 > path.point.start)
+                        x0p -= PathPointDY;
+                    else
+                        x0p -= PathPointDX;
+                    g.drawString(String.valueOf(path.point.start),x0p,y0p);
+                }
 
-                on = new Ellipse2D.Double(x2-ControlR, y2-ControlR, ControlD, ControlD);
+                x2 = (path.endX * scale)-ControlR;
+                y2 = (path.endY * scale)-ControlR;
+
+                on = new Ellipse2D.Double(x2, y2, ControlD, ControlD);
                 g.fill(on);
+                if (-1 != path.point.end){
+                    x2p = (float)(x2-PathPointDX);
+                    y2p = (float)(y2-PathPointDY);
+
+                    line = new Line2D.Double(x2,y2,x2p,y2p);
+                    g.draw(line);
+                    if (11.0 > path.point.end)
+                        x2p -= PathPointDY;
+                    else
+                        x2p -= PathPointDX;
+                    g.drawString(String.valueOf(path.point.end),x2p,y2p);
+                }
+
             }
             else {
 
-                x0 = (path.startX * scale);
-                y0 = (path.startY * scale);
+                x0 = (path.startX * scale)-ControlR;
+                y0 = (path.startY * scale)-ControlR;
 
-                on = new Ellipse2D.Double(x0-ControlR, y0-ControlR, ControlD, ControlD);
+                on = new Ellipse2D.Double(x0, y0, ControlD, ControlD);
                 g.fill(on);
+                if (-1 != path.point.start){
+                    x0p = (float)(x0-PathPointDX);
+                    y0p = (float)(y0-PathPointDY);
 
-                x1 = (path.controlX * scale);
-                y1 = (path.controlY * scale);
+                    line = new Line2D.Double(x0,y0,x0p,y0p);
+                    g.draw(line);
+                    if (11.0 > path.point.start)
+                        x0p -= PathPointDY;
+                    else
+                        x0p -= PathPointDX;
+                    g.drawString(String.valueOf(path.point.start),x0p,y0p);
+                }
 
-                off = new Ellipse2D.Double(x1-ControlR, y1-ControlR, ControlD, ControlD);
+                x1 = (path.controlX * scale)-ControlR;
+                y1 = (path.controlY * scale)-ControlR;
+
+                off = new Ellipse2D.Double(x1, y1, ControlD, ControlD);
                 g.draw(off);
+                if (-1 != path.point.control){
+                    x1p = (float)(x1-PathPointDX);
+                    y1p = (float)(y1-PathPointDY);
 
-                x2 = (path.endX * scale);
-                y2 = (path.endY * scale);
+                    line = new Line2D.Double(x1,y1,x1p,y1p);
+                    g.draw(line);
+                    if (11.0 > path.point.control)
+                        x1p -= PathPointDY;
+                    else
+                        x1p -= PathPointDX;
+                    g.drawString(String.valueOf(path.point.control),x1p,y1p);
+                }
 
-                on = new Ellipse2D.Double(x2-ControlR, y2-ControlR, ControlD, ControlD);
+                x2 = (path.endX * scale)-ControlR;
+                y2 = (path.endY * scale)-ControlR;
+
+                on = new Ellipse2D.Double(x2, y2, ControlD, ControlD);
                 g.fill(on);
+                if (-1 != path.point.end){
+                    x2p = (float)(x2-PathPointDX);
+                    y2p = (float)(y2-PathPointDY);
+
+                    line = new Line2D.Double(x2,y2,x2p,y2p);
+                    g.draw(line);
+                    if (11.0 > path.point.end)
+                        x2p -= PathPointDY;
+                    else
+                        x2p -= PathPointDX;
+                    g.drawString(String.valueOf(path.point.end),x2p,y2p);
+                }
             }
         }
     }
     public void drawOutline(Graphics2D g){
-
-        g.draw(this.path2d);
+        Path2D.Double path2d = this.path2d;
+        if (null != path2d)
+            g.draw(path2d);
     }
     public final boolean hasPath2d(){
         return (null != this.path2d);
@@ -200,7 +269,7 @@ public class TTFGlyph
                     y0 *= scale;
                     path2d.moveTo(x0,y0);
                     if (debug)
-                        System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.contour,x0,y0);
+                        System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.point.contour,x0,y0);
                 }
             }
             else {
@@ -208,7 +277,7 @@ public class TTFGlyph
                 y0 *= scale;
                 path2d.moveTo(x0,y0);
                 if (debug)
-                    System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.contour,x0,y0);
+                    System.err.printf("Contour %d: MoveTo(%f,%f);\n",path.point.contour,x0,y0);
             }
 
             if (path.isStraight){
@@ -216,7 +285,7 @@ public class TTFGlyph
                 y2 *= scale;
                 path2d.lineTo(x2,y2);
                 if (debug)
-                    System.err.printf("Contour %d: LineTo(%f,%f);\n",path.contour,x2,y2);
+                    System.err.printf("Contour %d: LineTo(%f,%f);\n",path.point.contour,x2,y2);
             }
             else {
                 x1 *= scale;
@@ -225,7 +294,7 @@ public class TTFGlyph
                 y2 *= scale;
                 path2d.quadTo(x1,y1,x2,y2);
                 if (debug)
-                    System.err.printf("Contour %d: QuadTo(%f,%f,%f,%f);\n",path.contour,x1,y1,x2,y2);
+                    System.err.printf("Contour %d: QuadTo(%f,%f,%f,%f);\n",path.point.contour,x1,y1,x2,y2);
             }
             last = path;
         }

@@ -17,6 +17,8 @@
  */
 package fv3.font;
 
+import fv3.font.ttf.Point;
+
 /**
  * Quadratic
  * 
@@ -28,7 +30,7 @@ public class TTFPath
 {
     public final boolean isStraight, isCubic, isQuadratic, isSynthetic; 
 
-    public final int contour, index;
+    public final Point point;
 
     public double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
 
@@ -37,7 +39,7 @@ public class TTFPath
     /**
      * Straight line
      */
-    public TTFPath(int contour, int index,
+    public TTFPath(Point point,
                    double startX, double startY,
                    double endX, double endY)
     {
@@ -46,8 +48,7 @@ public class TTFPath
         this.isQuadratic = false;
         this.isCubic = false;
         this.isSynthetic = false;
-        this.contour = contour;
-        this.index = index;
+        this.point = point;
         this.startX = startX;
         this.startY = startY;
         this.controlX = 0.0;
@@ -59,31 +60,9 @@ public class TTFPath
     }
 
     /**
-     * Straight line
-     */
-    public TTFPath(TTFPath first, TTFPath last)
-    {
-        super();
-        this.isStraight = true;
-        this.isQuadratic = false;
-        this.isCubic = false;
-        this.isSynthetic = true;
-        this.contour = first.contour;
-        this.index = last.index;
-        this.startX = last.endX;
-        this.startY = last.endY;
-        this.controlX = 0.0;
-        this.controlY = 0.0;
-        this.controlX2 = 0.0;
-        this.controlY2 = 0.0;
-        this.endX = first.startX;
-        this.endY = first.startY;
-    }
-
-    /**
      * Quadratic
      */
-    public TTFPath(int contour, int index, boolean synthetic,
+    public TTFPath(Point point, boolean synthetic,
                    double startX, double startY,
                    double controlX, double controlY,
                    double endX, double endY)
@@ -93,8 +72,7 @@ public class TTFPath
         this.isQuadratic = true;
         this.isCubic = false;
         this.isSynthetic = synthetic;
-        this.contour = contour;
-        this.index = index;
+        this.point = point;
         this.startX = startX;
         this.startY = startY;
         this.controlX = controlX;
@@ -108,7 +86,7 @@ public class TTFPath
     /**
      * Cubic
      */
-    public TTFPath(int contour, int index,
+    public TTFPath(Point point,
                    double startX, double startY,
                    double controlX, double controlY,
                    double controlX2, double controlY2,
@@ -119,8 +97,7 @@ public class TTFPath
         this.isQuadratic = false;
         this.isCubic = true;
         this.isSynthetic = false;
-        this.contour = contour;
-        this.index = index;
+        this.point = point;
         this.startX = startX;
         this.startY = startY;
         this.controlX = controlX;
@@ -138,9 +115,14 @@ public class TTFPath
      */
     TTFPath close(TTFGlyph glyph, TTFPath last){
 
-        this.startX = last.endX;
+        if (this.point.contour == last.point.contour){
 
-        this.startY = last.endY;
+            this.startX = last.endX;
+
+            this.startY = last.endY;
+        }
+        //         else
+        //             throw new IllegalStateException();
 
         return last;
     }
