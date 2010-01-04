@@ -176,155 +176,173 @@ public class TTFGlyph
                     }
                 }
                 {
-                    int Path = Start;
                     int cc = 0;
                     if (cc < nPoints){
+                        int HavePoint;
                         int contour = 0;
                         int contourEnd = contourIndex[contour];
                         boolean contourNew = true;
                         TTFPath first = null, last = null;
 
-                        if (0 != (flags[cc] & ON_CURVE)){
-                            int x = (cc<<1);
-                            int y = (x+1);
-                            double startX = points[x];
-                            double startY = points[y];
-                            double controlX = 0.0, controlY = 0.0;
-                            double controlX2 = 0.0, controlY2 = 0.0;
-                            double endX = 0.0, endY = 0.0;
+                        boolean onCurve = (0 != (flags[cc] & ON_CURVE)), onCurveLast;
+                        int x = (cc<<1);
+                        int y = (x+1);
 
-                            for (cc++; cc < nPoints; cc++){
+                        double startX = 0.0, startY = 0.0;
+                        double controlX = 0.0, controlY = 0.0;
+                        double controlX2 = 0.0, controlY2 = 0.0;
+                        double endX = 0.0, endY = 0.0;
 
-                                if (cc > contourEnd){
-                                    contour += 1;
-                                    contourEnd = contourIndex[contour];
-                                    contourNew = true;
-                                    this.add(last = new TTFPath(first,last));
-                                }
+                        if (onCurve){
+                            startX = points[x];
+                            startY = points[y];
+                            HavePoint = Start;
+                        }
+                        else {
+                            controlX = points[x];
+                            controlY = points[y];
+                            HavePoint = Control;
+                        }
 
-                                x = (cc<<1);
-                                y = (x+1);
-                                if (0 != (flags[cc] & ON_CURVE)){
-                                    switch (Path){
-                                    case Start:
-                                        endX = points[x];
-                                        endY = points[y];
+                        for (cc++; cc < nPoints; cc++){
 
-                                        this.add(last = new TTFPath(contour, this.getLength(),
-                                                                    startX, startY, endX, endY));
+                            if (cc > contourEnd){
+                                contour += 1;
+                                contourEnd = contourIndex[contour];
+                                contourNew = true;
+                            }
 
-                                        if (contourNew){
-                                            first = last;
-                                            contourNew = false;
-                                        }
+                            x = (cc<<1);
+                            y = (x+1);
+                            onCurveLast = onCurve;
+                            onCurve = (0 != (flags[cc] & ON_CURVE));
 
-                                        Path = Start;
+                            if (onCurve){
+                                switch (HavePoint){
+                                case Start:
+                                    endX = points[x];
+                                    endY = points[y];
 
-                                        startX = endX;
-                                        startY = endY;
-                                        controlX = 0.0;
-                                        controlY = 0.0;
-                                        controlX2 = 0.0;
-                                        controlY2 = 0.0;
-                                        endX = 0.0;
-                                        endY = 0.0;
-                                        break;
-                                    case Control:
-                                        endX = points[x];
-                                        endY = points[y];
+                                    if (contourNew && null != first)
+                                        last = first.close(this,last);
 
-                                        this.add(last = new TTFPath(contour, this.getLength(), true,
-                                                                    startX, startY, controlX, controlY, endX, endY));
+                                    this.add(last = new TTFPath(contour, this.getLength(),
+                                                                startX, startY, endX, endY));
 
-                                        if (contourNew){
-                                            first = last;
-                                            contourNew = false;
-                                        }
-
-                                        Path = Start;
-
-                                        startX = endX;
-                                        startY = endY;
-                                        controlX = 0.0;
-                                        controlY = 0.0;
-                                        controlX2 = 0.0;
-                                        controlY2 = 0.0;
-                                        endX = 0.0;
-                                        endY = 0.0;
-                                        break;
-
-                                    default:
-                                        throw new IllegalStateException(String.format("Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,Path,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
+                                    if (contourNew){
+                                        first = last;
+                                        contourNew = false;
                                     }
-                                }
-                                else {
-                                    switch (Path){
-                                    case Start:
-                                        controlX = points[x];
-                                        controlY = points[y];
 
-                                        Path = Control;
+                                    HavePoint = Start;
 
-                                        break;
-                                    case Control:
-                                        /*
-                                         * The famous TTF point injection
-                                         */
-                                        controlX2 = points[x];
-                                        controlY2 = points[y];
-                                        /*
-                                         * The approach taken is from fontforge.  It is
-                                         * incorrect, according to the spec.
-                                         * 
-                                         * The solution here needs to work for any series of Off
-                                         * Curve (Control) points.
-                                         * 
-                                         * I've marked these paths "synthetic".  There's lots
-                                         * of them.
-                                         * 
-                                         * There's two possibilities for this strategy.  One is
-                                         * that after reviewing a large number of fonts in
-                                         * the wild, George found only shallow paths at these
-                                         * places.  (FontForge incorporates a substantial
-                                         * number of case studies). Another possibility might
-                                         * be that this strategy minimizes it's own impact
-                                         * on the path from the creation of On Curve
-                                         * points.  And then another combines both.
-                                         */
-                                        endX = (controlX2 - controlX)/2.0;
-                                        endY = (controlY2 - controlY)/2.0; 
+                                    startX = endX;
+                                    startY = endY;
+                                    controlX = 0.0;
+                                    controlY = 0.0;
+                                    controlX2 = 0.0;
+                                    controlY2 = 0.0;
+                                    endX = 0.0;
+                                    endY = 0.0;
+                                    break;
+                                case Control:
+                                    endX = points[x];
+                                    endY = points[y];
 
-                                        //System.err.printf("Synthesizing point on path in Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); StartX: %f, StartY: %f; ControlX: %f, ControlY: %f; EndX: %f, EndY: %f.\n",this.index,this.character,Path,cc,nPoints,startX,startY,controlX,controlY,endX,endY);
-                                        /*
-                                         */
-                                        this.add(last = new TTFPath(contour, this.getLength(), true,
-                                                                    startX, startY, controlX, controlY, endX, endY));
+                                    if (contourNew && null != first)
+                                        last = first.close(this,last);
 
-                                        if (contourNew){
-                                            first = last;
-                                            contourNew = false;
-                                        }
+                                    this.add(last = new TTFPath(contour, this.getLength(), false,
+                                                                startX, startY, controlX, controlY, endX, endY));
 
-                                        Path = Control;
-
-                                        startX = endX;
-                                        startY = endY;
-                                        controlX = controlX2;
-                                        controlY = controlY2;
-                                        controlX2 = 0.0;
-                                        controlY2 = 0.0;
-                                        endX = 0.0;
-                                        endY = 0.0;
-                                        break;
-
-                                    default:
-                                        throw new IllegalStateException(String.format("Glyph: %d(%c); Path: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,Path,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
+                                    if (contourNew){
+                                        first = last;
+                                        contourNew = false;
                                     }
+
+                                    HavePoint = Start;
+
+                                    startX = endX;
+                                    startY = endY;
+                                    controlX = 0.0;
+                                    controlY = 0.0;
+                                    controlX2 = 0.0;
+                                    controlY2 = 0.0;
+                                    endX = 0.0;
+                                    endY = 0.0;
+                                    break;
+
+                                default:
+                                    throw new IllegalStateException(String.format("Glyph: %d(%c); HavePoint: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,HavePoint,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
+                                }
+                            }
+                            else {
+                                switch (HavePoint){
+                                case Start:
+                                    controlX = points[x];
+                                    controlY = points[y];
+
+                                    HavePoint = Control;
+
+                                    break;
+                                case Control:
+                                    /*
+                                     * The famous TTF point injection
+                                     */
+                                    controlX2 = points[x];
+                                    controlY2 = points[y];
+                                    /*
+                                     * The approach taken is from fontforge.  It is
+                                     * incorrect, according to the spec.
+                                     * 
+                                     * The solution here needs to work for any series of Off
+                                     * Curve (Control) points.
+                                     * 
+                                     * I've marked these paths "synthetic".  There's lots
+                                     * of them.
+                                     * 
+                                     * There's two possibilities for this strategy.  One is
+                                     * that after reviewing a large number of fonts in
+                                     * the wild, George found only shallow paths at these
+                                     * places.  (FontForge incorporates a substantial
+                                     * number of case studies). Another possibility might
+                                     * be that this strategy minimizes it's own impact
+                                     * on the path from the creation of On Curve
+                                     * points.  And then another combines both.
+                                     */
+                                    endX = (controlX2 - controlX)/2.0;
+                                    endY = (controlY2 - controlY)/2.0; 
+                                    /*
+                                     */
+
+                                    if (contourNew && null != first)
+                                        last = first.close(this,last);
+
+                                    this.add(last = new TTFPath(contour, this.getLength(), true,
+                                                                startX, startY, controlX, controlY, endX, endY));
+
+                                    if (contourNew){
+                                        first = last;
+                                        contourNew = false;
+                                    }
+
+                                    HavePoint = Control;
+
+                                    startX = endX;
+                                    startY = endY;
+                                    controlX = controlX2;
+                                    controlY = controlY2;
+                                    controlX2 = 0.0;
+                                    controlY2 = 0.0;
+                                    endX = 0.0;
+                                    endY = 0.0;
+                                    break;
+
+                                default:
+                                    throw new IllegalStateException(String.format("Glyph: %d(%c); HavePoint: 0x%x; Point: (%d < %d); Flags: '%s'; X: %f, Y: %f.",this.index,this.character,HavePoint,cc,nPoints,FontReader.Bitstring(flags[cc],8),points[x],points[y]));
                                 }
                             }
                         }
-                        else
-                            throw new IllegalStateException(String.format("Glyph %d(%c) Starts Off Path?",this.index, this.character));
                     }
                 }
             }

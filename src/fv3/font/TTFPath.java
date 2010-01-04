@@ -30,7 +30,7 @@ public class TTFPath
 
     public final int contour, index;
 
-    public final double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
+    public double startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
 
     private double[] points;
 
@@ -132,6 +132,32 @@ public class TTFPath
     }
 
 
+    /**
+     * Called from {@link TTFGlyph} on contour change.  Reference
+     * "this" is the first element of the contour.
+     */
+    TTFPath close(TTFGlyph glyph, TTFPath last){
+        boolean synthesize = false;
+        if (this.startX != last.endX){
+            if (0.0 == this.startX)
+                this.startX = last.endX;
+            else
+                synthesize = true;
+        }
+        if (this.startY != last.endY){
+            if (0.0 == this.startY)
+                this.startY = last.endY;
+            else
+                synthesize = true;
+        }
+        if (synthesize){
+            TTFPath synth = new TTFPath(this,last);
+            glyph.add(synth);
+            return synth;
+        }
+        else
+            return last;
+    }
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
         double scale = font.getScale();
         if (this.isStraight){
@@ -149,8 +175,6 @@ public class TTFPath
             }
         }
         else if (this.isQuadratic){
-            double em = font.getEm();
-            double dt = (em/12.0);
 
             double x0 = (this.startX * scale);
             double y0 = (this.startY * scale);
@@ -166,7 +190,14 @@ public class TTFPath
             double y_c = -2 * y0 + 2 * y1;
             double y_d = y0;
 
-            double[] points = new double[26];
+            int step = 12; /*(TODO) Range step to scale
+                            * (a) project fair value
+                            * (b) drop points not significant
+                            */
+            double em = font.getEm();
+            double dt = (em/step);
+            double[] points = new double[(step<<1)+2];
+
             int xp = 0;
             int yp = 1;
             points[xp] = x0;
@@ -185,8 +216,7 @@ public class TTFPath
             this.points = points;
         }
         else {
-            double em = font.getEm();
-            double dt = (em/12.0);
+
 
             double x0 = (this.startX * scale);
             double y0 = (this.startY * scale);
@@ -205,7 +235,12 @@ public class TTFPath
             double y_c = -3 * y0 + 3 * y1;
             double y_d = y0;
 
-            double[] points = new double[26];
+            int step = 12; /*(TODO) Range step to scale
+                            */
+            double em = font.getEm();
+            double dt = (em/step);
+            double[] points = new double[(step<<1)+2];
+
             int xp = 0;
             int yp = 1;
             points[xp] = x0;

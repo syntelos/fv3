@@ -136,8 +136,19 @@ public class TTFFont
 
     public TTFGlyph get(char ch){
         lxl.Index map = this.map;
-        if (null != map)
-            return this.get(map.get(new Character(ch)));
+        if (null != map){
+            Character c = new Character(ch);
+            return this.get(map.get(c));
+        }
+        else
+            throw new IllegalStateException("Glyphs not mapped.");
+    }
+    public int indexOf(char ch){
+        lxl.Index map = this.map;
+        if (null != map){
+            Character c = new Character(ch);
+            return this.map.get(c);
+        }
         else
             throw new IllegalStateException("Glyphs not mapped.");
     }

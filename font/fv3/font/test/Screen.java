@@ -54,7 +54,7 @@ public final class Screen
 
     public final GraphicsConfiguration configuration;
 
-    public final Rectangle display, window;
+    public final Rectangle screen, window, display;
 
 
     /**
@@ -73,17 +73,22 @@ public final class Screen
         this.device = device;
         this.configuration = gc;
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-        this.display = this.configuration.getBounds();
-        this.display.y += insets.top;
-        this.display.height -= (insets.top + insets.bottom);
-        this.display.x += insets.left;
-        this.display.height -= (insets.left + insets.right);
-        this.window = new Rectangle(this.display);
+        this.screen = this.configuration.getBounds();
+        this.screen.y += insets.top;
+        this.screen.height -= (insets.top + insets.bottom);
+        this.screen.x += insets.left;
+        this.screen.height -= (insets.left + insets.right);
+        this.window = new Rectangle(this.screen);
         insets = window.getInsets();
         this.window.y += insets.top;
         this.window.height -= (insets.top + insets.bottom);
         this.window.x += insets.left;
         this.window.height -= (insets.left + insets.right);
+        this.display = new Rectangle(this.window);
+        this.display.x += 100;
+        this.display.width -= 200;
+        this.display.y += 100;
+        this.display.height -= 200;
     }
 
 
