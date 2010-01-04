@@ -184,10 +184,10 @@ public class TTFGlyph
                         int contour = 0;
                         int contourEnd = contourIndex[contour];
                         boolean contourNew = true;
-                        boolean isLastPoint = (cc == LastPoint);
+
                         TTFPath first = null, last = null;
 
-                        boolean onCurve = (0 != (flags[cc] & ON_CURVE)), onCurveLast;
+                        boolean onCurve = (0 != (flags[cc] & ON_CURVE));
                         int x = (cc<<1);
                         int y = (x+1);
 
@@ -213,19 +213,54 @@ public class TTFGlyph
 
                         for (cc++; cc < nPoints; cc++){
 
-                            if (cc > contourEnd){
-                                contour += 1;
-                                contourEnd = contourIndex[contour];
-                                contourNew = true;
-                            }
-
                             x = (cc<<1);
                             y = (x+1);
-                            isLastPoint = (cc == LastPoint);
-                            onCurveLast = onCurve;
                             onCurve = (0 != (flags[cc] & ON_CURVE));
 
-                            if (onCurve){
+                            if (cc > contourEnd){
+
+                                if (null != first && null != last)
+                                    first.close(this,last);
+
+                                contour += 1;
+                                contourEnd = contourIndex[contour];
+
+                                point = new Point(contour);
+
+                                if (onCurve){
+
+                                    startX = points[x];
+                                    startY = points[y];
+
+                                    HavePoint = Start;
+                                    point.start = cc;
+
+                                    controlX = 0.0;
+                                    controlY = 0.0;
+                                    controlX2 = 0.0;
+                                    controlY2 = 0.0;
+                                    endX = 0.0;
+                                    endY = 0.0;
+                                }
+                                else {
+
+                                    controlX = points[x];
+                                    controlY = points[y];
+
+                                    HavePoint = Control;
+                                    point.control = cc;
+
+                                    startX = 0.0;
+                                    startY = 0.0;
+                                    controlX2 = 0.0;
+                                    controlY2 = 0.0;
+                                    endX = 0.0;
+                                    endY = 0.0;
+                                }
+                                first = null;
+                                last = null;
+                            }
+                            else if (onCurve){
                                 switch (HavePoint){
                                 case Start:
                                     endX = points[x];
@@ -233,30 +268,17 @@ public class TTFGlyph
 
                                     point.end = cc;
 
-                                    if (contourNew){
-                                        if (null != first)
-                                            last = first.close(this,last);
-
-                                    }
-
                                     this.add(last = new TTFPath(point.close(this),
                                                                 startX, startY, endX, endY));
 
                                     point = new Point(contour);
 
-                                    if (contourNew){
-                                        first = last;
-                                        contourNew = false;
-                                    }
-                                    else if (isLastPoint && null != first){
-
-                                        last = first.close(this,last);
-                                    }
-
-                                    HavePoint = Start;
-
                                     startX = endX;
                                     startY = endY;
+
+                                    HavePoint = Start;
+                                    point.start = cc;
+
                                     controlX = 0.0;
                                     controlY = 0.0;
                                     controlX2 = 0.0;
@@ -265,13 +287,11 @@ public class TTFGlyph
                                     endY = 0.0;
                                     break;
                                 case Control:
+
                                     endX = points[x];
                                     endY = points[y];
 
                                     point.end = cc;
-
-                                    if (contourNew && null != first)
-                                        last = first.close(this,last);
 
                                     this.add(last = new TTFPath(point.close(this), false,
                                                                 startX, startY, controlX, controlY,
@@ -279,19 +299,12 @@ public class TTFGlyph
 
                                     point = new Point(contour);
 
-                                    if (contourNew){
-                                        first = last;
-                                        contourNew = false;
-                                    }
-                                    else if (isLastPoint && null != first){
-
-                                        last = first.close(this,last);
-                                    }
-
-                                    HavePoint = Start;
-
                                     startX = endX;
                                     startY = endY;
+
+                                    HavePoint = Start;
+                                    point.start = cc;
+
                                     controlX = 0.0;
                                     controlY = 0.0;
                                     controlX2 = 0.0;
@@ -310,50 +323,40 @@ public class TTFGlyph
                                     controlX = points[x];
                                     controlY = points[y];
 
-                                    point.control = cc;
-
                                     HavePoint = Control;
+                                    point.control = cc;
 
                                     break;
                                 case Control:
                                     /*
                                      * The famous TTF point injection
-                                     */
-                                    controlX2 = points[x];
-                                    controlY2 = points[y];
-                                    /*
+                                     * 
                                      * The approach taken is from
                                      * fontforge.  It is incorrect
                                      * according to the spec, but
                                      * works.
                                      */
-                                    endX = (controlX2 + controlX)/2.0;
-                                    endY = (controlY2 + controlY)/2.0; 
+                                    controlX2 = points[x];
+                                    controlY2 = points[y];
                                     /*
                                      */
-                                    if (contourNew){
-                                        if (null != first)
-                                            last = first.close(this,last);
-                                    }
+                                    endX = (controlX2 + controlX)/2.0;
+                                    endY = (controlY2 + controlY)/2.0; 
 
                                     this.add(last = new TTFPath(point.close(this), true,
                                                                 startX, startY, controlX, controlY,
                                                                 endX, endY));
 
                                     point = new Point(contour);
-                                    point.control = cc;
-
-                                    if (contourNew){
-                                        first = last;
-                                        contourNew = false;
-                                    }
-
-                                    HavePoint = Control;
 
                                     startX = endX;
                                     startY = endY;
                                     controlX = controlX2;
                                     controlY = controlY2;
+
+                                    HavePoint = Control;
+                                    point.control = cc;
+
                                     controlX2 = 0.0;
                                     controlY2 = 0.0;
                                     endX = 0.0;
