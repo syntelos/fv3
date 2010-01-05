@@ -95,6 +95,8 @@ public class Main
 
     private BufferedImage backing;
 
+    private FontsDir fontsDir;
+
 
     public Main(String name){
         super(name);
@@ -113,6 +115,7 @@ public class Main
         this.gridFg = new Color(1.0f,0.0f,0.0f,1.0f);
         this.norm = new AffineTransform();
         this.titleDescBox = new Rectangle(30,30,500,100);
+        this.fontsDir = new FontsDir();
     }
 
 

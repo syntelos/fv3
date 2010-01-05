@@ -48,6 +48,7 @@
       <fileset dir="fonts">
         <include name="**/*.ttf" />
         <include name="**/*.otf" />
+        <include name="**/fonts.dir" />
       </fileset>
     </copy>
     <jar jarfile="${target.jar}" basedir="${bin}" >
