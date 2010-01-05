@@ -74,6 +74,8 @@ public class TTFFont
 
     private double scale;
 
+    private String[] desc;
+
 
     public TTFFont(String name, TTFFontReader reader) {
         this(name,reader,(new FontOptions()));
@@ -329,6 +331,53 @@ public class TTFFont
         else
             return null;
     }
+    public final String[] getDescription(){
+        String[] desc = this.desc;
+        if (null == desc){
+            {
+                Os2 table = this.getTableOs2();
+                if (null != table){
+                    if (null != table.achVendID)
+                        desc = Add(desc,"Vendor ID: %s",table.achVendID);
+                }
+            }
+            {
+                Name table = this.getTableName();
+                if (null != table){
+                    if (null != table.uniqueid)
+                        desc = Add(desc,"Unique ID: %s",table.uniqueid);
+                    if (null != table.fullname)
+                        desc = Add(desc,"Fullname: %s",table.fullname);
+                    if (null != table.fontname)
+                        desc = Add(desc,"Fontname: %s",table.fontname);
+                    if (null != table.family)
+                        desc = Add(desc,"Family: %s",table.family);
+                    if (null != table.subfamily)
+                        desc = Add(desc,"Sub Family: %s",table.subfamily);
+                    if (null != table.copyright)
+                        desc = Add(desc,"Copyright: %s",table.copyright);
+                    if (null != table.designer)
+                        desc = Add(desc,"Designer: %s",table.designer);
+                    if (null != table.designerurl)
+                        desc = Add(desc,"Designer URL: %s",table.designerurl);
+                    if (null != table.manufacturer)
+                        desc = Add(desc,"Manufacturer: %s",table.manufacturer);
+                    if (null != table.vendorurl)
+                        desc = Add(desc,"Vendor URL: %s",table.vendorurl);
+                    if (null != table.descriptor)
+                        desc = Add(desc,"Descriptor: %s",table.descriptor);
+                    if (null != table.licenseurl)
+                        desc = Add(desc,"License URL: %s",table.licenseurl);
+                    if (null != table.license)
+                        desc = Add(desc,"License: %s",table.license);
+                    if (null != table.version)
+                        desc = Add(desc,"Version: %s",table.version);
+                }
+            }
+            this.desc = desc;
+        }
+        return desc;
+    }
     public final int countFaces(){
         if (this.isTTCF)
             return this.ttcf.getLength();
@@ -490,7 +539,7 @@ public class TTFFont
                         if (null != table.subfamily)
                             System.out.printf("\t\tSub-Family %s\n",table.subfamily);
                         if (null != table.uniqueid)
-                            System.out.printf("\t\tFullname %s\n",table.uniqueid);
+                            System.out.printf("\t\tUnique-ID %s\n",table.uniqueid);
                         if (null != table.fullname)
                             System.out.printf("\t\tFullname %s\n",table.fullname);
                         if (null != table.version)
@@ -551,6 +600,90 @@ public class TTFFont
         catch (java.io.IOException exc){
             exc.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    protected final static String[] Add(String[] list, String leader, String value){
+        Paragraph strtok = new Paragraph(value);
+        int count = strtok.countTokens();
+        if (1 == count)
+            return Paragraph.Add(list,String.format(leader,strtok.nextToken()));
+        else {
+            String leader2;
+            {
+                StringBuilder strbuf = new StringBuilder();
+                for (int cc = 0, cz = (leader.length()-2); cc < cz; cc++)
+                    strbuf.append(' ');
+                strbuf.append("%s");
+                leader2 = strbuf.toString();
+            }
+            list = Paragraph.Add(list,String.format(leader,strtok.nextToken()));
+            for (int cc = 1; cc < count; cc++){
+                list = Paragraph.Add(list,String.format(leader2,strtok.nextToken()));
+            }
+            return list;
+        }
+    }
+
+    protected final static class Paragraph
+        extends java.util.StringTokenizer
+    {
+        protected final static String[] Add(String[] list, String item){
+            if (null == item)
+                return list;
+            else if (null == list)
+                return new String[]{item};
+            else {
+                int len = list.length;
+                String[] copier = new String[len+1];
+                System.arraycopy(list,0,copier,0,len);
+                copier[len] = item;
+                return copier;
+            }
+        }
+
+        private final int count;
+        private final String[] list;
+        private int index;
+
+        protected Paragraph(String string){
+            super(string,"\r\n\t ");
+            int count = super.countTokens();
+            if (1 == count){
+                this.count = 1;
+                this.list = new String[]{super.nextToken()};
+            }
+            else {
+                String[] list = null;
+                StringBuilder strbuf = new StringBuilder();
+                for (int cc = 0; cc < count; cc++){
+                    if (0 != strbuf.length())
+                        strbuf.append(' ');
+
+                    if (strbuf.length() < 50)
+                        strbuf.append(super.nextToken());
+                    else {
+                        list = Add(list,strbuf.toString());
+                        strbuf.setLength(0);
+                        strbuf.append(super.nextToken());
+                    }
+                }
+                if (0 != strbuf.length())
+                    list = Add(list,strbuf.toString());
+
+                this.list = list;
+                this.count = ((null != list)?(list.length):(0));
+            }
+        }
+
+        public int countTokens() {
+            return this.count;
+        }
+        public String nextToken(){
+            if (this.index < this.count)
+                return this.list[this.index++];
+            else
+                throw new java.util.NoSuchElementException(String.valueOf(this.index)+'/'+String.valueOf(this.count));
         }
     }
 }

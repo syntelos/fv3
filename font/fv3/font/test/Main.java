@@ -28,10 +28,12 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -40,7 +42,8 @@ import java.awt.geom.Rectangle2D;
 
 public class Main 
     extends java.awt.Frame 
-    implements java.awt.event.KeyListener,
+    implements java.awt.event.ComponentListener,
+               java.awt.event.KeyListener,
                java.awt.event.MouseListener,
                java.awt.event.MouseMotionListener,
                java.awt.event.MouseWheelListener, 
@@ -74,9 +77,13 @@ public class Main
 
     private Rectangle display;
 
+    private Rectangle titleDescBox;
+
     private AffineTransform norm, flip;
 
     private int index, descPage;
+
+    private boolean descGlyph;
 
     private String title, desc[];
 
@@ -84,11 +91,14 @@ public class Main
 
     private Font large, small, micro;
 
-    private Color gridFg, gridBg;
+    private Color titleBg, titleFg, gridFg, gridBg;
+
+    private BufferedImage backing;
 
 
     public Main(String name){
         super(name);
+        this.addComponentListener(this);
         this.addKeyListener(this);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -97,9 +107,12 @@ public class Main
         this.micro = new Font(Font.MONOSPACED,Font.PLAIN,8);
         this.small = new Font(Font.MONOSPACED,Font.PLAIN,12);
         this.large = new Font(Font.MONOSPACED,Font.BOLD,28);
+        this.titleBg = new Color(0.7f,0.7f,0.7f,0.7f);
+        this.titleFg = new Color(0.9f,0.1f,0.1f,0.9f);
         this.gridBg = new Color(0.7f,0.0f,0.0f,0.7f);
         this.gridFg = new Color(1.0f,0.0f,0.0f,1.0f);
         this.norm = new AffineTransform();
+        this.titleDescBox = new Rectangle(30,30,500,100);
     }
 
 
@@ -137,13 +150,20 @@ public class Main
         TTFGlyph glyph = this.glyph;
         if (null != glyph){
             char ch = glyph.character;
-            this.title = String.format("Glyph '%c' 0x%x @ Index %d",ch,(int)ch,this.index);
-            this.desc = glyph.getPath2dDescription();
+            this.title = String.format("%s glyph '%c' 0x%x @ Index %d",this.font.getName(),ch,(int)ch,this.index);
+            if (this.descGlyph)
+                this.desc = glyph.getPath2dDescription();
+            else
+                this.desc = this.font.getDescription();
             this.descPage = 0;
         }
         else {
-            this.title = String.format("Glyph not found @ Index %d",this.index);
-            this.desc = null;
+            this.title = String.format("%s glyph not found @ Index %d",this.font.getName(),this.index);
+            if (this.descGlyph)
+                this.desc = null;
+            else
+                this.desc = this.font.getDescription();
+
             this.descPage = 0;
         }
     }
@@ -193,10 +213,20 @@ public class Main
         }
     }
     public void update(Graphics g){
-        this.update( (Graphics2D)g);
+        BufferedImage backing = this.backing;
+        if (null == backing)
+            backing = this.backing();
+        Graphics2D bg = backing.createGraphics();
+        try {
+            this.update(bg);
+        }
+        finally {
+            bg.dispose();
+        }
+        g.drawImage(backing,0,0,this);
     }
     public void paint(Graphics g){
-        this.update( (Graphics2D)g);
+        this.update(g);
     }
     public void update(Graphics2D g){
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -229,22 +259,9 @@ public class Main
             //
             g.setTransform(this.norm);
 
-            g.setColor(this.gridFg);
+            this.drawTitle(g);
 
-            g.setFont(this.large);
-
-            g.drawString(title,20,60);
-
-            if (null != this.desc){
-                g.setFont(this.small);
-                g.setColor(this.gridBg);
-
-                int x = 40, y = 100;
-                for (int cc = this.descPage, count = this.desc.length; cc < count; cc++){
-                    g.drawString(this.desc[cc],x,y);
-                    y += 20;
-                }
-            }
+            this.drawDesc(g);
             //
             g.setTransform(this.flip);
 
@@ -253,13 +270,57 @@ public class Main
             glyph.drawOutline(g);
         }
         else {
-
-            g.setColor(this.gridFg);
-
-            g.setFont(this.large);
-
-            g.drawString(title,20,60);
+            this.drawTitle(g);
         }
+    }
+    private void drawDesc(Graphics2D g){
+
+        String[] desc = this.desc;
+
+        float x = 40.0f, y = 100.0f;
+
+        if (null != this.desc){
+            g.setFont(this.small);
+            g.setColor(this.gridBg);
+
+            for (int cc = this.descPage, count = this.desc.length; cc < count; cc++){
+                g.drawString(this.desc[cc],x,y);
+                y += 20;
+            }
+            this.titleDescBox.height = (int)Math.ceil(y);
+        }
+    }
+    private void drawTitle(Graphics2D g){
+
+        String title = this.title;
+
+        float x = 30.0f, y = 60.0f;
+
+        g.setFont(this.large);
+
+        g.setColor(this.titleBg);
+
+        g.drawString(title,x-0.8f,y-0.8f);
+
+        g.setColor(this.titleFg);
+
+        g.drawString(title,x,y);
+    }
+    private BufferedImage backing(){
+        if (null != this.backing)
+            this.backing.flush();
+        this.backing = new BufferedImage(this.getWidth(),this.getHeight(),BufferedImage.TYPE_INT_ARGB);
+        return this.backing;
+    }
+    public void componentResized(ComponentEvent e){
+        this.backing();
+    }
+    public void componentMoved(ComponentEvent e){
+    }
+    public void componentShown(ComponentEvent e){
+        this.backing();
+    }
+    public void componentHidden(ComponentEvent e){
     }
     public void windowOpened(WindowEvent e){
         this.requestFocus();
@@ -322,6 +383,20 @@ public class Main
         }
     }
     public void mouseClicked(MouseEvent e){
+        int x = e.getX();
+        int y = e.getY();
+        if (this.titleDescBox.contains(x,y)){
+            this.descGlyph = (!this.descGlyph);
+            if (this.descGlyph){
+                if (null != this.glyph)
+                    this.desc = this.glyph.getPath2dDescription();
+                else
+                    this.desc = null;
+            }
+            else
+                this.desc = this.font.getDescription();
+            this.repaint();
+        }
         this.requestFocus();
     }
     public void mousePressed(MouseEvent e){
