@@ -74,6 +74,12 @@ public class TTFGlyph
     public final boolean isCompound(){
         return (null != this.compound);
     }
+    public final int getNumPoints(){
+        return this.nPoints;
+    }
+    public final int getNumContours(){
+        return this.nContours;
+    }
     public void read(TTFFontReader reader){
         if (0 == this.length)
             return;
@@ -282,7 +288,7 @@ public class TTFGlyph
                             }
                             else if (onCurve){
                                 /*
-                                 * (X,Y) in existing contour
+                                 * (X,Y) "on" existing contour
                                  */
                                 switch (HavePoint){
                                 case HaveStart:
@@ -347,6 +353,9 @@ public class TTFGlyph
                                 }
                             }
                             else {
+                                /*
+                                 * (X,Y) "off" existing contour
+                                 */
                                 switch (HavePoint){
                                 case HaveStart:
                                     controlX = points[x];
@@ -401,6 +410,12 @@ public class TTFGlyph
                             }
                         }
 
+                        if (HaveControl == HavePoint){
+
+                            this.add(last = new TTFPath(point.close(this), false,
+                                                        startX, startY, controlX, controlY,
+                                                        endX, endY));
+                        }
                         if (null != first && null != last)
                             last = first.close(this,last);
                     }
