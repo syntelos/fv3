@@ -53,9 +53,6 @@ public final class Hhea
         reader.seek(this.offset+4);
         this.ascent = reader.readUint16();
         this.descent = reader.readSint16();
-        if (0.0 > this.descent)
-            this.descent = -descent;
-
         this.leading = reader.readSint16();
         this.advanceWidthMax = reader.readUint16();
         this.minLeftSideBearing = reader.readSint16();

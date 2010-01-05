@@ -60,6 +60,27 @@ public class TTFPath
     }
 
     /**
+     * Synthetic straight line
+     */
+    public TTFPath(Point point, TTFPath first, TTFPath last)
+    {
+        super();
+        this.isStraight = true;
+        this.isQuadratic = false;
+        this.isCubic = false;
+        this.isSynthetic = true;
+        this.point = point;
+        this.startX = last.endX;
+        this.startY = last.endY;
+        this.controlX = 0.0;
+        this.controlY = 0.0;
+        this.controlX2 = 0.0;
+        this.controlY2 = 0.0;
+        this.endX = first.startX;
+        this.endY = first.startY;
+    }
+
+    /**
      * Quadratic
      */
     public TTFPath(Point point, boolean synthetic,
@@ -122,15 +143,25 @@ public class TTFPath
                 this.startX = last.endX;
 
                 this.startY = last.endY;
+
+                return last;
             }
             else if (0.0 == last.endX && 0.0 == last.endY){
 
                 last.endX = this.startX;
 
                 last.endY = this.startY;
+
+                return last;
+            }
+            else {
+                TTFPath synthetic = new TTFPath((new Point(this,last)),this,last);
+                glyph.add(synthetic);
+                return synthetic;
             }
         }
-        return last;
+        else
+            throw new IllegalStateException();
     }
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
         double scale = font.getScale();

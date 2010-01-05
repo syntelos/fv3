@@ -18,6 +18,7 @@
 package fv3.font.ttf;
 
 import fv3.font.TTFGlyph;
+import fv3.font.TTFPath;
 
 import java.lang.Math;
 
@@ -37,6 +38,13 @@ public final class Point {
         super();
         this.contour = contour;
     }
+    public Point(TTFPath first, TTFPath last){
+        super();
+        this.contour = last.point.contour;
+        this.index = (last.point.index + 1);
+        this.start = last.point.end;
+        this.end = first.point.start;
+    }
 
 
     public Point close(TTFGlyph glyph){
@@ -46,9 +54,9 @@ public final class Point {
     public String stringMoveTo(double startX, double startY){
 
         if (-1 != this.start)
-            return String.format("Path: %3d; Contour: %2d; LineTo(%d:{%f,%f});",this.index,this.contour,this.start,startX,startY);
+            return String.format("Path: %3d; Contour: %2d; MoveTo(%d:{%f,%f});",this.index,this.contour,this.start,startX,startY);
         else
-            return String.format("Path: %3d; Contour: %2d; LineTo({%f,%f});",this.index,this.contour,startX,startY);
+            return String.format("Path: %3d; Contour: %2d; MoveTo({%f,%f});",this.index,this.contour,startX,startY);
     }
     public String stringLineTo(double endX, double endY){
 
