@@ -45,8 +45,23 @@ public final class Point {
         this.start = last.point.end;
         this.end = first.point.start;
     }
+    /**
+     * Compound copy
+     */
+    public Point(int contour, int base, Point copy){
+        super();
+        this.contour = contour;
+        if (-1 != copy.start)
+            this.start = base+copy.start;
+        if (-1 != copy.end)
+            this.end = base+copy.end;
+    }
 
 
+    public int high(){
+
+        return Math.max(Math.max(this.start,this.control),this.end);
+    }
     public Point close(TTFGlyph glyph){
         this.index = glyph.getLength();
         return this;

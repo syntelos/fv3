@@ -17,6 +17,7 @@
  */
 package fv3.font;
 
+import fv3.font.ttf.CompoundGlyph;
 import fv3.font.ttf.Point;
 
 /**
@@ -58,7 +59,6 @@ public class TTFPath
         this.endX = endX;
         this.endY = endY;
     }
-
     /**
      * Synthetic straight line
      */
@@ -79,7 +79,49 @@ public class TTFPath
         this.endX = first.startX;
         this.endY = first.startY;
     }
-
+    /**
+     * Compound copy
+     */
+    public TTFPath(CompoundGlyph cg, Point point, TTFPath copy)
+    {
+        super();
+        this.isStraight = copy.isStraight;
+        this.isQuadratic = copy.isQuadratic;
+        this.isCubic = copy.isCubic;
+        this.isSynthetic = copy.isSynthetic;
+        this.point = point;
+        double[] dst = cg.transform(this.source(),copy.source());
+        if (this.isStraight){
+            this.startX    = dst[0];
+            this.startY    = dst[1];
+            this.controlX  = 0.0;
+            this.controlY  = 0.0;
+            this.controlX2 = 0.0;
+            this.controlY2 = 0.0;
+            this.endX      = dst[2];
+            this.endY      = dst[3];
+        }
+        else if (this.isQuadratic){
+            this.startX    = dst[0];
+            this.startY    = dst[1];
+            this.controlX  = dst[2];
+            this.controlY  = dst[3];
+            this.controlX2 = 0.0;
+            this.controlY2 = 0.0;
+            this.endX      = dst[4];
+            this.endY      = dst[5];
+        }
+        else if (this.isCubic){
+            this.startX    = dst[0];
+            this.startY    = dst[1];
+            this.controlX  = dst[2];
+            this.controlY  = dst[3];
+            this.controlX2 = dst[4];
+            this.controlY2 = dst[5];
+            this.endX      = dst[6];
+            this.endY      = dst[7];
+        }
+    }
     /**
      * Quadratic
      */
@@ -103,7 +145,6 @@ public class TTFPath
         this.endX = endX;
         this.endY = endY;
     }
-
     /**
      * Cubic
      */
@@ -267,6 +308,17 @@ public class TTFPath
     }
     public double[] points(){
         return this.points;
+    }
+    public final double[] source(){
+        if (this.isStraight){
+            return new double[]{this.startX,this.startY,this.endX,this.endY};
+        }
+        else if (this.isQuadratic){
+            return new double[]{this.startX,this.startY,this.controlX,this.controlY,this.endX,this.endY};
+        }
+        else {
+            return new double[]{this.startX,this.startY,this.controlX,this.controlY,this.controlX2,this.controlY2,this.endX,this.endY};
+        }
     }
     public String toString(){
         if (this.isStraight)

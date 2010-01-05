@@ -24,6 +24,7 @@ import fv3.font.FontsDir;
 import fv3.font.TTFFontReader;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Font;
@@ -84,7 +85,7 @@ public class Main
 
     private int index, descPage;
 
-    private boolean descGlyph;
+    private volatile boolean descGlyph, cursor;
 
     private String title, desc[];
 
@@ -424,5 +425,17 @@ public class Main
     public void mouseDragged(MouseEvent e){
     }
     public void mouseMoved(MouseEvent e){
+        if (e.getX() < 600){
+            if (this.cursor)
+                return;
+            else {
+                this.cursor = true;
+                this.setCursor(Cursor.HAND_CURSOR);
+            }
+        }
+        else if (this.cursor){
+            this.cursor = false;
+            this.setCursor(Cursor.DEFAULT_CURSOR);
+        }
     }
 }

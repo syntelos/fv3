@@ -435,9 +435,49 @@ public class TTFGlyph
                     copier[index] = add;
                     this.compound = copier;
                 }
+                /*
+                 */
+                for (int cc = 0, count = this.compound.length; cc < count; cc++){
+                    CompoundGlyph cg = this.compound[cc];
+                    if (cg.match){
+                        //
+                        // [TODO]
+                        //
+                    }
+                    else {
+                        index = cg.index;
+                        TTFGlyph glyph = this.font.get(index);
+                        if (null != glyph)
+                            this.add(cg,glyph);
+                    }
+                }
             }
             else
                 throw new UnsupportedOperationException(String.format("Unrecognized contour indicator (%d).",nContours));
+        }
+    }
+    protected final void add(CompoundGlyph cg, TTFGlyph glyph){
+        int contour = 0;
+        int pointBase = 0;
+        {
+            TTFPath last = this.last();
+            if (null != last){
+                contour = (last.point.contour+1);
+                pointBase = Math.max(0,last.point.high());
+            }
+        }
+        int contourState = 0;
+        for (int cc = 0, count = glyph.getLength(); cc < count; cc++){
+            TTFPath source = glyph.get(cc);
+            if (null != source){
+                if (contourState != source.point.contour){
+                    contour += 1;
+                    contourState = source.point.contour;
+                }
+
+                TTFPath target = new TTFPath(cg,(new Point(contour,pointBase,source.point).close(this)),source);
+                this.add(target);
+            }
         }
     }
 

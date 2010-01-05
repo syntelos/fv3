@@ -40,9 +40,11 @@ public final class CompoundGlyph {
 
     private final static double EPSILON = 33.0/65536.0;
 
+    public final boolean scale, translation, match;
+
     public final int flags, index, matchCompound, matchComponent;
 
-    public final double a, b, c, d, e, f, m, n, am, cm, bn, dn;
+    public final double xx, xy, yy, yx, tx, ty;
 
 
     public CompoundGlyph(TTFFontReader reader){
@@ -62,83 +64,100 @@ public final class CompoundGlyph {
             arg2 = reader.readSint8();
         }
 
+        double tx, ty;
+
         if (0 != (this.flags & WE_HAVE_A_SCALE)){
+            this.scale = true;
             double s = reader.read214();
-            this.a = s;
-            this.b = 0.0;
-            this.c = 0.0;
-            this.d = s;
+            this.xx = s;
+            this.xy = s;
+            this.yy = s;
+            this.yx = s;
+            tx = s;
+            ty = s;
         }
         else if (0 != (this.flags & WE_HAVE_AN_X_AND_Y_SCALE)){
-            this.a = reader.read214();
-            this.b = 0.0;
-            this.c = 0.0;
-            this.d = reader.read214();
+            this.scale = true;
+            this.xx = reader.read214();
+            this.xy = 0.0;
+            this.yy = reader.read214();
+            this.yx = 0.0;
+            tx = this.xx;
+            ty = this.yy;
         }
         else if (0 != (this.flags & WE_HAVE_A_TWO_BY_TWO)){
-            this.a = reader.read214();
-            this.b = reader.read214();
-            this.c = reader.read214();
-            this.d = reader.read214();
+            this.scale = true;
+            this.xx = reader.read214();
+            this.yx = reader.read214();
+            this.xy = reader.read214();
+            this.yy = reader.read214();
+            tx = Math.sqrt((this.xx*this.xx)+(this.xy+this.xy));
+            ty = Math.sqrt((this.yy*this.yy)+(this.yx+this.yx));
         }
         else {
-            this.a = 1.0;
-            this.b = 0.0;
-            this.c = 0.0;
-            this.d = 1.0;
+            this.scale = false;
+            this.xx = 0.0;
+            this.xy = 0.0;
+            this.yy = 0.0;
+            this.yx = 0.0;
+            tx = 1.0;
+            ty = 1.0;
         }
 
         if ( 0 != (this.flags & ARGS_ARE_XY_VALUES)){
-            double m = Math.max(Math.abs(a),Math.abs(b));
-            double n = Math.max(Math.abs(c),Math.abs(d));
-            if (Math.abs(Math.abs(this.a) - Math.abs(this.c)) <= EPSILON)
-                m *= 2.0;
-
-            if (Math.abs(Math.abs(c) - Math.abs(d)) <= EPSILON)
-                n *= 2.0;
-
-            this.m = m;
-            this.n = n;
-            this.am = (this.a/this.m);
-            this.cm = (this.c/this.m);
-            this.bn = (this.b/this.n);
-            this.dn = (this.d/this.n);
-            this.e = arg1;
-            this.f = arg2;
+            this.match = false;
+            this.translation = true;
+            if (this.scale){
+                this.tx = (tx * arg1);
+                this.ty = (ty * arg2);
+            }
+            else {
+                this.tx = arg1;
+                this.ty = arg2;
+            }
             this.matchCompound = -1;
             this.matchComponent = -1;
         }
         else {
-            this.m = 0.0;
-            this.n = 0.0;
-            this.am = 0.0;
-            this.cm = 0.0;
-            this.bn = 0.0;
-            this.dn = 0.0;
-            this.e = 0.0;
-            this.f = 0.0;
+            this.match = true;
+            this.translation = false;
+            this.tx = 0.0;
+            this.ty = 0.0;
             this.matchCompound = arg1;
             this.matchComponent = arg2;
         }
     }
 
 
-    public boolean hasMatchIndeces(){
-
-        return (0 == (this.flags & ARGS_ARE_XY_VALUES));
-    }
-    public boolean hasTransform(){
-
-        return (0 != (this.flags & ARGS_ARE_XY_VALUES));
-    }
     public double[] transform(double[] dst, double[] src){
         /*
-         * See freetype 'ttgload.c'.  This is the documented
-         * composite glyph transform.  It's known to be broken.
+         * From freetype 'ttgload.c'.  The documented composite glyph
+         * transform is known to be broken, and fontforge is hard to
+         * read in this neighborhood.  Freetype is relatively clear on
+         * the subject, with something known to work.
          */
-        for (int x = 0, y = 1, z = src.length; y < z; x += 2, y += 2){
-            dst[x] = (this.m * ((this.am * src[x]) + (this.cm * src[y]) + this.e));
-            dst[y] = (this.n * ((this.bn * src[x]) + (this.dn * src[y]) + this.f));
+        if (this.scale){
+            if (this.translation){
+                for (int x,y,cc = 0, count = (src.length>>1); cc < count; cc++){
+                    x = (cc<<1);
+                    y = (x+1);
+
+                    dst[x] = ((this.xx * src[x]) + (this.xy * src[y]) + this.tx);
+                    dst[y] = ((this.yx * src[x]) + (this.yy * src[y]) + this.ty);
+                }
+            }
+            else {
+                for (int x,y,cc = 0, count = (src.length>>1); cc < count; cc++){
+                    x = (cc<<1);
+                    y = (x+1);
+
+                    dst[x] = ((this.xx * src[x]) + (this.xy * src[y]));
+                    dst[y] = ((this.yx * src[x]) + (this.yy * src[y]));
+                }
+            }
+        }
+        else {
+            System.arraycopy(src,0,dst,0,src.length);
         }
         return dst;
     }
@@ -146,12 +165,9 @@ public final class CompoundGlyph {
         return (0 != (this.flags & MORE_COMPONENTS));
     }
     public String toString(){
-            
-        if (0 != (this.flags & ARGS_ARE_XY_VALUES)){
-            return String.format("Compound( 0x%x, %d, %f, %f, %f, %f, %f, %f)",this.flags,this.index,this.a,this.b,this.c,this.d,this.e,this.f);
-        }
-        else {
+        if (this.match)
             return String.format("Compound( 0x%x, %d, %d, %d)",this.flags,this.index,this.matchCompound,this.matchComponent);
-        }
+        else 
+            return String.format("Compound( 0x%x, %d, %f, %f, %f, %f, %f, %f)",this.flags,this.index,this.xx,this.yx,this.xy,this.yy,this.tx,this.ty);
     }
 }
