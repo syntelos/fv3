@@ -20,6 +20,7 @@ package fv3.font.inspect;
 import fv3.font.awt.TTFFont;
 import fv3.font.awt.TTFGlyph;
 import fv3.font.FontOptions;
+import fv3.font.FontsDir;
 import fv3.font.TTFFontReader;
 
 import java.awt.Color;
