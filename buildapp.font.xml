@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="fv3-font" default="jar">
 
-  <property name="main" value="fv3.font.test.Main"/>
+  <property name="main" value="fv3.font.inspect.Main"/>
 
   <property name="src" value="font"/>
   <property name="bin" value="font/bin"/>

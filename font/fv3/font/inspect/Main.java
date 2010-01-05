@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.font.test;
+package fv3.font.inspect;
 
 import fv3.font.awt.TTFFont;
 import fv3.font.awt.TTFGlyph;
