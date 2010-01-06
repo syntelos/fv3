@@ -156,6 +156,15 @@ public final class CompoundGlyph {
                 }
             }
         }
+        else if (this.translation){
+            for (int x,y,cc = 0, count = (src.length>>1); cc < count; cc++){
+                x = (cc<<1);
+                y = (x+1);
+
+                dst[x] = (src[x] + this.tx);
+                dst[y] = (src[y] + this.ty);
+            }
+        }
         else {
             System.arraycopy(src,0,dst,0,src.length);
         }
