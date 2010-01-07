@@ -54,36 +54,25 @@ public class Main
 
     public static void main(String[] argv){
 
-        String name = "NEUROPOL";
-        Main main = new Main(name);
+        Main main = new Main("NEUROPOL");
         Screen screen = new Screen(main);
-        FontOptions options = new FontOptions((screen.display.width),(screen.display.height));
-        try {
-            TTFFontReader reader = new TTFFontReader(name);
-            try {
-                TTFFont font = new TTFFont(name,reader,options);
-                main.init(screen,font);
-            }
-            finally {
-                reader.close();
-            }
-        }
-        catch (java.io.IOException exc){
-            exc.printStackTrace();
-            System.exit(1);
-        }
+        main.init(screen);
     }
 
 
+    private TTFFontReader reader;
+
     private TTFFont font ;
 
-    private Rectangle display;
+    private Rectangle2D.Double display;
 
-    private Rectangle titleDescBox;
+    private Point2D.Double displayCenter;
 
     private AffineTransform norm, flip;
 
     private int index, descPage;
+
+    private double glLeft, glTop;
 
     private volatile boolean descGlyph, cursor;
 
@@ -102,6 +91,7 @@ public class Main
 
     public Main(String name){
         super(name);
+        this.setName(name);
         this.addComponentListener(this);
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -116,21 +106,56 @@ public class Main
         this.gridBg = new Color(0.7f,0.0f,0.0f,0.7f);
         this.gridFg = new Color(1.0f,0.0f,0.0f,1.0f);
         this.norm = new AffineTransform();
-        this.titleDescBox = new Rectangle(30,30,500,100);
         this.fontsDir = new FontsDir();
     }
 
 
-    public void init(Screen screen, TTFFont font){
-        this.font = font;
-        this.set('A');
-        this.setBounds(screen.window);
-        Rectangle display = screen.display;
-        this.display = display;
-        Point2D.Double c = new Point2D.Double(((display.width-display.x)/2.0),((display.height-display.y)/2.0));
-        this.flip = AffineTransform.getQuadrantRotateInstance(2,c.x,c.y);
-        this.flip.translate(display.x,display.y);
+    private TTFFontReader reader(String name)
+        throws java.io.IOException
+    {
+        TTFFontReader reader = this.reader;
+        if (null == reader || (!reader.name.equals(name))){
+            reader = new TTFFontReader(name);
+            this.reader = reader;
+        }
+        else
+            reader.rewind();
+
+        return reader;
+    }
+    public void init(Screen screen){
+        Rectangle window = screen.window;
+        this.reshape(window.x,window.y,window.width,window.height);
         this.show();
+    }
+    public void init(String name){
+        this.setName(name);
+        FontOptions options = new FontOptions((this.display.width),(this.display.height));
+        try {
+            TTFFontReader reader = this.reader(name);
+            TTFFont font = new TTFFont(name,reader,options);
+            this.font = font;
+            this.set('A');
+        }
+        catch (java.io.IOException exc){
+            exc.printStackTrace();
+        }
+    }
+    public void reshape(int x, int y, int w, int h){
+        super.reshape(x,y,w,h);
+        
+        this.display = new Rectangle2D.Double(72d,72d,(w-144d),(h-144d));
+
+        this.displayCenter = new Point2D.Double(((display.width-display.x)/2.0),((display.height-display.y)/2.0));
+
+        this.flip = AffineTransform.getQuadrantRotateInstance(2,this.displayCenter.x,this.displayCenter.y);
+        this.flip.translate(this.display.x,this.display.y);
+
+        this.glLeft = Math.max(250,(this.display.width-800));
+        this.glTop = Math.max(250,(this.display.height-100));
+
+        this.init(this.getName());
+        this.repaint();
     }
     protected void dec(){
         this.set(this.index-1);
@@ -223,7 +248,7 @@ public class Main
             backing = this.backing();
         Graphics2D bg = backing.createGraphics();
         try {
-            this.update(bg);
+            this.draw(bg);
         }
         finally {
             bg.dispose();
@@ -233,7 +258,7 @@ public class Main
     public void paint(Graphics g){
         this.update(g);
     }
-    public void update(Graphics2D g){
+    public void draw(Graphics2D g){
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -258,6 +283,8 @@ public class Main
 
             //
             g.setTransform(this.flip);
+
+            this.font.drawGrid(g,this.small,this.micro,this.gridBg,this.gridFg, this.glLeft, this.glTop);
 
             glyph.drawGrid(g,this.small,this.micro,this.gridBg,this.gridFg);
 
@@ -292,24 +319,23 @@ public class Main
                 g.drawString(this.desc[cc],x,y);
                 y += 20;
             }
-            this.titleDescBox.height = (int)Math.ceil(y);
         }
     }
     private void drawTitle(Graphics2D g){
 
         String title = this.title;
-
-        float x = 30.0f, y = 60.0f;
-
-        g.setFont(this.large);
-
-        g.setColor(this.titleBg);
-
-        g.drawString(title,x-0.8f,y-0.8f);
-
-        g.setColor(this.titleFg);
-
-        g.drawString(title,x,y);
+        if (null != title){
+            float x = 30.0f, y = 60.0f;
+            g.setFont(this.large);
+            g.setColor(this.titleBg);
+            g.drawString(title,x-0.8f,y-0.8f);
+            g.setColor(this.titleFg);
+            g.drawString(title,x,y);
+        }
+    }
+    private void resized(){
+        Rectangle bounds = this.getBounds();
+        this.reshape(bounds.x,bounds.y,bounds.width,bounds.height);
     }
     private BufferedImage backing(){
         if (null != this.backing)
@@ -318,7 +344,7 @@ public class Main
         return this.backing;
     }
     public void componentResized(ComponentEvent e){
-        this.backing();
+        this.resized();
     }
     public void componentMoved(ComponentEvent e){
     }
@@ -388,9 +414,8 @@ public class Main
         }
     }
     public void mouseClicked(MouseEvent e){
-        int x = e.getX();
-        int y = e.getY();
-        if (this.titleDescBox.contains(x,y)){
+
+        if (e.getX() < 600){
             this.descGlyph = (!this.descGlyph);
             if (this.descGlyph){
                 if (null != this.glyph)

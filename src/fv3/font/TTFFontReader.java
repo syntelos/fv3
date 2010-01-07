@@ -49,8 +49,8 @@ public class TTFFontReader
     {
         super("/fonts/"+name+".ttf");
     }
-    public TTFFontReader(ByteBuffer in){
-        super(in);
+    public TTFFontReader(String name, ByteBuffer in){
+        super(name, in);
     }
     public TTFFontReader(File source)
         throws IOException

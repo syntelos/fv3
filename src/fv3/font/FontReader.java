@@ -65,16 +65,23 @@ public class FontReader
     }
 
 
+    public final String name;
+
     protected ByteBuffer buffer;
 
 
     public FontReader(String resource)
         throws IOException
     {
-        this(Resource(resource));
+        this(resource,Resource(resource));
     }
-    public FontReader(ByteBuffer in){
+    public FontReader(String name, ByteBuffer in){
         super();
+        if (null != name)
+            this.name = name;
+        else
+            throw new IllegalArgumentException();
+
         if (null != in)
             this.buffer = in;
         else
@@ -88,6 +95,9 @@ public class FontReader
     {
         super();
         if (null != source && source.isFile()){
+
+            this.name = source.getName();
+
             long length = source.length();
             if (MAX_FILESIZE < length)
                 throw new IllegalArgumentException("Size of file '"+source.getPath()+"' exceeds practical limits.");
@@ -108,6 +118,10 @@ public class FontReader
     }
 
 
+    public FontReader rewind(){
+        this.buffer.rewind();
+        return this;
+    }
     public int tell(){
         return this.buffer.position();
     }

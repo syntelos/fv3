@@ -36,9 +36,6 @@ import java.awt.geom.Path2D;
 public class TTFGlyph
     extends fv3.font.TTFGlyph
 {
-    private final static float Pad = 3.0f;
-    private final static float PadV = 14f;
-
     private final static double ControlR = 3.0;
     private final static double ControlD = (2.0 * ControlR);
     private final static float PathPointDX = 14f;
@@ -61,68 +58,10 @@ public class TTFGlyph
 
         double scale = this.font.getScale();
 
-        double minX = (this.minX * scale);
-        double minY = (this.minY * scale);
-        double maxX = (this.maxX * scale);
-        double maxY = (this.maxY * scale);
-
-        double em = (this.font.getEm() * scale);
-        double dt = (em/10.0);
-
-        for (double t = 0.0, z = (minX - dt); t >= z; t -= dt)
-            minX = t;
-        for (double t = 0.0, z = (maxX + dt); t <= z; t += dt)
-            maxX = t;
-        for (double t = 0.0, z = (minY - dt); t >= z; t -= dt)
-            minY = t;
-        for (double t = 0.0, z = (maxY + dt); t <= z; t += dt)
-            maxY = t;
-
-        g.setFont(small);
-        g.setColor(bg);
-
-        Line2D line;
-
-        int block;
-        int blockX0 = 0, blockY0 = 0, blockX1 = 0, blockY1 = 0;
-
-        block = 0;
-        for (double x = minX; x <= maxX; x += dt, block++){
-
-            line = new Line2D.Double(x,minY,x,maxY);
-
-            g.draw(line);
-            if (100.0 >= x)
-                g.drawString(String.format("%4.1f",x),(float)(x),(float)(maxY+PadV));
-
-            if (5 == block)
-                blockX0 = (int)Math.ceil(x);
-            else
-                blockX1 = (int)Math.ceil(x);
-        }
-        block = 0;
-        for (double y = minY; y <= maxY; y += dt, block++){
-
-            line = new Line2D.Double(minX,y,maxX,y);
-
-            g.draw(line);
-            if (100.0 >= y)
-                g.drawString(String.format("%4.1f",y),(float)(maxX+Pad),(float)(y+Pad));
-
-            if (3 == block)
-                blockY0 = (int)Math.ceil(y);
-            else
-                blockY1 = (int)Math.ceil(y);
-        }
-
-        if (0 != blockX0 && 0 != blockY0){
-            g.setColor(Color.white);
-            g.fillRect(blockX0,blockY0,blockX1,blockY1);
-        }
-
         g.setFont(micro);
         g.setColor(fg);
 
+        Line2D line;
         Ellipse2D on, off;
         double x0, y0, x1, y1, x2, y2;
         float x0p, y0p, x1p, y1p, x2p, y2p;
@@ -238,43 +177,6 @@ public class TTFGlyph
     }
     public final Path2D.Double getPath2d(){
         return this.path2d;
-    }
-    public final Path2D.Double getGrid2d(){
-        Path2D.Double grid2d = this.grid2d;
-        if (null == grid2d){
-            double scale = this.font.getScale();
-
-            double minX = (this.minX * scale);
-            double minY = (this.minY * scale);
-            double maxX = (this.maxX * scale);
-            double maxY = (this.maxY * scale);
-
-            double em = (this.font.getEm() * scale);
-            double dt = (em/10.0);
-
-            for (double t = 0.0, z = (minX - dt); t >= z; t -= dt)
-                minX = t;
-            for (double t = 0.0, z = (maxX + dt); t <= z; t += dt)
-                maxX = t;
-            for (double t = 0.0, z = (minY - dt); t >= z; t -= dt)
-                minY = t;
-            for (double t = 0.0, z = (maxY + dt); t <= z; t += dt)
-                maxY = t;
-
-            grid2d = new Path2D.Double();
-            for (double x = minX; x <= maxX; x += dt){
-
-                grid2d.moveTo(x,minY);
-                grid2d.lineTo(x,maxY);
-            }
-            for (double y = minY; y <= maxY; y += dt){
-
-                grid2d.moveTo(minX,y);
-                grid2d.lineTo(maxX,y);
-            }
-            this.grid2d = grid2d;
-        }
-        return grid2d;
     }
     public String[] getPath2dDescription(){
         String[] path2desc = this.path2desc;

@@ -39,7 +39,7 @@ public final class Screen
 
     public final GraphicsConfiguration configuration;
 
-    public final Rectangle screen, window, display;
+    public final Rectangle screen, window;
 
 
     /**
@@ -69,11 +69,6 @@ public final class Screen
         this.window.height -= (insets.top + insets.bottom);
         this.window.x += insets.left;
         this.window.height -= (insets.left + insets.right);
-        this.display = new Rectangle(this.window);
-        this.display.x += 100;
-        this.display.width -= 200;
-        this.display.y += 100;
-        this.display.height -= 200;
     }
 
 
