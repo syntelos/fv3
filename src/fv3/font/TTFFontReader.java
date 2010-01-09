@@ -19,6 +19,7 @@ package fv3.font;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.BufferUnderflowException;
 import java.nio.CharBuffer;
@@ -41,6 +42,12 @@ public class TTFFontReader
     extends FontReader
 {
     private final static long SfntDate1970 = 0x7c25b080;
+
+    public static InputStream ResourceAsStream(String name)
+        throws IOException
+    {
+        return TTFFontReader.class.getResourceAsStream("/fonts/"+name+".ttf");
+    }
 
 
 

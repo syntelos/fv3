@@ -101,35 +101,62 @@ public final class TTF
     public void init(TTFFont font, TTFFontReader reader) {
 
         Head head = this.getTableHead();
-        head.init(font,this,reader);
+        if (null != head)
+            head.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Head.NAME,font));
 
         Hhea hhea = this.getTableHhea();
-        hhea.init(font,this,reader);
+        if (null != hhea)
+            hhea.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Hhea.NAME,font));
 
         Hmtx hmtx = this.getTableHmtx();
-        hmtx.init(font,this,reader);
+        if (null != hmtx)
+            hmtx.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Hmtx.NAME,font));
 
         Maxp maxp = this.getTableMaxp();
-        maxp.init(font,this,reader);
+        if (null != maxp)
+            maxp.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Maxp.NAME,font));
 
         Os2 os2 = this.getTableOs2();
         if (null != os2)
             os2.init(font,this,reader);
 
         Name name = this.getTableName();
-        name.init(font,this,reader);
+        if (null != name)
+            name.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Name.NAME,font));
 
         Loca loca = this.getTableLoca();
-        loca.init(font,this,reader);
+        if (null != loca)
+            loca.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Loca.NAME,font));
 
         Cmap cmap = this.getTableCmap();
-        cmap.init(font,this,reader);
+        if (null != cmap)
+            cmap.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Cmap.NAME,font));
 
         Glyf glyf = this.getTableGlyf();
-        glyf.init(font,this,reader);
+        if (null != glyf)
+            glyf.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Glyf.NAME,font));
 
         Post post = this.getTablePost();
-        post.init(font,this,reader);
+        if (null != post)
+            post.init(font,this,reader);
+        else
+            throw new IllegalStateException(String.format("Required TTF/OTF table '%s' not found in font '%s'.",Post.NAME,font));
     }
     public int countTables(){
         return this.count;

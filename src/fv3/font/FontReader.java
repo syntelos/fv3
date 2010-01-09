@@ -118,6 +118,9 @@ public class FontReader
     }
 
 
+    public InputStream copy(){
+        return new java.io.ByteArrayInputStream(this.buffer.array());
+    }
     public FontReader rewind(){
         this.buffer.rewind();
         return this;

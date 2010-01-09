@@ -606,7 +606,9 @@ public class TTFFont
     protected final static String[] Add(String[] list, String leader, String value){
         Paragraph strtok = new Paragraph(value);
         int count = strtok.countTokens();
-        if (1 == count)
+        if (0 == count)
+            return list;
+        else if (1 == count)
             return Paragraph.Add(list,String.format(leader,strtok.nextToken()));
         else {
             String leader2;
@@ -649,7 +651,11 @@ public class TTFFont
         protected Paragraph(String string){
             super(string,"\r\n\t ");
             int count = super.countTokens();
-            if (1 == count){
+            if (0 == count){
+                this.count = 0;
+                this.list = null;
+            }
+            else if (1 == count){
                 this.count = 1;
                 this.list = new String[]{super.nextToken()};
             }
