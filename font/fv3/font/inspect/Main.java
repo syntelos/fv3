@@ -57,6 +57,9 @@ public class Main
         main.init(screen);
     }
 
+    private enum Nav {
+        Fonts, Glyphs, Desc;
+    }
 
     private final Font large, small, micro;
 
@@ -76,11 +79,13 @@ public class Main
 
     private volatile Point2D.Double displayCenter;
 
-    private volatile int index, descPage;
+    private volatile int glyphIndex, descPage;
 
     private volatile double glLeft, glTop;
 
-    private volatile boolean descGlyph, cursor, navFonts, navDesc = true;
+    private volatile boolean descGlyph, cursor;
+
+    private volatile Nav nav = Nav.Glyphs;
 
     private volatile String titleString, desc[];
 
@@ -128,11 +133,11 @@ public class Main
             this.setName(font.getName());
             this.font = font;
             if (null != this.glyph){
-                if (!this.glyphSet(this.glyph.character))
-                    this.glyphSet('A');
+                if (!this.glyphSet(this.glyph.character,false))
+                    this.glyphSet('A',false);
             }
             else
-                this.glyphSet('A');
+                this.glyphSet('A',false);
         }
     }
     public void reshape(int x, int y, int w, int h){
@@ -150,53 +155,70 @@ public class Main
 
         this.init();
     }
-    protected boolean glyphDec(){
-        return this.glyphSet(this.index-1);
+    protected boolean glyphDec(int dec){
+        return this.glyphSet(this.glyphIndex-dec);
     }
-    protected boolean glyphInc(){
-        return this.glyphSet(this.index+1);
+    protected boolean glyphInc(int inc){
+        return this.glyphSet(this.glyphIndex+inc);
+    }
+    protected boolean glyphHome(){
+        return this.glyphSet(0);
+    }
+    protected boolean glyphEnd(){
+        return this.glyphSet(this.font.getLength()-1);
     }
     protected boolean glyphSet(int idx){
+        return this._glyphSet(idx,true);
+    }
+    protected boolean glyphSet(char ch, boolean nav){
+        int idx = this.font.indexOf(ch);
+        return this._glyphSet(idx,nav);
+    }
+    protected boolean glyphSet(char ch){
+        return this.glyphSet(ch,true);
+    }
+    private boolean _glyphSet(int idx, boolean nav){
+        if (nav)
+            this.nav = Nav.Glyphs;
+
         if (-1 < idx){
-            this.index = idx;
-            this.glyph = (TTFGlyph)this.font.get(idx);
-            this.glyphSet();
+            if (idx >= this.font.getLength())
+                idx = (idx - this.font.getLength());
+        }
+        else {
+            idx = (idx + this.font.getLength());
+        }
+
+        if (idx != this.glyphIndex || (!nav)){
+            this.glyphIndex = idx;
+            TTFGlyph glyph = (TTFGlyph)this.font.get(idx);
+            this.glyph = glyph;
+            if (null != glyph){
+                char ch = glyph.character;
+                this.titleString = String.format("%s glyph '%c' 0x%x @ Index %d",this.font.getName(),ch,(int)ch,this.glyphIndex);
+                if (this.descGlyph)
+                    this.desc = glyph.getPath2dDescription();
+                else
+                    this.desc = this.font.getDescription();
+                this.descPage = 0;
+            }
+            else {
+                this.titleString = String.format("%s glyph not found @ Index %d",this.font.getName(),this.glyphIndex);
+                if (this.descGlyph)
+                    this.desc = null;
+                else
+                    this.desc = this.font.getDescription();
+
+                this.descPage = 0;
+            }
             return true;
         }
         else
             return false;
     }
-    protected boolean glyphSet(char ch){
-        this.index = this.font.indexOf(ch);
-        this.glyph = (TTFGlyph)this.font.get(this.index);
-        this.glyphSet();
-        return (null != this.glyph);
-    }
-    protected void glyphSet(){
-
-        TTFGlyph glyph = this.glyph;
-        if (null != glyph){
-            char ch = glyph.character;
-            this.titleString = String.format("%s glyph '%c' 0x%x @ Index %d",this.font.getName(),ch,(int)ch,this.index);
-            if (this.descGlyph)
-                this.desc = glyph.getPath2dDescription();
-            else
-                this.desc = this.font.getDescription();
-            this.descPage = 0;
-        }
-        else {
-            this.titleString = String.format("%s glyph not found @ Index %d",this.font.getName(),this.index);
-            if (this.descGlyph)
-                this.desc = null;
-            else
-                this.desc = this.font.getDescription();
-
-            this.descPage = 0;
-        }
-    }
     protected boolean fontsInc(int n){
-        this.navFonts = true;
-        this.navDesc = false;
+        this.nav = Nav.Fonts;
+
         this.fontsDirIndex += n;
         if (this.fontsDirIndex >= this.fontsDir.size)
             this.fontsDirIndex = 0;
@@ -204,23 +226,16 @@ public class Main
         return true;
     }
     protected boolean fontsDec(int n){
-        this.navFonts = true;
-        this.navDesc = false;
+        this.nav = Nav.Fonts;
+
         this.fontsDirIndex -= n;
         if (0 > this.fontsDirIndex)
             this.fontsDirIndex = (this.fontsDir.size-1);
         this.init();
         return true;
     }
-    protected boolean fontsPgUp(){
-        int idx = this.fontsDirIndex;
-        return this.fontsDec(3);
-    }
-    protected boolean fontsPgDn(){
-        int idx = this.fontsDirIndex;
-        return this.fontsInc(3);
-    }
     protected boolean fontsHome(){
+        this.nav = Nav.Fonts;
         if (0 != this.fontsDirIndex){
             this.fontsDirIndex = 0;
             this.init();
@@ -230,6 +245,7 @@ public class Main
             return false;
     }
     protected boolean fontsEnd(){
+        this.nav = Nav.Fonts;
         int idx = (this.fontsDir.size-1);
         if (idx != this.fontsDirIndex){
             this.fontsDirIndex = idx;
@@ -240,8 +256,8 @@ public class Main
             return false;
     }
     protected void descToggle(){
-        this.navDesc = true;
-        this.navFonts = false;
+        this.nav = Nav.Desc;
+
         this.descGlyph = (!this.descGlyph);
         if (this.descGlyph){
             if (null != this.glyph)
@@ -251,44 +267,6 @@ public class Main
         }
         else
             this.desc = this.font.getDescription();
-    }
-    protected boolean inc(){
-        if (this.navFonts)
-            return this.fontsInc(1);
-        else 
-            return this.glyphInc();
-    }
-    protected boolean dec(){
-
-        if (this.navFonts)
-            return this.fontsDec(1);
-        else 
-            return this.glyphDec();
-    }
-    protected boolean pgUp(){
-        if (this.navFonts)
-            return this.fontsPgUp();
-        else 
-            return this.descPgUp();
-    }
-    protected boolean pgDn(){
-
-        if (this.navFonts)
-            return this.fontsPgDn();
-        else 
-            return this.descPgDn();
-    }
-    protected boolean home(){
-        if (this.navFonts)
-            return this.fontsHome();
-        else 
-            return this.descHome();
-    }
-    protected boolean end(){
-        if (this.navFonts)
-            return this.fontsEnd();
-        else 
-            return this.descEnd();
     }
     private boolean _desc(int dp){
         if (dp != this.descPage){
@@ -308,19 +286,19 @@ public class Main
     protected boolean descHome(){
         return this._desc(0);
     }
-    protected boolean descPgUp(){
-        int dp = (this.descPage - 10);
+    protected boolean descDec(int dec){
+        int dp = (this.descPage - dec);
         if (0 > dp)
             return this._desc(0);
         else
             return this._desc(dp);
     }
-    protected boolean descPgDn(){
+    protected boolean descInc(int inc){
         int len = this.descLen();
         if (0 == len)
             return this._desc(0);
         else {
-            int dp = (this.descPage + 10);
+            int dp = (this.descPage + inc);
             if (dp > len)
                 return this._desc(len-10);
             else
@@ -333,6 +311,67 @@ public class Main
             return this._desc(0);
         else {
             return this._desc(len-10);
+        }
+    }
+    protected boolean inc(){
+        switch (this.nav){
+        case Fonts:
+            return this.fontsInc(1);
+        case Glyphs:
+            return this.glyphInc(1);
+        default:
+            return this.descInc(1);
+        }
+    }
+    protected boolean dec(){
+
+        switch (this.nav){
+        case Fonts:
+            return this.fontsDec(1);
+        case Glyphs:
+            return this.glyphDec(1);
+        default:
+            return this.descDec(1);
+        }
+    }
+    protected boolean pgUp(){
+        switch (this.nav){
+        case Fonts:
+            return this.fontsDec(10);
+        case Glyphs:
+            return this.glyphDec(10);
+        default:
+            return this.descDec(10);
+        }
+    }
+    protected boolean pgDn(){
+        switch (this.nav){
+        case Fonts:
+            return this.fontsInc(10);
+        case Glyphs:
+            return this.glyphInc(10);
+        default:
+            return this.descInc(10);
+        }
+    }
+    protected boolean home(){
+        switch (this.nav){
+        case Fonts:
+            return this.fontsHome();
+        case Glyphs:
+            return this.glyphHome();
+        default:
+            return this.descHome();
+        }
+    }
+    protected boolean end(){
+        switch (this.nav){
+        case Fonts:
+            return this.fontsEnd();
+        case Glyphs:
+            return this.glyphEnd();
+        default:
+            return this.descEnd();
         }
     }
     public void update(Graphics g){
@@ -526,8 +565,22 @@ public class Main
             else {
                 this.descToggle();
             }
-            this.repaint();
         }
+        else {
+            if (e.getY() < 100){
+                if (e.isPopupTrigger())
+                    this.fontsDec(1);
+                else 
+                    this.fontsInc(1);
+            }
+            else {
+                if (e.isPopupTrigger())
+                    this.glyphDec(1);
+                else 
+                    this.glyphInc(1);
+            }
+        }
+        this.repaint();
         this.requestFocus();
     }
     public void mousePressed(MouseEvent e){
