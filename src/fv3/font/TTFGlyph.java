@@ -24,6 +24,8 @@ import fv3.font.ttf.Head;
 import fv3.font.ttf.Point;
 import fv3.font.ttf.TTF;
 
+import javax.media.opengl.GL2;
+
 /**
  * This class may be subclassed with a {@link Font} subclass as for
  * implementing a text editor.
@@ -68,6 +70,8 @@ public class TTFGlyph
     }
 
 
+    public void apply(GL2 gl){
+    }
     public final boolean isSimple(){
         return (null == this.compound);
     }

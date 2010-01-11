@@ -17,6 +17,8 @@
  */
 package fv3.font;
 
+import javax.media.opengl.GL2;
+
 /**
  * This class may be subclassed with a {@link Font} subclass as for
  * implementing a text editor.
@@ -24,15 +26,13 @@ package fv3.font;
  * @author John Pritchard
  */
 public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
-    extends Object
+    extends fv3.model.Object
     implements Iterable<Path>
 {
 
     protected Font font;
 
     protected fv3.font.Path[] list;
-
-    protected double[] points;
 
 
     protected Glyph(Font font){
@@ -67,47 +67,6 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
         }
         else
             throw new IllegalArgumentException();
-    }
-    public final double[] points(){
-        double[] points = this.points;
-        if (null == points){
-            fv3.font.Path[] paths = this.list;
-            if (null != paths){
-                fv3.font.Path path;
-                double[] pointset;
-                for (int cc = 0, count = paths.length; cc < count; cc++){
-                    path = paths[cc];
-                    pointset = path.points();
-                    if (null == pointset)
-                        continue;
-                    else if (null == points)
-                        points = pointset;
-                    else {
-                        int pointsl = points.length;
-                        int pointsly = (pointsl - 1);
-                        int pointslx = (pointsly - 1);
-                        if (points[pointslx] == pointset[0] &&
-                            points[pointsly] == pointset[1])
-                        {
-                            int pslen = (pointset.length - 2);
-                            double[] copier = new double[pointsl + pslen];
-                            System.arraycopy(points,0,copier,0,pointsl);
-                            System.arraycopy(pointset,2,copier,pointsl,pslen);
-                            points = copier;
-                        }
-                        else {
-                            int pslen = (pointset.length);
-                            double[] copier = new double[pointsl + pslen];
-                            System.arraycopy(points,0,copier,0,pointsl);
-                            System.arraycopy(pointset,0,copier,pointsl,pslen);
-                            points = copier;
-                        }
-                    }
-                }
-                this.points = points;
-            }
-        }
-        return points;
     }
     public final Font getFont() {
         return this.font;
@@ -156,6 +115,11 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
                 this.list = copier;
             }
         }
+    }
+    public Type getObjectType(){
+        return Type.Glyph;
+    }
+    public void apply(GL2 gl){
     }
     public String toString(){
         return this.toString("; ");
