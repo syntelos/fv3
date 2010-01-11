@@ -27,12 +27,18 @@ import com.sun.javafx.newt.KeyEvent;
 import com.sun.javafx.newt.MouseEvent;
 
 /**
+ * Contains child components, and applies their respective
+ * transformation matrices on behalf of child components.
+ * 
+ * See also {@link fv3.Component#pushFv3Matrix()}.
+ * 
+ * <h3>Notes</h3>
+ * 
  * If the region itself will be using a transformation matrix -- as
  * for translation or rotation, ensure that it is defined before
  * calling <code>"addEnd()"</code>.  One way to do this is by calling
  * the protected method named <code>"matrix()"</code>, defined in the
- * {@link Component} class in this package.  The Gears demo
- * demonstrates this usage.
+ * {@link Component} class in this package.  
  * 
  * @see fv3.Region
  */
@@ -199,7 +205,7 @@ public class Region
         if (null != c){
             Object[] list = c.array();
             for (int cc = 0, count = ((null != list)?(list.length):(0)); cc < count; cc++){
-                if (list[cc] instanceof fv3.View)
+                if (list[cc] instanceof fv3.Viewport)
                     return cc;
             }
         }
@@ -208,14 +214,14 @@ public class Region
     public boolean hasView(){
         return (-1 != this.indexOfView());
     }
-    public fv3.View getView(){
+    public fv3.Viewport getView(){
         int idx = this.indexOfView();
         if (-1 != idx)
-            return (fv3.View)this.children.get(idx);
+            return (fv3.Viewport)this.children.get(idx);
         else
             return null;
     }
-    public Region setView(fv3.View view){
+    public Region setView(fv3.Viewport view){
         int idx = this.indexOfView();
         if (-1 != idx)
             this.children.update(idx,view);

@@ -360,15 +360,18 @@ public class Gear3
         new End()
     };
 
-    private final static AxisAngle Rotation = AxisAngle.Axis.Degrees.Z(-29.0);
-
 
 
     Gear3(){
         super(MODEL3);
 
-        this.translate(-3.1,  4.2, -40.0);
+        this.translate(-3.1,  4.2, 0.0);
     }
 
 
+    public void display(GL2 gl){
+
+        gl.glRotatef(-2.0f * Gears.Angle - 25.0f, 0.0f, 0.0f, 1.0f);
+        super.display(gl);
+    }
 }

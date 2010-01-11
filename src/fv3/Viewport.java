@@ -26,39 +26,27 @@ package fv3;
  * 
  * @see Region
  */
-public interface View
+public interface Viewport
     extends Component
 {
 
-    public View set(int x, int y, int w, int h);
+    public Viewport set(int x, int y, int w, int h);
 
     public int x();
     public int getX();
-    public View x(int x);
-    public View setX(int x);
+    public Viewport x(int x);
+    public Viewport setX(int x);
     public int y();
     public int getY();
-    public View y(int y);
-    public View setY(int y);
+    public Viewport y(int y);
+    public Viewport setY(int y);
     public int w();
     public int getW();
-    public View w(int w);
-    public View setW(int w);
+    public Viewport w(int w);
+    public Viewport setW(int w);
     public int h();
     public int getH();
-    public View h(int h);
-    public View setH(int h);
-    /**
-     * After defining the width and height of this viewport, any of
-     * the centering methods may be called.  This may only occur after
-     * the screen is established in Fv3.Tk, as in the {@link
-     * fv3.tk.Component} init (GL) method.
-     */
-    public View center();
-    public View centerHor();
-    public View centerVer();
-    public View center(fv3.tk.Fv3Screen fv3s);
-    public View centerHor(fv3.tk.Fv3Screen fv3s);
-    public View centerVer(fv3.tk.Fv3Screen fv3s);
+    public Viewport h(int h);
+    public Viewport setH(int h);
 
 }

@@ -150,4 +150,8 @@ public class Component
         this.matrix().rotateXY(ax,ay);
         return this;
     }
+    public final fv3.Component rotateYX(double ay, double ax){
+        this.matrix().rotateYX(ay,ax);
+        return this;
+    }
 }

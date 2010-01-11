@@ -2,7 +2,5 @@
 
 * 2d font inspector layout
 ** 3d font inspector
-* pkg fv3.d2
-** an idea
 * fv3/ds
 ** Resolve math dupes

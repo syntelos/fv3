@@ -24,26 +24,26 @@ import javax.media.opengl.GL2;
 /**
  * @see fv3.View
  */
-public class View
+public class Viewport
     extends Component
-    implements fv3.View
+    implements fv3.Viewport
 {
     protected volatile boolean defined;
 
     protected volatile int x, y, w, h;
 
 
-    public View(){
+    public Viewport(){
         super();
     }
-    public View(int x, int y, int w, int h){
+    public Viewport(int x, int y, int w, int h){
         super();
 
         this.set(x,y,w,h);
     }
 
 
-    public final View set(int x, int y, int w, int h){
+    public final Viewport set(int x, int y, int w, int h){
         this.defined = true;
         this.x = x;
         this.y = y;
@@ -52,8 +52,9 @@ public class View
         return this;
     }
     public void init(GL2 gl){
-        if (this.defined)
+        if (this.defined){
             gl.glViewport(this.x,this.y,this.w,this.h);
+        }
     }
 
     public final int x(){
@@ -62,11 +63,11 @@ public class View
     public final int getX(){
         return this.x;
     }
-    public final View x(int x){
+    public final Viewport x(int x){
         this.x = x;
         return this;
     }
-    public final View setX(int x){
+    public final Viewport setX(int x){
         this.x = x;
         return this;
     }
@@ -77,11 +78,11 @@ public class View
     public final int getY(){
         return this.y;
     }
-    public final View y(int y){
+    public final Viewport y(int y){
         this.y = y;
         return this;
     }
-    public final View setY(int y){
+    public final Viewport setY(int y){
         this.y = y;
         return this;
     }
@@ -92,11 +93,11 @@ public class View
     public final int getW(){
         return this.w;
     }
-    public final View w(int w){
+    public final Viewport w(int w){
         this.w = w;
         return this;
     }
-    public final View setW(int w){
+    public final Viewport setW(int w){
         this.w = w;
         return this;
     }
@@ -107,37 +108,12 @@ public class View
     public final int getH(){
         return this.h;
     }
-    public final View h(int h){
+    public final Viewport h(int h){
         this.h = h;
         return this;
     }
-    public final View setH(int h){
+    public final Viewport setH(int h){
         this.h = h;
-        return this;
-    }
-    public final View center(){
-        return this.center(Fv3Screen.Current());
-    }
-    public final View centerHor(){
-        return this.centerHor(Fv3Screen.Current());
-    }
-    public final View centerVer(){
-        return this.centerVer(Fv3Screen.Current());
-    }
-    public final View center(fv3.tk.Fv3Screen fv3s){
-
-        this.x = (int)(fv3s.w2 - (this.w / 2.0));
-        this.y = (int)(fv3s.h2 - (this.h / 2.0));
-        return this;
-    }
-    public final View centerHor(fv3.tk.Fv3Screen fv3s){
-
-        this.x = (int)(fv3s.w2 - (this.w / 2.0));
-        return this;
-    }
-    public final View centerVer(fv3.tk.Fv3Screen fv3s){
-
-        this.y = (int)(fv3s.h2 - (this.h / 2.0));
         return this;
     }
 }

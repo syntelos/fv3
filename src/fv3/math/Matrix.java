@@ -21,9 +21,12 @@ package fv3.math;
 /**
  * A transformation matrix in geometric three- space.
  * 
- * This class employs the Row Major Notation.  The Row Major Notation
- * expresses the elements of the matrix as illustrated in the
- * following:
+ * This class employs the Row Major Notation.  The matrix notation is
+ * an addressing scheme.  In using Row Major Notation, this class
+ * adopts an address mapping to Open GL's Row Minor storage format.
+ * 
+ * The Row Major Notation used exposed by this class expresses the
+ * elements of the matrix as illustrated in the following:
  * 
  * <pre>
  *          | 0,0  0,1  0,2  0,3 |
@@ -51,8 +54,24 @@ package fv3.math;
  * }
  * </pre>
  * 
- * Using this notation, this class maintains order of storage for Open
- * GL.
+ * From Row Major notation, this class maps storage location for Open
+ * GL.  GL's matrix notation and storage, as in the red book, is Row
+ * Minor.  
+ * 
+ * Row Minor Notation can be confusing from the perspective of the
+ * programming language, while it's natural from the relative
+ * perspective of hardware internals.  The Row Minor storage order is
+ * defined as follows.
+ * 
+ * <pre>
+ *          |  0    4    8   12  |
+ *          |                    |
+ *          |  1    5    9   13  |
+ *      N = |                    |
+ *          |  2    6   10   14  |
+ *          |                    |
+ *          |  3    7   11   15  |
+ * </pre>
  * 
  * 
  * @see Abstract
@@ -65,21 +84,21 @@ public class Matrix
      * Row Major Array Indeces Notation
      */
     public final static int M00 =  0;
-    public final static int M01 =  1;
-    public final static int M02 =  2;
-    public final static int M03 =  3;
-    public final static int M10 =  4;
+    public final static int M01 =  4;
+    public final static int M02 =  8;
+    public final static int M03 =  12;
+    public final static int M10 =  1;
     public final static int M11 =  5;
-    public final static int M12 =  6;
-    public final static int M13 =  7;
-    public final static int M20 =  8;
-    public final static int M21 =  9;
-    public final static int M22 = 10;
-    public final static int M23 = 11;
-    public final static int M30 = 12;
-    public final static int M31 = 13;
-    public final static int M32 = 14;
-    public final static int M33 = 15;
+    public final static int M12 =  9;
+    public final static int M13 =  13;
+    public final static int M20 =  2;
+    public final static int M21 =  6;
+    public final static int M22 =  10;
+    public final static int M23 =  14;
+    public final static int M30 =  3;
+    public final static int M31 =  7;
+    public final static int M32 =  11;
+    public final static int M33 =  15;
 
 
     private final double[] m;
@@ -205,6 +224,17 @@ public class Matrix
         }
         return this;
     }
+    public final Matrix scale(double x, double y, double z){
+
+        double[] m = this.m;
+
+        for (int i = 0; i < 4; i++) {
+            m[I(0,i)] *= x;
+            m[I(1,i)] *= y;
+            m[I(2,i)] *= z;
+        }
+        return this;
+    }
     public final Matrix rotate(AxisAngle a){
         double[] axis = a.normalize().array();
         double[] R = Identity.clone();
@@ -230,13 +260,13 @@ public class Matrix
 
         R[M00] = ((xx * c1) +  c);
         R[M01] = ((xy * c1) - zs);
-        R[M02] = ((xz * c1) - ys);
+        R[M02] = ((xz * c1) + ys);
         R[M10] = ((xy * c1) + zs);
         R[M11] = ((yy * c1) +  c);
         R[M12] = ((yz * c1) - xs);
         R[M20] = ((xz * c1) - ys);
         R[M21] = ((yz * c1) + xs);
-        R[M22] = ((zz * c1) -  c);
+        R[M22] = ((zz * c1) +  c);
 
         return this.mul(R);
     }
@@ -251,6 +281,9 @@ public class Matrix
     }
     public final Matrix rotateXY(double ax, double ay){
         return this.rotateX(ax).rotateY(ay);
+    }
+    public final Matrix rotateYX(double ay, double ax){
+        return this.rotateY(ay).rotateX(ax);
     }
     /**
      * @return The determinant of this matrix.  

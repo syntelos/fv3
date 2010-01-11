@@ -17,11 +17,15 @@
  */
 package fv3.nui;
 
+import fv3.tk.Fv3Screen;
+
 import javax.media.opengl.GL2;
 
 public class Frustrum 
     extends Component
 {
+
+    protected volatile boolean auto;
 
     protected volatile double left, right, bottom, top, near, far;
 
@@ -31,15 +35,38 @@ public class Frustrum
     }
     public Frustrum(double left, double right, double bottom, double top, double near, double far){
         super();
-        this.left = left;
-        this.right = right;
-        this.bottom = bottom;
-        this.top = top;
-        this.near = near;
-        this.far = far;
+        if (0.0 < near){
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+            this.near = near;
+            this.far = far;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+    }
+    public Frustrum(double near, double far){
+        super();
+        this.auto = true;
+        if (0.0 < near){
+            this.near = near;
+            this.far = far;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
     }
 
     public void init(GL2 gl) {
+
+        if (this.auto){
+            Fv3Screen fv3s = Fv3Screen.Current();
+            double aspect = (fv3s.width / fv3s.height);
+            this.left = -(aspect);
+            this.bottom = -1.0;
+            this.top = +1.0;
+            this.right = +(aspect);
+        }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
@@ -74,7 +101,10 @@ public class Frustrum
         return this.near;
     }
     public final void setNear(double near){
-        this.near = near;
+        if (0.0 < near)
+            this.near = near;
+        else
+            throw new IllegalArgumentException("Near must be positive.");
     }
     public final double getFar(){
         return this.far;

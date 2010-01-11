@@ -50,12 +50,12 @@ public interface Region
     /**
      * @return Null for not found.
      */
-    public View getView();
+    public Viewport getView();
     /**
      * Replace or insert a non- null view in the list of component children.
      * @param view If null, no effect.
      */
-    public Region setView(View view);
+    public Region setView(Viewport view);
 
     /**
      * @return A descendant of this that is current for input events,

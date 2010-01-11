@@ -3,7 +3,9 @@ package test;
 
 import fv3.Component;
 
-import fv3.nui.View;
+import fv3.nui.Frustrum;
+import fv3.nui.Light;
+import fv3.nui.Viewport;
 
 import fv3.tk.Animator;
 import fv3.tk.Fv3Screen;
@@ -20,8 +22,7 @@ import com.sun.javafx.newt.MouseEvent;
  * @author Brian Paul
  * @author Ron Cemer
  * @author Sven Goethel
- * @author jdp@syntelos
- * @version 1.2 1999/10/21
+ * @author John Pritchard
  */
 public class Gears
     extends fv3.World
@@ -39,10 +40,11 @@ public class Gears
     }
 
 
+    private final static int LightNum = 0;;
     private final static float LightPos[] = { 5.0f, 5.0f, 10.0f, 0.0f };
 
+    static float Angle = 0.0f;
 
-    private View view;
 
     private double prevMouseX, prevMouseY;
 
@@ -51,13 +53,13 @@ public class Gears
 
     public Gears(){
         super();
-        this.matrix();
-        this.add(this.view = new View(200,200,600,600));
-        this.add(new fv3.nui.Light(0,LightPos));
+        this.translate(0,0,-40);
+
+        this.add(new Light(LightNum,LightPos));
         this.add(new Gear1());
         this.add(new Gear2());
         this.add(new Gear3());
-        this.add(new fv3.nui.Frustrum(-1.0, 1.0, -1.0, +1.0, 5.0, 60.0));
+        this.add(new Frustrum(5.0, 60.0));
         this.addEnd();
     }
 
@@ -67,8 +69,6 @@ public class Gears
         Fv3Screen fv3s = Fv3Screen.Current();
         this.screenW = fv3s.width;
         this.screenH = fv3s.height;
-
-        this.view.centerVer(fv3s);
 
         super.init(gl);
     }
@@ -80,13 +80,17 @@ public class Gears
     public void mouseDragged(MouseEvent e){
         double x = e.getX();
         double y = e.getY();
-        double rx = (Math.PI * ((x-this.prevMouseX)/this.screenW));
-        double ry = (Math.PI * ((this.prevMouseY-y)/this.screenH));
+        double rx = -(PI2 * ((x-this.prevMouseX)/this.screenW));
+        double ry = (PI2 * ((this.prevMouseY-y)/this.screenH));
 
-        this.rotateXY( rx, ry);
+        this.rotateXY( ry, rx);
 
         this.prevMouseX = x;
         this.prevMouseY = y;
     }
 
+    public void display(GL2 gl){
+        Angle += 1.0f;
+        super.display(gl);
+    }
 }

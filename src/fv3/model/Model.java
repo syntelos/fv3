@@ -23,11 +23,9 @@ public class Model
     extends fv3.nui.Model
 {
 
-    private volatile Object[] model;
+    protected volatile Object[] model;
 
-    private volatile boolean inited;
-
-    private volatile int lid;
+    protected volatile int lid = -1;
 
 
     public Model(){
@@ -48,7 +46,7 @@ public class Model
         return this;
     }
     public final int getGlListCount(){
-        if (this.inited)
+        if (-1 != this.lid)
             return 1;
         else
             return 0;
@@ -56,38 +54,37 @@ public class Model
     public final int getGlListId(int idx)
         throws java.lang.ArrayIndexOutOfBoundsException
     {
-        if (this.inited && 0 == idx)
+        if (0 == idx)
             return this.lid;
         else
             throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
     }
-    public final void init(GL2 gl){
+    public void init(GL2 gl){
 
-        if (!this.inited){
+        if (-1 == this.lid){
             this.lid = gl.glGenLists(1);
-            this.inited = true;
-        }
-        else {
-            gl.glDeleteLists(this.lid,1);
-            this.lid = gl.glGenLists(1);
-            this.inited = true;
-        }
+            gl.glNewList(this.lid, GL2.GL_COMPILE);
 
-        gl.glNewList(this.lid, GL2.GL_COMPILE);
-        Object[] model = this.model;
-        for (int cc = 0, count = model.length; cc < count; cc++){
-            model[cc].apply(gl);
-        }
-        gl.glEndList();
+            Object[] model = this.model;
+            for (int cc = 0, count = model.length; cc < count; cc++){
+                model[cc].apply(gl);
+            }
+            gl.glEndList();
 
-        gl.glEnable(GL2.GL_NORMALIZE);
+            gl.glEnable(GL2.GL_NORMALIZE);
+        }
     }
-    public final void display(GL2 gl){
-
-        gl.glCallList(this.lid);
+    public void display(GL2 gl){
+        int lid = this.lid;
+        if (-1 != lid)
+            gl.glCallList(lid);
     }
-    public final void destroy(){
-        this.inited = false;
+    public void destroy(){
+        int lid = this.lid;
+        if (-1 != lid){
+            this.lid = -1;
+            GL().glDeleteLists(lid,1);
+        }
         super.destroy();
     }
 }
