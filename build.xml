@@ -89,7 +89,7 @@
 
   <target name="version" description="Report current project version.">
     <version/>
-    <property name="target.jar" value="${ant.project.name}-${this.version}.jar"/>
+    <property name="target.jar" value="${web}/${ant.project.name}-${this.version}.jar"/>
     <property name="loader.jar" value="${web}/${ant.project.name}-loader-${this.version}.jar"/>
   </target>
 
