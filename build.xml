@@ -10,26 +10,18 @@
 
   <property name="jnlp.codebase" value="http://fv3.googlecode.com/svn/web/"/>
 
+  <property name="target.jnlp" value="${web}/${ant.project.name}.jnlp"/>
+
   <property name="compiler.source" value="1.5"/>
   <property name="compiler.target" value="1.5"/>
   <property name="compiler.debug" value="true"/>
   <property name="compiler.encoding" value="utf-8"/>
 
-  <property file="build.version"/>
-  <property name="this.version" value="${version.major}.${version.minor}.${version.build}"/>
+  <property file="${user.home}/build.properties"/>
 
-  <property file="${user.home}/fv3.build.properties"/>
-  <condition property="update.llg.not">
-    <or>
-      <not>
-        <isset property="copyto.llg.fv3"/>
-      </not>
-      <not>
-        <available file="${copyto.llg.fv3}" type="dir"/>
-      </not>
-    </or>
-  </condition>
-
+  <import file="ant/build.in.java.xml"/>
+  <import file="ant/build.in.update.xml"/>
+  <import file="ant/build.in.version.xml"/>
 
   <path id="lib.path">
     <fileset dir="${lib}">
@@ -43,17 +35,10 @@
   </path>
 
 
-  <property name="target.jar" value="${web}/${ant.project.name}-${this.version}.jar"/>
 
-  <property name="loader.jar" value="${web}/${ant.project.name}-loader-${this.version}.jar"/>
+  <target name="update" if="fv3.update" depends="apps" description="Copy jar product to targets defined in '{user.home}/build.properties' name 'fv3.update'.">
 
-  <property name="target.jnlp" value="${web}/${ant.project.name}-${this.version}.jnlp"/>
-
-
-  <target name="update" depends="apps, update-llg" />
-
-  <target name="update-llg" unless="update.llg.not" depends="apps">
-    <copy file="${target.jar}" todir="${copyto.llg.fv3}"/>
+    <do-update src="${target.jar}" tgt="${fv3.update}" />
   </target>
 
   <target name="apps" depends="loader">
@@ -103,7 +88,7 @@
     </copy>
   </target>
 
-  <target name="compile" description="Compile src to bin">
+  <target name="compile" depends="version" description="Compile src to bin">
     <mkdir dir="${bin}"/>
     <copy todir="${bin}">
       <fileset dir="${src}" includes="**/*.properties"/>
@@ -126,4 +111,22 @@
     <antcall target="jar"/>
   </target>
 
+  <target name="version" description="Report current project version.">
+    <version/>
+    <property name="target.jar" value="${ant.project.name}-${this.version}.jar"/>
+    <property name="loader.jar" value="${web}/${ant.project.name}-loader-${this.version}.jar"/>
+  </target>
+
+  <target name="build" description="Increment project version build number.">
+    <version-build/>
+    <version/>
+  </target>
+  <target name="minor" description="Increment project version minor number.">
+    <version-minor/>
+    <version/>
+  </target>
+  <target name="major" description="Increment project version major number.">
+    <version-major/>
+    <version/>
+  </target>
 </project>
