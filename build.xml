@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="fv3" default="update">
 
-  <property name="main" value="fv3.World"/>
-
   <property name="src" value="src"/>
   <property name="bin" value="bin"/>
   <property name="lib" value="lib"/>
@@ -41,7 +39,7 @@
     <do-update src="${target.jar}" tgt="${fv3.update}" />
   </target>
 
-  <target name="apps" depends="loader">
+  <target name="apps" depends="jar">
     <subant>
       <fileset dir="." includes="**/buildapp.*.xml" />
     </subant>
@@ -50,39 +48,17 @@
     </subant>
   </target>
 
-  <target name="loader" depends="jar" description="Package target loader jar.">
-    <delete file="${loader.jar}"/>
-
-    <delete file="main.jnlp"/>
-
-    <copy tofile="main.jnlp" file="${target.jnlp}" />
-
-    <jar jarfile="${loader.jar}">
-      <manifest>
-        <attribute name="Main-Class" value="loader.Main"/>
-      </manifest>
-      <fileset file="main.jnlp"/>
-      <zipgroupfileset dir="loader" includes="**/jnlp-loader-*.jar"/>
-    </jar>
-
-    <delete file="main.jnlp"/>
-
-  </target>
-
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
-      <manifest>
-        <attribute name="Main-Class" value="fv3.font.TTFFont"/>
-      </manifest>
+
       <zipgroupfileset dir="lib" includes="**/lxl-*.jar"/>
     </jar>
     <delete dir="${bin}"/>
-    <copy tofile="${target.jnlp}" file="ver/pkg/apps.jnlp" filtering="true" overwrite="true">
+    <copy tofile="${target.jnlp}" file="ver/pkg/lib.jnlp" filtering="true" overwrite="true">
       <filterset>
         <filter token="ProjectName"         value="${ant.project.name}"/>
         <filter token="ProjectVersion"      value="${this.version}"/>
-        <filter token="ProjectMainClass"    value="${main}"/>
         <filter token="ProjectCodebase"    value="${jnlp.codebase}"/>
       </filterset>
     </copy>
