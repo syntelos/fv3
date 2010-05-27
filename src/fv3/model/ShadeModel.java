@@ -27,10 +27,7 @@ public final class ShadeModel
 
     public ShadeModel(int glType){
         super();
-        if (0 < glType)
-            this.glType = glType;
-        else
-            throw new IllegalArgumentException();
+        this.glType = glType;
     }
 
 

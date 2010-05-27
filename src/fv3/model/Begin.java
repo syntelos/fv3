@@ -27,10 +27,7 @@ public final class Begin
 
     public Begin(int glType){
         super();
-        if (0 < glType)
-            this.glType = glType;
-        else
-            throw new IllegalArgumentException();
+        this.glType = glType;
     }
 
 
