@@ -1,7 +1,7 @@
 
 package test;
 
-import fv3.Component;
+import fv3.Camera;
 
 import fv3.nui.Frustrum;
 import fv3.nui.Light;
@@ -85,7 +85,9 @@ public class Gears
         double dx = ((x-this.prevMouseX)/this.screenW);
         double dy = ((y-this.prevMouseY)/this.screenH);
 
-        this.getCamera().moveby(dx,dy,0);
+        Camera camera = this.getCamera();
+        camera.moveby(dx,dy,0);
+        System.out.printf(" (%g %g) %s \n",dx,dy,camera.toString());
 
         this.prevMouseX = x;
         this.prevMouseY = y;
