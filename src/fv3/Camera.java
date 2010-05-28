@@ -54,7 +54,7 @@ public class Camera
     public void view(double x, double y, double z, double d){
         this.eyeX = 0;
         this.eyeY = 0;
-        this.eyeZ = (2*d);
+        this.eyeZ = d;
         this.centerX = x;
         this.centerY = y;
         this.centerZ = z;
