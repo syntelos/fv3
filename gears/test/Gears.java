@@ -82,12 +82,11 @@ public class Gears
     public void mouseDragged(MouseEvent e){
         double x = e.getX();
         double y = e.getY();
-        double dx = ((x-this.prevMouseX)/this.screenW);
-        double dy = ((y-this.prevMouseY)/this.screenH);
+        double dx = (x-this.prevMouseX);
+        double dy = (y-this.prevMouseY);
 
         Camera camera = this.getCamera();
         camera.moveby(dx,dy,0);
-        System.out.printf(" (%g %g) %s \n",dx,dy,camera.toString());
 
         this.prevMouseX = x;
         this.prevMouseY = y;
