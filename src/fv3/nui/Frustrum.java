@@ -19,6 +19,7 @@ package fv3.nui;
 
 import fv3.Camera;
 import fv3.World;
+import fv3.math.Vector;
 import fv3.tk.Fv3Screen;
 
 import javax.media.opengl.GL2;
@@ -76,16 +77,20 @@ public class Frustrum
             if (null != this.world){
                 Camera camera = world.getCamera();
                 camera.view(world);
-                double[] c = camera.getCenter();
-                double d = camera.getDiameter();
-                double r = (d/2);
+                double[] eye = camera.getEye();
+                double[] center = camera.getCenter();
+                double diameter = camera.getDiameter();
+                double radius = (diameter/2);
+                double target = new Vector(eye).distance(new Vector(center));
 
-                this.left = c[0] - r;
-                this.right = c[0] + r;
-                this.bottom = c[1] - r;
-                this.top = c[1] + r;
+                double cx = center[0], cy = center[1];
+
+                this.left = cx - radius;
+                this.right = cx + radius;
+                this.bottom = cy - radius;
+                this.top = cy + radius;
                 this.near = 1;
-                this.far = d+1;
+                this.far = Math.max( (diameter+1), (target+radius+1));
 
                 if ( aspect < 1.0 ) {
                     this.bottom /= aspect;

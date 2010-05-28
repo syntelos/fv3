@@ -17,6 +17,8 @@
  */
 package fv3;
 
+import fv3.math.Vector;
+
 import lxl.List;
 
 import javax.media.opengl.GL2;
@@ -66,10 +68,7 @@ public class Camera
         this.diameter = d;
     }
     public void view(Bounds bounds){
-        double dx = bounds.getBoundsMaxX()-bounds.getBoundsMinX();
-        double dy = bounds.getBoundsMaxY()-bounds.getBoundsMinY();
-        double dz = bounds.getBoundsMaxZ()-bounds.getBoundsMinZ();
-        double d = Math.max(dx,Math.max(dy,dz));
+        double d = Vector.Diameter(bounds);
         this.view(bounds.getBoundsMidX(),bounds.getBoundsMidY(),bounds.getBoundsMidZ(),d);
     }
     public void view(Component component){
@@ -107,14 +106,13 @@ public class Camera
                 }
             }
             if (!once){
-                double dX = (maxX - minX);
-                double dY = (maxY - minY);
-                double dZ = (maxZ - minZ);
-                double midX = (dX/2)+minX;
-                double midY = (dY/2)+minY;
-                double midZ = (dZ/2)+minZ;
+                double midX = ((maxX - minX)/2)+minX;
+                double midY = ((maxY - minY)/2)+minY;
+                double midZ = ((maxZ - minZ)/2)+minZ;
 
-                double d = Math.max(dX,Math.max(dY,dZ));
+                double d = Vector.Diameter(minX, maxX,
+                                           minY, maxY,
+                                           minZ, maxZ);
 
                 this.view(midX,midY,midZ,d);
             }
@@ -190,4 +188,5 @@ public class Camera
     public double[] getUp(){
         return new double[]{this.upX,this.upY,this.upZ};
     }
+
 }

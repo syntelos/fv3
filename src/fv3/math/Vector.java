@@ -209,6 +209,9 @@ public class Vector
         }
         return new Vector(c);
     }
+    public double distance(Vector b){
+        return Math.sqrt( Math.pow((this.v[X]-b.v[X]),2)+Math.pow((this.v[Y]-b.v[Y]),2)+Math.pow((this.v[Z]-b.v[Z]),2));
+    }
     public final double[] array(){
         return this.v;
     }
@@ -266,4 +269,18 @@ public class Vector
 
     private final static double[] Zero = {0.0,0.0,0.0};
 
+
+    public final static double Diameter(fv3.Bounds bounds){
+        Vector min = new Vector(bounds.getBoundsMinX(),bounds.getBoundsMinY(),bounds.getBoundsMinZ());
+        Vector max = new Vector(bounds.getBoundsMaxX(),bounds.getBoundsMaxY(),bounds.getBoundsMaxZ());
+        return max.distance(min);
+    }
+    public final static double Diameter(double minX, double maxX,
+                                        double minY, double maxY,
+                                        double minZ, double maxZ)
+    {
+        Vector min = new Vector(minX,minY,minZ);
+        Vector max = new Vector(maxX,maxY,maxZ);
+        return max.distance(min);
+    }
 }
