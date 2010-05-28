@@ -17,6 +17,8 @@
  */
 package fv3;
 
+import lxl.List;
+
 import javax.media.opengl.GL2;
 
 import javax.media.opengl.glu.GLU;
@@ -58,6 +60,62 @@ public class Camera
         this.upX = 0;
         this.upY = 1;
         this.upZ = 0;
+    }
+    public void view(Bounds bounds){
+        double dx = bounds.getBoundsMaxX()-bounds.getBoundsMinX();
+        double dy = bounds.getBoundsMaxY()-bounds.getBoundsMinY();
+        double dz = bounds.getBoundsMaxZ()-bounds.getBoundsMinZ();
+        double d = Math.max(dx,Math.max(dy,dz));
+        this.view(bounds.getBoundsMidX(),bounds.getBoundsMidY(),bounds.getBoundsMidZ(),d);
+    }
+    public void view(Component component){
+        if (component.hasFv3Bounds())
+            this.view(component.getFv3Bounds());
+
+        else if (component instanceof Region){
+            double minX = 0, maxX = 0;
+            double minY = 0, maxY = 0;
+            double minZ = 0, maxZ = 0;
+
+            boolean once = true;
+
+            Region region = (Region)component;
+            for (Component child : region.getChildren()){
+                if (child.hasFv3Bounds()){
+                    Bounds bounds = child.getFv3Bounds();
+                    if (once){
+                        once = false;
+                        minX = bounds.getBoundsMinX();
+                        maxX = bounds.getBoundsMaxX();
+                        minY = bounds.getBoundsMinY();
+                        maxY = bounds.getBoundsMaxY();
+                        minZ = bounds.getBoundsMinZ();
+                        maxZ = bounds.getBoundsMaxZ();
+                    }
+                    else {
+                        minX = Math.min(minX,bounds.getBoundsMinX());
+                        maxX = Math.max(maxX,bounds.getBoundsMaxX());
+                        minY = Math.min(minY,bounds.getBoundsMinY());
+                        maxY = Math.max(maxY,bounds.getBoundsMaxY());
+                        minZ = Math.min(minZ,bounds.getBoundsMinZ());
+                        maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
+                    }
+                }
+            }
+            if (!once){
+                double midX = (maxX - minX);
+                double midY = (maxY - minY);
+                double midZ = (maxZ - minZ);
+
+                double d = Math.max(midX,Math.max(midY,midZ));
+
+                this.view(midX,midY,midZ,d);
+            }
+            else
+                throw new IllegalStateException("No bounds found in region.");
+        }
+        else
+            throw new IllegalArgumentException("Component has no bounds and is not region.");
     }
     public void moveto(double x, double y, double z){
         this.eyeX = x;

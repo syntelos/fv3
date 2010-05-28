@@ -21,11 +21,14 @@ import javax.media.opengl.GL2;
 
 public class Model
     extends fv3.nui.Model
+    implements fv3.Bounds
 {
 
     protected volatile Object[] model;
 
     protected volatile int lid = -1;
+
+    private volatile double minX, maxX, minY, maxY, minZ, maxZ, midX, midY, midZ;
 
 
     public Model(){
@@ -33,16 +36,84 @@ public class Model
     }
     public Model(Object[] model){
         super();
-        this.model = model;
+        this.add(model);
     }
 
 
-    public final Model add(Object object){
-        this.model = Object.Add(this.model,object);
+    public final boolean hasFv3Bounds(){
+        return true;
+    }
+    public final boolean hasNotFv3Bounds(){
+        return false;
+    }
+    public final fv3.Bounds getFv3Bounds(){
         return this;
     }
-    public final Model add(Object[] object){
-        this.model = Object.Add(this.model,object);
+    public double getBoundsMinX(){
+        return this.minX;
+    }
+    public double getBoundsMidX(){
+        return this.midX;
+    }
+    public double getBoundsMaxX(){
+        return this.maxX;
+    }
+    public double getBoundsMinY(){
+        return this.minY;
+    }
+    public double getBoundsMidY(){
+        return this.midY;
+    }
+    public double getBoundsMaxY(){
+        return this.maxY;
+    }
+    public double getBoundsMinZ(){
+        return this.minZ;
+    }
+    public double getBoundsMidZ(){
+        return this.midZ;
+    }
+    public double getBoundsMaxZ(){
+        return this.maxZ;
+    }
+    public final Model add(Object object){
+        if (null != object){
+            this.model = Object.Add(this.model,object);
+            if (Object.Type.Vertex == object.getObjectType()){
+
+                Vertex v = (Vertex)object;
+                this.minX = Math.min(this.minX, v.x);
+                this.maxX = Math.max(this.maxX, v.x);
+                this.minY = Math.min(this.minY, v.y);
+                this.maxY = Math.max(this.maxY, v.y);
+                this.minZ = Math.min(this.minZ, v.z);
+                this.maxZ = Math.max(this.maxZ, v.z);
+            }
+            this.midX = (this.maxX - this.minX);
+            this.midY = (this.maxY - this.minY);
+            this.midZ = (this.maxZ - this.minZ);
+        }
+        return this;
+    }
+    public final Model add(Object[] list){
+        if (null != list){
+            this.model = Object.Add(this.model,list);
+            for (Object object: list){
+                if (Object.Type.Vertex == object.getObjectType()){
+
+                    Vertex v = (Vertex)object;
+                    this.minX = Math.min(this.minX, v.x);
+                    this.maxX = Math.max(this.maxX, v.x);
+                    this.minY = Math.min(this.minY, v.y);
+                    this.maxY = Math.max(this.maxY, v.y);
+                    this.minZ = Math.min(this.minZ, v.z);
+                    this.maxZ = Math.max(this.maxZ, v.z);
+                }
+            }
+            this.midX = (this.maxX - this.minX);
+            this.midY = (this.maxY - this.minY);
+            this.midZ = (this.maxZ - this.minZ);
+        }
         return this;
     }
     public final int getGlListCount(){

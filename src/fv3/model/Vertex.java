@@ -23,7 +23,7 @@ public final class Vertex
     extends fv3.model.Object
 {
 
-    private final double x, y, z;
+    public final double x, y, z;
 
 
     public Vertex(double x, double y, double z){
