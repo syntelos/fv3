@@ -111,7 +111,7 @@ public class World
     public Camera getCamera(){
         return this.cameras[this.cameraCurrent];
     }
-    public void useCamera(char name){
+    public Camera useCamera(char name){
         if ('A' <= name && 'Z' >= name){
 
             int idx = name-'A';
@@ -120,6 +120,7 @@ public class World
                 this.cameras[idx] = new Camera(name);
 
             this.cameraCurrent = idx;
+            return this.cameras[idx];
         }
         else if ('a' <= name && 'z' >= name){
             
@@ -129,18 +130,21 @@ public class World
                 this.cameras[idx] = new Camera(name);
 
             this.cameraCurrent = idx;
+            return this.cameras[idx];
         }
         else
             throw new IllegalArgumentException(String.format("0x%x",(int)name));
     }
-    public void defineCamera(Camera camera){
+    public Camera defineCamera(Camera camera){
 
         this.cameras[camera.index] = camera;
+        return camera;
     }
-    public void useCamera(Camera camera){
+    public Camera useCamera(Camera camera){
 
         this.cameras[camera.index] = camera;
         this.cameraCurrent = camera.index;
+        return camera;
     }
 
     public void display(GL2 gl){

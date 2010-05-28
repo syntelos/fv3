@@ -545,6 +545,8 @@ public final class Animator
     }
     public void windowResized(WindowEvent e){
     }
+    public void windowResizing(WindowEvent e){
+    }
     public void windowMoved(WindowEvent e){
     }
     public void windowDestroyNotify(WindowEvent e){
