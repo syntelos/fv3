@@ -23,6 +23,8 @@ import java.io.IOException;
 
 import java.net.URL;
 
+import javax.media.opengl.GL2;
+
 /**
  * The world of the screen may contain many regions and components
  * having many coordinate spaces -- all visible simultaneously without
@@ -92,13 +94,54 @@ public class World
     }
 
 
+    private volatile Camera[] cameras = new Camera[26];
+
+    private volatile int cameraCurrent;
+
+
     protected World(){
         super();
         if (null == Window)
             Window = this;
+
+        this.useCamera('A');
     }
 
 
+    public Camera getCamera(){
+        return this.cameras[this.cameraCurrent];
+    }
+    public void useCamera(char name){
+        if ('A' <= name && 'Z' >= name){
+            int idx = name-'A';
+
+            if (null == this.cameras[idx])
+                this.cameras[idx] = new Camera(name);
+
+            this.cameraCurrent = idx;
+        }
+        else
+            throw new IllegalArgumentException(String.format("0x%x",(int)name));
+    }
+    public void defineCamera(Camera camera){
+
+        this.cameras[camera.index] = camera;
+    }
+    public void useCamera(Camera camera){
+
+        this.cameras[camera.index] = camera;
+        this.cameraCurrent = camera.index;
+    }
+
+    public void display(GL2 gl){
+
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+
+        Camera camera = this.getCamera();
+        camera.apply(gl,this.glu);
+
+        super.display(gl);
+    }
     /**
      * Unload current components.
      */

@@ -93,7 +93,6 @@ public class Region
             gl.glLoadMatrixd(this.getFv3MatrixBuffer());
         }
 
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         try {
             List<fv3.Component> children = this.children;
             if (null != children){
