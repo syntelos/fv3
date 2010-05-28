@@ -89,6 +89,8 @@ public class Camera
     }
     public void apply(GL2 gl, GLU glu){
 
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        
         gl.glLoadIdentity();
 
         glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
