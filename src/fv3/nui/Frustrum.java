@@ -94,18 +94,25 @@ public class Frustrum
                     this.left *= aspect; 
                     this.right *= aspect;
                 }
+                gl.glMatrixMode(GL2.GL_PROJECTION);
+                gl.glLoadIdentity();
+                gl.glOrtho(this.left, this.right, this.bottom, this.top, this.near, this.far);
             }
             else {
                 this.left = -(aspect);
                 this.bottom = -1.0;
                 this.top = +1.0;
                 this.right = +(aspect);
+                gl.glMatrixMode(GL2.GL_PROJECTION);
+                gl.glLoadIdentity();
+                gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
             }
         }
-
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
+        else {
+            gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glLoadIdentity();
+            gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
+        }
     }
 
     public final double getLeft(){
