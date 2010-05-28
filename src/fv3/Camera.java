@@ -39,6 +39,8 @@ public class Camera
     protected volatile double upX = 0, upY = 1, upZ = 0;
     protected volatile double diameter = 0;
 
+    private volatile boolean once = true;
+
 
     public Camera(char name){
         super();
@@ -159,9 +161,13 @@ public class Camera
         glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
                       this.centerX, this.centerY, this.centerZ,
                       this.upX, this.upY, this.upZ);
-        System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
-                          this.centerX, this.centerY, this.centerZ,
-                          this.upX, this.upY, this.upZ);
+
+        if (this.once){
+            this.once = false;
+            System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
+                              this.centerX, this.centerY, this.centerZ,
+                              this.upX, this.upY, this.upZ);
+        }
     }
     public String toString(){
         return String.format("%c (%g,%g,%g)->(%g,%g,%g);(%g,%g,%g)",this.name,
