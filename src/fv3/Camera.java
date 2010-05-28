@@ -159,6 +159,9 @@ public class Camera
         glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
                       this.centerX, this.centerY, this.centerZ,
                       this.upX, this.upY, this.upZ);
+        System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
+                          this.centerX, this.centerY, this.centerZ,
+                          this.upX, this.upY, this.upZ);
     }
     public String toString(){
         return String.format("%c (%g,%g,%g)->(%g,%g,%g);(%g,%g,%g)",this.name,
