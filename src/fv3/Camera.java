@@ -32,7 +32,7 @@ public class Camera
 
     public final int index;
 
-    protected volatile double eyeX = 0, eyeY = 0, eyeZ = 0;
+    protected volatile double eyeX = 0, eyeY = 0, eyeZ = 6;
     protected volatile double centerX = 0, centerY = 0, centerZ = 1;
     protected volatile double upX = 0, upY = 1, upZ = 0;
 
@@ -48,6 +48,17 @@ public class Camera
     }
 
 
+    public void view(double x, double y, double z, double d){
+        this.eyeX = 0;
+        this.eyeY = 0;
+        this.eyeZ = (2*d);
+        this.centerX = x;
+        this.centerY = y;
+        this.centerZ = z;
+        this.upX = 0;
+        this.upY = 1;
+        this.upZ = 0;
+    }
     public void moveto(double x, double y, double z){
         this.eyeX = x;
         this.eyeY = y;
@@ -85,6 +96,9 @@ public class Camera
                       this.upX, this.upY, this.upZ);
     }
     public String toString(){
-        return String.format("%c",this.name);
+        return String.format("%c (%g,%g,%g)->(%g,%g,%g);(%g,%g,%g)",this.name,
+                             this.eyeX,this.eyeY,this.eyeZ,
+                             this.centerX,this.centerY,this.centerZ,
+                             this.upX,this.upY,this.upZ);
     }
 }

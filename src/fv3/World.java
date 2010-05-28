@@ -113,7 +113,17 @@ public class World
     }
     public void useCamera(char name){
         if ('A' <= name && 'Z' >= name){
+
             int idx = name-'A';
+
+            if (null == this.cameras[idx])
+                this.cameras[idx] = new Camera(name);
+
+            this.cameraCurrent = idx;
+        }
+        else if ('a' <= name && 'z' >= name){
+            
+            int idx = name-'a';
 
             if (null == this.cameras[idx])
                 this.cameras[idx] = new Camera(name);
@@ -134,6 +144,16 @@ public class World
     }
 
     public void display(GL2 gl){
+
+        this.camera(gl);
+    }
+    protected void cameraNone(GL2 gl){
+
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+
+        super.display(gl);
+    }
+    protected void camera(GL2 gl){
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
