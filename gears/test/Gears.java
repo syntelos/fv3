@@ -62,7 +62,7 @@ public class Gears
         this.add(new Frustrum(5.0, 60.0));
         this.addEnd();
 
-        this.getCamera().view(0,0,0,6);
+        this.getCamera().view(this);
     }
 
 
