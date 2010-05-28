@@ -78,11 +78,12 @@ public class Frustrum
                 camera.view(world);
                 double[] c = camera.getCenter();
                 double d = camera.getDiameter();
+                double r = (d/2);
 
-                this.left = c[0] - d;
-                this.right = c[0] + d;
-                this.bottom = c[1] - d;
-                this.top = c[1] + d;
+                this.left = c[0] - r;
+                this.right = c[0] + r;
+                this.bottom = c[1] - r;
+                this.top = c[1] + r;
                 this.near = 1;
                 this.far = d+1;
 
