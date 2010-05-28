@@ -37,6 +37,7 @@ public class Camera
     protected volatile double eyeX = 0, eyeY = 0, eyeZ = 6;
     protected volatile double centerX = 0, centerY = 0, centerZ = 1;
     protected volatile double upX = 0, upY = 1, upZ = 0;
+    protected volatile double diameter = 0;
 
 
     public Camera(char name){
@@ -60,6 +61,7 @@ public class Camera
         this.upX = 0;
         this.upY = 1;
         this.upZ = 0;
+        this.diameter = d;
     }
     public void view(Bounds bounds){
         double dx = bounds.getBoundsMaxX()-bounds.getBoundsMinX();
@@ -163,5 +165,20 @@ public class Camera
                              this.eyeX,this.eyeY,this.eyeZ,
                              this.centerX,this.centerY,this.centerZ,
                              this.upX,this.upY,this.upZ);
+    }
+    public boolean hasDiameter(){
+        return (0 != this.diameter);
+    }
+    public double getDiameter(){
+        return this.diameter;
+    }
+    public double[] getEye(){
+        return new double[]{this.eyeX,this.eyeY,this.eyeZ};
+    }
+    public double[] getCenter(){
+        return new double[]{this.centerX,this.centerY,this.centerZ};
+    }
+    public double[] getUp(){
+        return new double[]{this.upX,this.upY,this.upZ};
     }
 }

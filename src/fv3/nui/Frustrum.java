@@ -17,6 +17,8 @@
  */
 package fv3.nui;
 
+import fv3.Camera;
+import fv3.World;
 import fv3.tk.Fv3Screen;
 
 import javax.media.opengl.GL2;
@@ -28,6 +30,8 @@ public class Frustrum
     protected volatile boolean auto;
 
     protected volatile double left, right, bottom, top, near, far;
+
+    protected World world;
 
 
     public Frustrum(){
@@ -56,16 +60,47 @@ public class Frustrum
         else
             throw new IllegalArgumentException("Near must be positive.");
     }
+    public Frustrum(World world){
+        super();
+        this.auto = true;
+        this.world = world;
+    }
 
     public void init(GL2 gl) {
 
         if (this.auto){
+
             Fv3Screen fv3s = Fv3Screen.Current();
             double aspect = (fv3s.width / fv3s.height);
-            this.left = -(aspect);
-            this.bottom = -1.0;
-            this.top = +1.0;
-            this.right = +(aspect);
+
+            if (null != this.world){
+                Camera camera = world.getCamera();
+                camera.view(world);
+                double[] c = camera.getCenter();
+                double d = camera.getDiameter();
+
+                this.left = c[0] - d;
+                this.right = c[0] + d;
+                this.bottom = c[1] - d;
+                this.top = c[1] + d;
+                this.near = 1;
+                this.far = d+1;
+
+                if ( aspect < 1.0 ) {
+                    this.bottom /= aspect;
+                    this.top /= aspect;
+                }
+                else {
+                    this.left *= aspect; 
+                    this.right *= aspect;
+                }
+            }
+            else {
+                this.left = -(aspect);
+                this.bottom = -1.0;
+                this.top = +1.0;
+                this.right = +(aspect);
+            }
         }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
