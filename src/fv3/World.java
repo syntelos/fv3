@@ -145,16 +145,6 @@ public class World
 
     public void display(GL2 gl){
 
-        this.camera(gl);
-    }
-    protected void cameraNone(GL2 gl){
-
-        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-
-        super.display(gl);
-    }
-    protected void camera(GL2 gl){
-
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         Camera camera = this.getCamera();
