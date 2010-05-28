@@ -140,9 +140,9 @@ public class Model
         this.minZ = minZ;
         this.maxZ = maxZ;
 
-        this.midX = (this.maxX - this.minX);
-        this.midY = (this.maxY - this.minY);
-        this.midZ = (this.maxZ - this.minZ);
+        this.midX = (this.maxX - this.minX)/2+this.minX;
+        this.midY = (this.maxY - this.minY)/2+this.minY;
+        this.midZ = (this.maxZ - this.minZ)/2+this.minZ;
     }
     public int getGlListCount(){
         if (this.inited)

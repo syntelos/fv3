@@ -103,11 +103,14 @@ public class Camera
                 }
             }
             if (!once){
-                double midX = (maxX - minX);
-                double midY = (maxY - minY);
-                double midZ = (maxZ - minZ);
+                double dX = (maxX - minX);
+                double dY = (maxY - minY);
+                double dZ = (maxZ - minZ);
+                double midX = (dX/2)+minX;
+                double midY = (dY/2)+minY;
+                double midZ = (dZ/2)+minZ;
 
-                double d = Math.max(midX,Math.max(midY,midZ));
+                double d = Math.max(dX,Math.max(dY,dZ));
 
                 this.view(midX,midY,midZ,d);
             }

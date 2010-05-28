@@ -89,9 +89,9 @@ public class Model
                 this.minZ = Math.min(this.minZ, v.z);
                 this.maxZ = Math.max(this.maxZ, v.z);
             }
-            this.midX = (this.maxX - this.minX);
-            this.midY = (this.maxY - this.minY);
-            this.midZ = (this.maxZ - this.minZ);
+            this.midX = (this.maxX - this.minX)/2+this.minX;
+            this.midY = (this.maxY - this.minY)/2+this.minY;
+            this.midZ = (this.maxZ - this.minZ)/2+this.minZ;
         }
         return this;
     }
@@ -110,9 +110,9 @@ public class Model
                     this.maxZ = Math.max(this.maxZ, v.z);
                 }
             }
-            this.midX = (this.maxX - this.minX);
-            this.midY = (this.maxY - this.minY);
-            this.midZ = (this.maxZ - this.minZ);
+            this.midX = (this.maxX - this.minX)/2+this.minX;
+            this.midY = (this.maxY - this.minY)/2+this.minY;
+            this.midZ = (this.maxZ - this.minZ)/2+this.minZ;
         }
         return this;
     }
