@@ -102,83 +102,100 @@ public class Camera
         else
             throw new IllegalArgumentException();
     }
-    public Camera setFrustrum(double left, double right, double bottom, double top, double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Frustrum;
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-            this.near = near;
-            this.far = far;
+    public double[] getEye(){
+        return new double[]{this.eyeX,this.eyeY,this.eyeZ};
+    }
+    public double[] getCenter(){
+        return new double[]{this.centerX,this.centerY,this.centerZ};
+    }
+    public double[] getUp(){
+        return new double[]{this.upX,this.upY,this.upZ};
+    }
+    public boolean hasDiameter(){
+        return (0 != this.diameter);
+    }
+    public double getDiameter(){
+        return this.diameter;
+    }
+    public Camera setDiameter(double d){
+        if (0.0 < d){
+            this.diameter = d;
             return this;
         }
         else
-            throw new IllegalArgumentException("Near must be positive.");
+            throw new IllegalArgumentException("Diameter must be positive");
     }
-    /**
-     * Called after "view", updates the projection.
-     */
-    public Camera setFrustrum(double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Frustrum;
-            this.near = near;
-            this.far = far;
-            if (0 != this.aspect){
-                this.left = -(aspect);
-                this.right = +(aspect);
+    public Camera diameter(Bounds bounds){
+
+        return this.setDiameter(Vector.Diameter(bounds));
+    }
+    public Camera diameter(Component component){
+
+        if (component.hasFv3Bounds())
+
+            return this.diameter(component.getFv3Bounds());
+
+        else if (component instanceof Region){
+            double minX = 0, maxX = 0;
+            double minY = 0, maxY = 0;
+            double minZ = 0, maxZ = 0;
+
+            boolean once = true;
+
+            Region region = (Region)component;
+            for (Component child : region.getChildren()){
+                if (child.hasFv3Bounds()){
+                    Bounds bounds = child.getFv3Bounds();
+                    if (once){
+                        once = false;
+                        minX = bounds.getBoundsMinX();
+                        maxX = bounds.getBoundsMaxX();
+                        minY = bounds.getBoundsMinY();
+                        maxY = bounds.getBoundsMaxY();
+                        minZ = bounds.getBoundsMinZ();
+                        maxZ = bounds.getBoundsMaxZ();
+                    }
+                    else {
+                        minX = Math.min(minX,bounds.getBoundsMinX());
+                        maxX = Math.max(maxX,bounds.getBoundsMaxX());
+                        minY = Math.min(minY,bounds.getBoundsMinY());
+                        maxY = Math.max(maxY,bounds.getBoundsMaxY());
+                        minZ = Math.min(minZ,bounds.getBoundsMinZ());
+                        maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
+                    }
+                }
             }
-            this.bottom = -1.0;
-            this.top = +1.0;
+            if (!once){
+                double midX = ((maxX - minX)/2)+minX;
+                double midY = ((maxY - minY)/2)+minY;
+                double midZ = ((maxZ - minZ)/2)+minZ;
+
+                double d = Vector.Diameter(minX, maxX,
+                                           minY, maxY,
+                                           minZ, maxZ);
+
+                return this.setDiameter(d);
+            }
+            else
+                throw new IllegalStateException("No bounds found in region");
         }
         else
-            throw new IllegalArgumentException("Near must be positive.");
+            throw new IllegalArgumentException("Component has no bounds and is not region");
+    }
+    /**
+     * Called before "view" 
+     */
+    public Camera moveto(double x, double y, double z){
+        this.eyeX = x;
+        this.eyeY = y;
+        this.eyeZ = z;
         return this;
     }
-    public Camera setOrtho(double left, double right, double bottom, double top, double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Ortho;
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-            this.near = near;
-            this.far = far;
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
-    }
-    /**
-     * Called after "view", updates the projection.
-     */
-    public Camera setOrtho(double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Ortho;
-            this.near = near;
-            this.far = far;
-            if (0 != this.aspect){
-                this.left = -(aspect);
-                this.right = +(aspect);
-            }
-            this.bottom = -1.0;
-            this.top = +1.0;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
+    public Camera moveby(double dx, double dy, double dz){
+        this.eyeX += dx;
+        this.eyeY += dy;
+        this.eyeZ += dz;
         return this;
-    }
-    /**
-     * @param fovy Field of view (degrees) in Y
-     */
-    public Camera setPerspective(double fovy){
-        if (0.0 < fovy){
-            this.projection = Projection.Perspective;
-            this.fovy = fovy;
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Field of view must be positive");
     }
     public Camera view(double x, double y, double z, double d){
         this.diameter = d;
@@ -243,20 +260,87 @@ public class Camera
         else
             throw new IllegalArgumentException("Component has no bounds and is not region");
     }
+    public Camera frustrum(double left, double right, double bottom, double top, double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Frustrum;
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+            this.near = near;
+            this.far = far;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+    }
     /**
-     * Called before "view" 
+     * Called after "view", updates the projection.
      */
-    public Camera moveto(double x, double y, double z){
-        this.eyeX = x;
-        this.eyeY = y;
-        this.eyeZ = z;
+    public Camera frustrum(double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Frustrum;
+            this.near = near;
+            this.far = far;
+            if (0 != this.aspect){
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            else {
+                this.left = 0;
+                this.right = 0;
+            }
+            this.bottom = -1.0;
+            this.top = +1.0;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
         return this;
     }
-    public Camera moveby(double dx, double dy, double dz){
-        this.eyeX += dx;
-        this.eyeY += dy;
-        this.eyeZ += dz;
+    public Camera ortho(double left, double right, double bottom, double top, double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Ortho;
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+            this.near = near;
+            this.far = far;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+    }
+    /**
+     * Called after "view", updates the projection.
+     */
+    public Camera ortho(double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Ortho;
+            this.near = near;
+            this.far = far;
+            if (0 != this.aspect){
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            this.bottom = -1.0;
+            this.top = +1.0;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
         return this;
+    }
+    /**
+     * @param fovy Field of view (degrees) in Y
+     */
+    public Camera perspective(double fovy){
+        if (0.0 < fovy){
+            this.projection = Projection.Perspective;
+            this.fovy = fovy;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Field of view must be positive");
     }
     /**
      * Called after "setDiameter".
@@ -358,91 +442,11 @@ public class Camera
             throw new IllegalStateException();
         }
     }
+
     public String toString(){
         return String.format("%c (%g,%g,%g)->(%g,%g,%g);(%g,%g,%g)",this.name,
                              this.eyeX,this.eyeY,this.eyeZ,
                              this.centerX,this.centerY,this.centerZ,
                              this.upX,this.upY,this.upZ);
     }
-    public boolean hasDiameter(){
-        return (0 != this.diameter);
-    }
-    public double getDiameter(){
-        return this.diameter;
-    }
-    public Camera setDiameter(double d){
-        if (0.0 < d){
-            this.diameter = d;
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Diameter must be positive");
-    }
-    public Camera setDiameter(Bounds bounds){
-
-        return this.setDiameter(Vector.Diameter(bounds));
-    }
-    public Camera setDiameter(Component component){
-
-        if (component.hasFv3Bounds())
-
-            return this.setDiameter(component.getFv3Bounds());
-
-        else if (component instanceof Region){
-            double minX = 0, maxX = 0;
-            double minY = 0, maxY = 0;
-            double minZ = 0, maxZ = 0;
-
-            boolean once = true;
-
-            Region region = (Region)component;
-            for (Component child : region.getChildren()){
-                if (child.hasFv3Bounds()){
-                    Bounds bounds = child.getFv3Bounds();
-                    if (once){
-                        once = false;
-                        minX = bounds.getBoundsMinX();
-                        maxX = bounds.getBoundsMaxX();
-                        minY = bounds.getBoundsMinY();
-                        maxY = bounds.getBoundsMaxY();
-                        minZ = bounds.getBoundsMinZ();
-                        maxZ = bounds.getBoundsMaxZ();
-                    }
-                    else {
-                        minX = Math.min(minX,bounds.getBoundsMinX());
-                        maxX = Math.max(maxX,bounds.getBoundsMaxX());
-                        minY = Math.min(minY,bounds.getBoundsMinY());
-                        maxY = Math.max(maxY,bounds.getBoundsMaxY());
-                        minZ = Math.min(minZ,bounds.getBoundsMinZ());
-                        maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
-                    }
-                }
-            }
-            if (!once){
-                double midX = ((maxX - minX)/2)+minX;
-                double midY = ((maxY - minY)/2)+minY;
-                double midZ = ((maxZ - minZ)/2)+minZ;
-
-                double d = Vector.Diameter(minX, maxX,
-                                           minY, maxY,
-                                           minZ, maxZ);
-
-                return this.setDiameter(d);
-            }
-            else
-                throw new IllegalStateException("No bounds found in region");
-        }
-        else
-            throw new IllegalArgumentException("Component has no bounds and is not region");
-    }
-    public double[] getEye(){
-        return new double[]{this.eyeX,this.eyeY,this.eyeZ};
-    }
-    public double[] getCenter(){
-        return new double[]{this.centerX,this.centerY,this.centerZ};
-    }
-    public double[] getUp(){
-        return new double[]{this.upX,this.upY,this.upZ};
-    }
-
 }
