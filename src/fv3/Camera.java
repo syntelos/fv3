@@ -71,7 +71,96 @@ public class Camera
     }
 
 
-    public void view(double x, double y, double z, double d){
+    public Camera.Projection getProjection(){
+        return this.projection;
+    }
+    public Camera setProjection(Camera.Projection p){
+        if (null != p){
+            this.projection = p;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException();
+    }
+    public Camera setFrustrum(double left, double right, double bottom, double top, double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Frustrum;
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+            this.near = near;
+            this.far = far;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+    }
+    /**
+     * Called after "view", updates the projection.
+     */
+    public Camera setFrustrum(double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Frustrum;
+            this.near = near;
+            this.far = far;
+            if (0 != this.aspect){
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            this.bottom = -1.0;
+            this.top = +1.0;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+        return this;
+    }
+    public Camera setOrtho(double left, double right, double bottom, double top, double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Ortho;
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+            this.near = near;
+            this.far = far;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+    }
+    /**
+     * @param fovy Field of view (degrees) in Y
+     */
+    public Camera setPerspective(double fovy){
+        if (0.0 < fovy){
+            this.projection = Projection.Perspective;
+            this.fovy = fovy;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException("Field of view must be positive.");
+    }
+    /**
+     * Called after "view", updates the projection.
+     */
+    public Camera setOrtho(double near, double far){
+        if (0.0 < near){
+            this.projection = Projection.Ortho;
+            this.near = near;
+            this.far = far;
+            if (0 != this.aspect){
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            this.bottom = -1.0;
+            this.top = +1.0;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive.");
+        return this;
+    }
+    public Camera view(double x, double y, double z, double d){
         this.eyeX = 0;
         this.eyeY = 0;
         this.eyeZ = 0; //(d/2);//(2*d);
@@ -93,14 +182,19 @@ public class Camera
         this.near = 1;
         this.far = Math.max( (diameter+1), (target+radius+1));
 
+        return this;
     }
-    public void view(Bounds bounds){
+    public Camera view(Bounds bounds){
+
         double d = Vector.Diameter(bounds);
-        this.view(bounds.getBoundsMidX(),bounds.getBoundsMidY(),bounds.getBoundsMidZ(),d);
+
+        return this.view(bounds.getBoundsMidX(),bounds.getBoundsMidY(),bounds.getBoundsMidZ(),d);
     }
-    public void view(Component component){
+    public Camera view(Component component){
+
         if (component.hasFv3Bounds())
-            this.view(component.getFv3Bounds());
+
+            return this.view(component.getFv3Bounds());
 
         else if (component instanceof Region){
             double minX = 0, maxX = 0;
@@ -141,7 +235,7 @@ public class Camera
                                            minY, maxY,
                                            minZ, maxZ);
 
-                this.view(midX,midY,midZ,d);
+                return this.view(midX,midY,midZ,d);
             }
             else
                 throw new IllegalStateException("No bounds found in region.");
@@ -149,30 +243,35 @@ public class Camera
         else
             throw new IllegalArgumentException("Component has no bounds and is not region.");
     }
-    public void moveto(double x, double y, double z){
+    public Camera moveto(double x, double y, double z){
         this.eyeX = x;
         this.eyeY = y;
         this.eyeZ = z;
+        return this;
     }
-    public void moveby(double dx, double dy, double dz){
+    public Camera moveby(double dx, double dy, double dz){
         this.eyeX += dx;
         this.eyeY += dy;
         this.eyeZ += dz;
+        return this;
     }
-    public void lookto(double x, double y, double z){
+    public Camera lookto(double x, double y, double z){
         this.centerX = x;
         this.centerY = y;
         this.centerZ = z;
+        return this;
     }
-    public void lookby(double dx, double dy, double dz){
+    public Camera lookby(double dx, double dy, double dz){
         this.centerX += dx;
         this.centerY += dy;
         this.centerZ += dz;
+        return this;
     }
-    public void upto(double x, double y, double z){
+    public Camera upto(double x, double y, double z){
         this.upX = x;
         this.upY = y;
         this.upZ = z;
+        return this;
     }
     public String getName(){
         return String.valueOf(this.name);
@@ -181,6 +280,12 @@ public class Camera
         {
             Fv3Screen fv3s = Fv3Screen.Current();
             this.aspect = (fv3s.width / fv3s.height);
+
+            if (0 == this.left && 0 == this.right){
+
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
         }
         if ( this.aspect < 1.0 ) {
             this.bottom /= this.aspect;
