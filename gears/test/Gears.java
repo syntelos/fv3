@@ -60,7 +60,7 @@ public class Gears
         this.add(new Gear3());
         this.addEnd();
 
-        this.getCamera().view(this).setFrustrum(5.0,60.0);
+        this.getCamera().view(this).setFrustrum(5.0,60.0).setView(Camera.View.None);
     }
 
 

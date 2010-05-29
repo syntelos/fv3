@@ -36,12 +36,19 @@ import javax.media.opengl.glu.GLU;
  * 
  * This class endeavors to provide an essential feature set while
  * remaining amenable to modification in subclasses.
+ * 
+ * As called from {@link World}, the root of the scene- event tree,
+ * the camera loads both the projection and modelview matrices to
+ * identity in its init and display methods.
  */
 public class Camera
     extends java.lang.Object
 {
     public enum Projection {
         Frustrum, Ortho, Perspective;
+    }
+    public enum View {
+        LookAt, None;
     }
 
     public final char name;
@@ -56,6 +63,8 @@ public class Camera
     protected volatile double left, right, bottom, top, near, far, aspect, fovy = 50;
 
     protected volatile Projection projection = Projection.Perspective;
+
+    protected volatile View view = View.None;
 
     private volatile boolean once = true;
 
@@ -77,6 +86,17 @@ public class Camera
     public Camera setProjection(Camera.Projection p){
         if (null != p){
             this.projection = p;
+            return this;
+        }
+        else
+            throw new IllegalArgumentException();
+    }
+    public Camera.View getView(){
+        return this.view;
+    }
+    public Camera setView(Camera.View p){
+        if (null != p){
+            this.view = p;
             return this;
         }
         else
@@ -319,15 +339,23 @@ public class Camera
         
         gl.glLoadIdentity();
 
-        glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
-                      this.centerX, this.centerY, this.centerZ,
-                      this.upX, this.upY, this.upZ);
+        switch (this.view){
+        case LookAt:
+            glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
+                          this.centerX, this.centerY, this.centerZ,
+                          this.upX, this.upY, this.upZ);
 
-        if (this.once){
-            this.once = false;
-            System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
-                              this.centerX, this.centerY, this.centerZ,
-                              this.upX, this.upY, this.upZ);
+            if (this.once){
+                this.once = false;
+                System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
+                                  this.centerX, this.centerY, this.centerZ,
+                                  this.upX, this.upY, this.upZ);
+            }
+            break;
+        case None:
+            break;
+        default:
+            throw new IllegalStateException();
         }
     }
     public String toString(){
