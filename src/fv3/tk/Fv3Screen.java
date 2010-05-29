@@ -26,6 +26,16 @@ import com.sun.javafx.newt.NewtFactory;
 import com.sun.javafx.newt.Screen;
 
 /**
+ * This physical screen descriptor is created by the Animator} thread.
+ * As a result, it is not available from component constructors.  This
+ * is necessary because the screen descriptor accesses native
+ * resources that may only be accessed by one thread, the Animator
+ * thread.  
+ * 
+ * The init and display methods in the {@link Fv3Component} ({@link
+ * fv3.Component}) interface both occur from the Animator thread and
+ * have access to the screen descriptor.
+ * 
  * @author jdp
  */
 public final class Fv3Screen
@@ -49,7 +59,7 @@ public final class Fv3Screen
 
 
     /**
-     * Created in animator thread for 
+     * Created in animator thread 
      */
     Fv3Screen(){
         this(0);

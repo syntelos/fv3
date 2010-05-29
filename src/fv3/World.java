@@ -147,12 +147,19 @@ public class World
         return camera;
     }
 
+    public void init(GL2 gl) {
+
+        Camera camera = this.getCamera();
+        camera.init(gl,this.glu);
+
+        super.init(gl);
+    }
     public void display(GL2 gl){
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         Camera camera = this.getCamera();
-        camera.apply(gl,this.glu);
+        camera.display(gl,this.glu);
 
         super.display(gl);
     }

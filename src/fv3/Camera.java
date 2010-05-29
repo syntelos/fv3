@@ -18,19 +18,31 @@
 package fv3;
 
 import fv3.math.Vector;
+import fv3.tk.Fv3Screen;
 
 import lxl.List;
 
 import javax.media.opengl.GL2;
-
 import javax.media.opengl.glu.GLU;
 
 /**
+ * The camera is controlled from the root {@link World} in a number of
+ * instances to perform both perspective and modelview.  
  * 
+ * Perspective operations are performed in the "init" method, and
+ * modelview operations are performed in the "display" method.  These
+ * methods are named for the events of the same names that invoke them
+ * from {@link World}.
+ * 
+ * This class endeavors to provide an essential feature set while
+ * remaining amenable to modification in subclasses.
  */
 public class Camera
     extends java.lang.Object
 {
+    public enum Projection {
+        Frustrum, Ortho, Perspective;
+    }
 
     public final char name;
 
@@ -40,6 +52,10 @@ public class Camera
     protected volatile double centerX = 0, centerY = 0, centerZ = 1;
     protected volatile double upX = 0, upY = 1, upZ = 0;
     protected volatile double diameter = 0;
+
+    protected volatile double left, right, bottom, top, near, far, aspect, fovy = 50;
+
+    protected volatile Projection projection = Projection.Perspective;
 
     private volatile boolean once = true;
 
@@ -58,7 +74,7 @@ public class Camera
     public void view(double x, double y, double z, double d){
         this.eyeX = 0;
         this.eyeY = 0;
-        this.eyeZ = 0; //(d/2);
+        this.eyeZ = 0; //(d/2);//(2*d);
         this.centerX = x;
         this.centerY = y;
         this.centerZ = z;
@@ -66,6 +82,17 @@ public class Camera
         this.upY = 1;
         this.upZ = 0;
         this.diameter = d;
+
+        double radius = (d/2);
+        double target = new Vector(this.eyeX,this.eyeY,this.eyeZ).distance(new Vector(x,y,z));
+
+        this.left = x - radius;
+        this.right = x + radius;
+        this.bottom = y - radius;
+        this.top = y + radius;
+        this.near = 1;
+        this.far = Math.max( (diameter+1), (target+radius+1));
+
     }
     public void view(Bounds bounds){
         double d = Vector.Diameter(bounds);
@@ -150,7 +177,38 @@ public class Camera
     public String getName(){
         return String.valueOf(this.name);
     }
-    public void apply(GL2 gl, GLU glu){
+    public void init(GL2 gl, GLU glu){
+        {
+            Fv3Screen fv3s = Fv3Screen.Current();
+            this.aspect = (fv3s.width / fv3s.height);
+        }
+        if ( this.aspect < 1.0 ) {
+            this.bottom /= this.aspect;
+            this.top /= this.aspect;
+        }
+        else {
+            this.left *= this.aspect; 
+            this.right *= this.aspect;
+        }
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+
+        switch (this.projection){
+        case Frustrum:
+            gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
+            break;
+        case Ortho:
+            gl.glOrtho(this.left, this.right, this.bottom, this.top, this.near, this.far);
+            break;
+        case Perspective:
+            glu.gluPerspective(this.fovy,this.aspect,this.near,this.far);
+            break;
+        default:
+            throw new IllegalStateException();
+        }
+    }
+    public void display(GL2 gl, GLU glu){
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         

@@ -3,7 +3,6 @@ package test;
 
 import fv3.Camera;
 
-import fv3.nui.Frustrum;
 import fv3.nui.Light;
 import fv3.nui.Viewport;
 
@@ -59,7 +58,6 @@ public class Gears
         this.add(new Gear1());
         this.add(new Gear2());
         this.add(new Gear3());
-        this.add(new Frustrum(5.0, 60.0));
         this.addEnd();
 
         this.getCamera().view(this);
