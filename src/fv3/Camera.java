@@ -380,19 +380,21 @@ public class Camera
             Fv3Screen fv3s = Fv3Screen.Current();
             this.aspect = (fv3s.width / fv3s.height);
 
+            System.out.printf("aspect %g = (%g/%g)\n",this.aspect,fv3s.width,fv3s.height);
+
             if (0 == this.left && 0 == this.right){
 
                 this.left = -(aspect);
                 this.right = +(aspect);
             }
-        }
-        if ( this.aspect < 1.0 ) {
-            this.bottom /= this.aspect;
-            this.top /= this.aspect;
-        }
-        else {
-            this.left *= this.aspect; 
-            this.right *= this.aspect;
+            else if ( this.aspect < 1.0 ) {
+                this.bottom /= this.aspect;
+                this.top /= this.aspect;
+            }
+            else {
+                this.left *= this.aspect; 
+                this.right *= this.aspect;
+            }
         }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);

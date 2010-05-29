@@ -80,6 +80,9 @@ public final class Animator
     private volatile static Animator Instance;
 
     static {
+        /*
+         * Using NEWT not AWT
+         */
         System.setProperty("java.awt.headless","true");
     }
     /**
@@ -95,8 +98,10 @@ public final class Animator
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
-                x = tt;
-                System.err.println(String.format("%s: Set fv3.tk.Animator.X(%d)",Thread.currentThread().getName(),x));
+                if (0 <= tt){
+                    x = tt;
+                    System.err.println(String.format("%s: Set fv3.tk.Animator.X(%d)",Thread.currentThread().getName(),x));
+                }
             }
             catch (NumberFormatException exc){
             }
@@ -116,8 +121,10 @@ public final class Animator
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
-                y = tt;
-                System.err.println(String.format("%s: Set fv3.tk.Animator.Y(%d)",Thread.currentThread().getName(),y));
+                if (0 <= tt){
+                    y = tt;
+                    System.err.println(String.format("%s: Set fv3.tk.Animator.Y(%d)",Thread.currentThread().getName(),y));
+                }
             }
             catch (NumberFormatException exc){
             }
@@ -137,8 +144,10 @@ public final class Animator
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
-                w = tt;
-                System.err.println(String.format("%s: Set fv3.tk.Animator.W(%d)",Thread.currentThread().getName(),w));
+                if (0 < tt){
+                    w = tt;
+                    System.err.println(String.format("%s: Set fv3.tk.Animator.W(%d)",Thread.currentThread().getName(),w));
+                }
             }
             catch (NumberFormatException exc){
             }
@@ -158,8 +167,10 @@ public final class Animator
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
-                h = tt;
-                System.err.println(String.format("%s: Set fv3.tk.Animator.H(%d)",Thread.currentThread().getName(),h));
+                if (0 < tt){
+                    h = tt;
+                    System.err.println(String.format("%s: Set fv3.tk.Animator.H(%d)",Thread.currentThread().getName(),h));
+                }
             }
             catch (NumberFormatException exc){
             }
@@ -180,8 +191,10 @@ public final class Animator
         if (null != config){
             try {
                 int tt = Integer.parseInt(config);
-                swapi = tt;
-                System.err.println(String.format("%s: Set fv3.tk.Animator.SwapInterval(%d)",Thread.currentThread().getName(),swapi));
+                if (0 <= tt){
+                    swapi = tt;
+                    System.err.println(String.format("%s: Set fv3.tk.Animator.SwapInterval(%d)",Thread.currentThread().getName(),swapi));
+                }
             }
             catch (NumberFormatException exc){
             }

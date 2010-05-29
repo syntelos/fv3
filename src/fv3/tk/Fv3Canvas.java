@@ -45,6 +45,12 @@ public class Fv3Canvas
     public static GL2 GL(){
         return (GL2)javax.media.opengl.GLContext.getCurrentGL();
     }
+    static {
+        /*
+         * Using NEWT not AWT
+         */
+        System.setProperty("java.awt.headless","true");
+    }
 
     public final static double PI2 = (Math.PI * 2.0);
 

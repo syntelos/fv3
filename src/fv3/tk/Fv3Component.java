@@ -26,9 +26,8 @@ import javax.media.opengl.glu.GLU;
 /**
  * Interface from {@link Animator} to {@link Fv3Canvas}.
  * 
- * The system architecture is for a single (full) screen window under
- * a single animator, without resizing.  Therefore the init method
- * performs both scene and fustrum construction.
+ * The init method performs projection operations, and the display
+ * method performs modelview operations.
  * 
  * @see Fv3Canvas
  * @author jdp
@@ -38,15 +37,19 @@ public interface Fv3Component
             MouseListener
 {
     /**
-     * Called once after constructing the object.  The GL viewport is
-     * defined by the caller, and available from the {@link
-     * Fv3Screen}.  The GL version is also defined by the caller in
-     * {@link Fv3glv}.
+     * Called once from the {@link Animator} after the {@link
+     * Fv3Screen} and GL version ({@link Fv3glv}) have been defined.
      */
     public void init(GL2 gl);
-
+    /**
+     * Called once from the {@link Animator} before "init" and after
+     * the {@link Fv3Screen} and GL version ({@link Fv3glv}) have been
+     * defined.  The {@link Animator} thread creates one GLU instance
+     * which is shared.
+     */
     public void setGLU(GLU glu);
     /**
+     * Called by the {@link Animator} for many updates per second.
      * @param gl GL context
      */
     public void display(GL2 gl);
