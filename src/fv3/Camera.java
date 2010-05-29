@@ -102,6 +102,14 @@ public class Camera
         else
             throw new IllegalArgumentException();
     }
+    public Camera modelViewNone(){
+        this.modelView = Camera.ModelView.None;
+        return this;
+    }
+    public Camera modelViewLookAt(){
+        this.modelView = Camera.ModelView.LookAt;
+        return this;
+    }
     public double[] getEye(){
         return new double[]{this.eyeX,this.eyeY,this.eyeZ};
     }
