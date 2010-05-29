@@ -1,8 +1,15 @@
                                               -*- outline -*-
 
-* 2d font inspector layout
-** JAI__ / fontographer mult sequential control points errors
+* fv3.model
+** use vertex array memory
+** i/o mesh formats 
+*** STL, 3DS, OBJ
+* fv3.font
+** 2d font inspector layout
 ** scale font work to be done
 ** 3d font inspector
-* fv3/ds
+* fv3.ds
 ** Resolve math dupes
+** 3ds file write
+** (numerous bugs)
+** (model view)
