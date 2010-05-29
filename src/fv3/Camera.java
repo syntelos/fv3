@@ -317,12 +317,17 @@ public class Camera
         switch (this.projection){
         case Frustrum:
             gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
+            System.out.printf("glFrustrum(%g,%g,%g,%g,%g,%g)\n",this.left,this.right,this.bottom,
+                              this.top, this.near, this.far);
             break;
         case Ortho:
             gl.glOrtho(this.left, this.right, this.bottom, this.top, this.near, this.far);
+            System.out.printf("glOrtho(%g,%g,%g,%g,%g,%g)\n",this.left,this.right,this.bottom,
+                              this.top, this.near, this.far);
             break;
         case Perspective:
             glu.gluPerspective(this.fovy,this.aspect,this.near,this.far);
+            System.out.printf("gluPerspective(%g,%g,%g,%g)\n",this.fovy,this.aspect,this.near,this.far);
             break;
         default:
             throw new IllegalStateException();
