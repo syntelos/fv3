@@ -74,7 +74,7 @@ public class Camera
 
     protected volatile int vpX, vpY, vpWidth, vpHeight;
 
-    protected volatile Projection projection = Projection.Perspective;
+    protected volatile Projection projection = Projection.Frustrum;
 
     protected volatile ModelView modelView = ModelView.LookAt;
 
