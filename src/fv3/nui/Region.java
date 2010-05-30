@@ -248,36 +248,7 @@ public class Region
         else
             super.mouseWheelMoved(e);
     }
-    public int indexOfView(){
-        List<fv3.Component> c = this.children;
-        if (null != c){
-            Object[] list = c.array();
-            for (int cc = 0, count = ((null != list)?(list.length):(0)); cc < count; cc++){
-                if (list[cc] instanceof fv3.Viewport)
-                    return cc;
-            }
-        }
-        return -1;
-    }
-    public boolean hasView(){
-        return (-1 != this.indexOfView());
-    }
-    public fv3.Viewport getView(){
-        int idx = this.indexOfView();
-        if (-1 != idx)
-            return (fv3.Viewport)this.children.get(idx);
-        else
-            return null;
-    }
-    public Region setView(fv3.Viewport view){
-        int idx = this.indexOfView();
-        if (-1 != idx)
-            this.children.update(idx,view);
-        else 
-            this.children().insert(view,0);
 
-        return this;
-    }
     public final fv3.Component getCurrent(){
         return this.current;
     }

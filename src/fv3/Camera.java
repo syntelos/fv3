@@ -68,7 +68,9 @@ public class Camera
     protected volatile double upX = 0, upY = 1, upZ = 0;
     protected volatile double diameter = 0;
 
-    protected volatile double left, right, bottom, top, near, far, aspect, fovy = 50;
+    protected volatile double left, right, bottom, top, near, far, fovy = 50, vpAspect;
+
+    protected volatile int vpX, vpY, vpWidth, vpHeight;
 
     protected volatile Projection projection = Projection.Perspective;
 
@@ -105,8 +107,12 @@ public class Camera
             this.top = copy.top; 
             this.near = copy.near; 
             this.far = copy.far; 
-            this.aspect = copy.aspect; 
             this.fovy = copy.fovy;
+            this.vpX = copy.vpX;
+            this.vpY = copy.vpY;
+            this.vpWidth = copy.vpWidth;
+            this.vpHeight = copy.vpHeight;
+            this.vpAspect = copy.vpAspect; 
             this.projection = copy.projection;
             this.modelView = copy.modelView;
         }
@@ -323,9 +329,9 @@ public class Camera
             this.projection = Projection.Frustrum;
             this.near = near;
             this.far = far;
-            if (0 != this.aspect){
-                this.left = -(aspect);
-                this.right = +(aspect);
+            if (0 != this.vpAspect){
+                this.left = -(vpAspect);
+                this.right = +(vpAspect);
             }
             else {
                 this.left = 0;
@@ -360,9 +366,9 @@ public class Camera
             this.projection = Projection.Ortho;
             this.near = near;
             this.far = far;
-            if (0 != this.aspect){
-                this.left = -(aspect);
-                this.right = +(aspect);
+            if (0 != this.vpAspect){
+                this.left = -(vpAspect);
+                this.right = +(vpAspect);
             }
             this.bottom = -1.0;
             this.top = +1.0;
@@ -418,21 +424,31 @@ public class Camera
     }
     public void init(GL2 gl, GLU glu){
         {
-            Fv3Screen fv3s = Fv3Screen.Current();
-            this.aspect = (fv3s.width / fv3s.height);
+            if (0 == this.vpWidth || 0 == this.vpHeight){
+
+                Fv3Screen fv3s = Fv3Screen.Current();
+
+                this.vpWidth = (int)fv3s.width;
+                this.vpHeight = (int)fv3s.height;
+            }
+            else {
+                gl.glViewport(this.vpX,this.vpY,this.vpWidth,this.vpHeight);
+                System.out.printf("glViewport(%g,%g,%g,%g)\n",this.vpX,this.vpY,this.vpWidth,this.vpHeight);
+            }
+            this.vpAspect = (this.vpWidth / this.vpHeight);
 
             if (0 == this.left && 0 == this.right){
 
-                this.left = -(aspect);
-                this.right = +(aspect);
+                this.left = -(vpAspect);
+                this.right = +(vpAspect);
             }
-            else if ( this.aspect < 1.0 ) {
-                this.bottom /= this.aspect;
-                this.top /= this.aspect;
+            else if ( this.vpAspect < 1.0 ) {
+                this.bottom /= this.vpAspect;
+                this.top /= this.vpAspect;
             }
             else {
-                this.left *= this.aspect; 
-                this.right *= this.aspect;
+                this.left *= this.vpAspect; 
+                this.right *= this.vpAspect;
             }
         }
 
@@ -451,8 +467,8 @@ public class Camera
                               this.top, this.near, this.far);
             break;
         case Perspective:
-            glu.gluPerspective(this.fovy,this.aspect,this.near,this.far);
-            System.out.printf("gluPerspective(%g,%g,%g,%g)\n",this.fovy,this.aspect,this.near,this.far);
+            glu.gluPerspective(this.fovy,this.vpAspect,this.near,this.far);
+            System.out.printf("gluPerspective(%g,%g,%g,%g)\n",this.fovy,this.vpAspect,this.near,this.far);
             break;
         default:
             throw new IllegalStateException();

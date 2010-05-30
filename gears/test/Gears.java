@@ -4,7 +4,6 @@ package test;
 import fv3.Camera;
 
 import fv3.nui.Light;
-import fv3.nui.Viewport;
 
 import fv3.tk.Animator;
 import fv3.tk.Fv3Screen;

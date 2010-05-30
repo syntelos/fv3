@@ -48,25 +48,6 @@ public interface Region
     extends Component,
             lxl.Hier
 {
-    /**
-     * The position of the view in the list of children should be zero.
-     * @return Negative one for not found, otherwise a zero- positive
-     * index into the list of children.
-     */
-    public int indexOfView();
-    /**
-     * @return Index of view is not negative one.
-     */
-    public boolean hasView();
-    /**
-     * @return Null for not found.
-     */
-    public Viewport getView();
-    /**
-     * Replace or insert a non- null view in the list of component children.
-     * @param view If null, no effect.
-     */
-    public Region setView(Viewport view);
 
     /**
      * @return A descendant of this that is current for input events,
