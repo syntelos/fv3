@@ -26,8 +26,9 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 /**
- * The camera is controlled from the root {@link World} in a number of
- * instances to perform both perspective and modelview.  
+ * The {@link World} manages a set of cameras, and can dynamically
+ * change cameras by name.  Cameras perform both perspective and
+ * modelview operations.
  * 
  * Perspective operations are performed in the "init" method, and
  * modelview operations are performed in the "display" method.  These
@@ -37,9 +38,16 @@ import javax.media.opengl.glu.GLU;
  * This class endeavors to provide an essential feature set while
  * remaining amenable to modification in subclasses.
  * 
+ * <h3>Operation</h3>
+ * 
  * As called from {@link World}, the root of the scene- event tree,
  * the camera loads both the projection and modelview matrices to
  * identity in its init and display methods.
+ * 
+ * <h3>Lifecycle</h3>
+ * 
+ * Cameras have end of life event like "destroy".
+ * 
  */
 public class Camera
     extends java.lang.Object
@@ -77,6 +85,31 @@ public class Camera
         }
         else
             throw new IllegalArgumentException(String.format("0x%x",(int)name));
+    }
+    public Camera(char name, Camera copy){
+        this(name);
+        if (null != copy){
+            this.eyeX = copy.eyeX;
+            this.eyeY = copy.eyeY;
+            this.eyeZ = copy.eyeZ;
+            this.centerX = copy.centerX;
+            this.centerY = copy.centerY;
+            this.centerZ = copy.centerZ;
+            this.upX = copy.upX;
+            this.upY = copy.upY;
+            this.upZ = copy.upZ;
+            this.diameter = copy.diameter;
+            this.left = copy.left;
+            this.right = copy.right;
+            this.bottom = copy.bottom;
+            this.top = copy.top; 
+            this.near = copy.near; 
+            this.far = copy.far; 
+            this.aspect = copy.aspect; 
+            this.fovy = copy.fovy;
+            this.projection = copy.projection;
+            this.modelView = copy.modelView;
+        }
     }
 
 
@@ -387,8 +420,6 @@ public class Camera
         {
             Fv3Screen fv3s = Fv3Screen.Current();
             this.aspect = (fv3s.width / fv3s.height);
-
-            System.out.printf("aspect %g = (%g/%g)\n",this.aspect,fv3s.width,fv3s.height);
 
             if (0 == this.left && 0 == this.right){
 

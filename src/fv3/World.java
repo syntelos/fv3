@@ -97,6 +97,7 @@ public class World
     private volatile Camera[] cameras = new Camera[26];
 
     private volatile int cameraCurrent;
+    private volatile boolean cameraChange;
 
 
     protected World(){
@@ -108,17 +109,27 @@ public class World
     }
 
 
+    /**
+     * @return The current camera.  The default camera is "A".
+     */
     public Camera getCamera(){
         return this.cameras[this.cameraCurrent];
     }
+    /**
+     * @param name Camera name, an ASCII alpha letter (A-Z == a-z).
+     * @return The new current camera.  If the named camera didn't
+     * exist before this method call, one is created as a clone of the
+     * camera current before this method call.
+     */
     public Camera useCamera(char name){
         if ('A' <= name && 'Z' >= name){
 
             int idx = name-'A';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(name);
+                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
 
+            this.cameraChange = (idx != this.cameraCurrent);
             this.cameraCurrent = idx;
             return this.cameras[idx];
         }
@@ -127,30 +138,38 @@ public class World
             int idx = name-'a';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(name);
+                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
 
+            this.cameraChange = (idx != this.cameraCurrent);
             this.cameraCurrent = idx;
             return this.cameras[idx];
         }
         else
             throw new IllegalArgumentException(String.format("0x%x",(int)name));
     }
+    /**
+     * Include a camera in the set of cameras without making it
+     * current.
+     */
     public Camera defineCamera(Camera camera){
 
         this.cameras[camera.index] = camera;
         return camera;
     }
+    /**
+     * Include a camera in the set of cameras, making it current.
+     */
     public Camera useCamera(Camera camera){
 
         this.cameras[camera.index] = camera;
+        this.cameraChange = (camera.index != this.cameraCurrent);
         this.cameraCurrent = camera.index;
         return camera;
     }
 
     public void init(GL2 gl) {
 
-        Camera camera = this.getCamera();
-        camera.init(gl,this.glu);
+        this.cameras[this.cameraCurrent].init(gl,this.glu);
 
         super.init(gl);
     }
@@ -158,8 +177,15 @@ public class World
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
-        Camera camera = this.getCamera();
-        camera.display(gl,this.glu);
+        if (this.cameraChange){
+            this.cameraChange = false;
+
+            Camera camera = this.cameras[this.cameraCurrent];
+            camera.init(gl,this.glu);
+            camera.display(gl,this.glu);
+        }
+        else
+            this.cameras[this.cameraCurrent].display(gl,this.glu);
 
         super.display(gl);
     }

@@ -27,6 +27,13 @@ import fv3.math.Vector;
  * A component that is not a {@link Region} is a leaf in a component
  * graph.  At least for the benefit of discussion, a component is a GL
  * vertex list.
+ * 
+ * <h3>Operation</h3>
+ * 
+ * The component graph is populated in the constructors of
+ * implementors, before the Fv3 Component "init" event occurs, before
+ * the Fv3 tk Animator thread has started.
+ * 
  * @see Region
  * @see fv3.nui.Component
  */

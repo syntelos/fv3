@@ -20,15 +20,26 @@ package fv3;
 import lxl.List;
 
 /**
- * When a region has a matrix, its matrix creates a new coordinate
- * space (loading, not multiplying).
+ * A region is a component with children.
  * 
- * The {@link lxl.Hier lxl component hierarchy} is an experimental
- * feature for dynamic work space graphing.  With this feature set
- * embedded in the Fv3 Component graph, an application or tool can
- * spider the Fv3 World and then elaborate on that graph visually or
- * in data I/O.  The Fv3 Component graph exists in the lxl graph at
- * the identifying class {@link fv3.Component}.
+ * <h3>Operation</h3>
+ * 
+ * The component graph is populated in the constructors of
+ * implementors, before the Fv3 Component "init" event occurs, before
+ * the Fv3 tk Animator thread has started.
+ * 
+ * <h3>Hierarchical Object Model</h3>
+ * 
+ * Fv3 employs the {@link lxl.Hier lxl component hierarchy} for an
+ * object model as a dynamic work space.
+ * 
+ * Like a Document Object Model, the Fv3 component graph permits an
+ * application or tool to spider the Fv3 World -- possibly to
+ * elaborate on the lxl graph with new classes of branches.
+ * 
+ * The Fv3 Component graph exists in the lxl graph at the identifying
+ * class {@link fv3.Component}.
+ * 
  * 
  * @see Component
  * @see fv3.nui.Region

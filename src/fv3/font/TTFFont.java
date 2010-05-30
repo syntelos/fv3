@@ -475,7 +475,7 @@ public class TTFFont
         TTFGlyph glyph = this.get(index);
         if (null != glyph){
             glyph.character = ch;
-            this.map.add(new Character(ch),index);
+            this.map.put(new Character(ch),index);
         }
     }
 

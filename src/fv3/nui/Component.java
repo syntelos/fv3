@@ -28,6 +28,12 @@ import fv3.math.Vector;
  * The transformation matrix of a component is applied by a containing
  * {@link fv3.Region} (see also {@link fv3.World}).
  * 
+ * <h3>Operation</h3>
+ * 
+ * The component graph is populated in the constructors of subclasses,
+ * before the Fv3 Component "init" event occurs, before the Fv3 tk
+ * Animator thread has started.
+ * 
  * @see fv3.Component
  */
 public class Component 

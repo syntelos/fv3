@@ -78,7 +78,7 @@ public class FontsDir
                 this.size = count;
                 this.map = new lxl.Index(count);
                 for (int cc = 0; cc < count; cc++){
-                    this.map.add(names[cc],cc);
+                    this.map.put(names[cc],cc);
                 }
             }
             else {
