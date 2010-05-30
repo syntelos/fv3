@@ -1,7 +1,7 @@
                                               -*- outline -*-
 
 * fv3.model
-** use vertex array memory
+** use display lists and vertex array memory
 ** i/o mesh formats 
 *** STL, 3DS, OBJ
 * fv3.font
