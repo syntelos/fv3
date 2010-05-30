@@ -144,8 +144,8 @@ public abstract class Model
         this.matrix().rotateZ(a);
         return this;
     }
-    public Component rotateXY(double ax, double ay){
-        this.matrix().rotateXY(ax,ay);
+    public Component rotate(double ax, double ay, double az){
+        this.matrix().rotate(ax,ay,az);
         return this;
     }
     protected final String[] errorStrings(GL2 gl){

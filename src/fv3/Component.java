@@ -95,5 +95,5 @@ public interface Component
 
     public Component rotateZ(double a);
 
-    public Component rotateXY(double ax, double ay);
+    public Component rotate(double ax, double ay, double az);
 }

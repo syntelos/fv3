@@ -270,20 +270,73 @@ public class Matrix
 
         return this.mul(R);
     }
-    public final Matrix rotateX(double angle){
-        return this.rotate(AxisAngle.Axis.X(angle));
+    public final Matrix rotateX(double rax){
+        double[] R = Identity.clone();
+
+        double c = Math.cos(rax);
+        double s = Math.sin(rax);
+
+        R[M11] = c;
+        R[M21] = -s;
+
+        R[M12] = s;
+        R[M22] = c;
+
+        return this.mul(R);
     }
-    public final Matrix rotateY(double angle){
-        return this.rotate(AxisAngle.Axis.Y(angle));
+    public final Matrix rotateY(double ray){
+        double[] R = Identity.clone();
+
+        double c = Math.cos(ray);
+        double s = Math.sin(ray);
+
+        R[M00] = c;
+        R[M20] = -s;
+
+        R[M02] = s;
+        R[M22] = c;
+
+        return this.mul(R);
     }
-    public final Matrix rotateZ(double angle){
-        return this.rotate(AxisAngle.Axis.Z(angle));
+    public final Matrix rotateZ(double raz){
+        double[] R = Identity.clone();
+
+        double c = Math.cos(raz);
+        double s = Math.sin(raz);
+
+        R[M00] = c;
+        R[M10] = -s;
+
+        R[M01] = s;
+        R[M11] = c;
+
+        return this.mul(R);
     }
-    public final Matrix rotateXY(double ax, double ay){
-        return this.rotateX(ax).rotateY(ay);
-    }
-    public final Matrix rotateYX(double ay, double ax){
-        return this.rotateY(ay).rotateX(ax);
+    public final Matrix rotate(double rax, double ray, double raz){
+        double[] R = Identity.clone();
+
+        double cx = Math.cos(rax);
+        double sx = Math.sin(rax);
+
+        double cy = Math.cos(ray);
+        double sy = Math.sin(ray);
+
+        double cz = Math.cos(raz);
+        double sz = Math.sin(raz);
+
+        R[M00] =  cy * cz;
+        R[M01] = -cy * sz;
+        R[M02] =  sy;
+
+        R[M10] =  (sx * sy * cz)+(cx * sz);
+        R[M11] = -(sx * sy * sz) + (cx * cz);
+        R[M12] = -sx * cy;
+
+        R[M20] = -(cx * sy * cz) + (sx * sz);
+        R[M21] =  (cx * sy * sz) + (sx * cz);
+        R[M22] =  cx * cy;
+
+        return this.mul(R);
     }
     /**
      * @return The determinant of this matrix.  

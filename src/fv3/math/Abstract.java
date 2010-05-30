@@ -34,6 +34,8 @@ public abstract class Abstract
     extends Object
 {
     public final static double EPSILON = (1e-8);
+    public final static double PI = Math.PI;
+    public final static double PI2 = (Math.PI/2.0);
 
 
     private volatile DoubleBuffer b;
