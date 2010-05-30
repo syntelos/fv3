@@ -18,10 +18,12 @@ public class Gear3
     extends fv3.model.Model
 {
 
-    private final static float MatBlue[] = { 0.2f, 0.2f, 1.0f, 1.0f };
+    private final static float MatRed[] = { 0.8f, 0.1f, 0.0f, 1.0f };
+
+    //private final static float MatBlue[] = { 0.2f, 0.2f, 1.0f, 1.0f };
 
     private final static fv3.model.Object[] MODEL3 = {
-        new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, MatBlue),
+        new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, MatRed),
         new ShadeModel(GL2.GL_FLAT),
         new Normal(  0.00000000000000000000000000,  0.00000000000000000000000000,  1.00000000000000000000000000),
         new Begin(GL2.GL_QUAD_STRIP),
