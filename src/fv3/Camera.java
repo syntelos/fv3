@@ -70,6 +70,8 @@ public class Camera
 
     protected volatile double left, right, bottom, top, near, far, fovy = 50, vpAspect;
 
+    protected volatile boolean vp = false;
+
     protected volatile int vpX, vpY, vpWidth, vpHeight;
 
     protected volatile Projection projection = Projection.Perspective;
@@ -108,6 +110,7 @@ public class Camera
             this.near = copy.near; 
             this.far = copy.far; 
             this.fovy = copy.fovy;
+            this.vp = copy.vp;
             this.vpX = copy.vpX;
             this.vpY = copy.vpY;
             this.vpWidth = copy.vpWidth;
@@ -424,18 +427,25 @@ public class Camera
     }
     public void init(GL2 gl, GLU glu){
         {
-            if (0 == this.vpWidth || 0 == this.vpHeight){
+
+            if (this.vp){
+                double vpw = this.vpWidth;
+                double vph = this.vpHeight;
+                this.vpAspect = (vpw / vph);
+
+                gl.glViewport(this.vpX,this.vpY,this.vpWidth,this.vpHeight);
+                System.out.printf("glViewport(%g,%g,%g,%g)\n",this.vpX,this.vpY,this.vpWidth,this.vpHeight);
+            }
+            else {
 
                 Fv3Screen fv3s = Fv3Screen.Current();
+
+                this.vpAspect = (fv3s.width / fv3s.height);
 
                 this.vpWidth = (int)fv3s.width;
                 this.vpHeight = (int)fv3s.height;
             }
-            else {
-                gl.glViewport(this.vpX,this.vpY,this.vpWidth,this.vpHeight);
-                System.out.printf("glViewport(%g,%g,%g,%g)\n",this.vpX,this.vpY,this.vpWidth,this.vpHeight);
-            }
-            this.vpAspect = (this.vpWidth / this.vpHeight);
+
 
             if (0 == this.left && 0 == this.right){
 
