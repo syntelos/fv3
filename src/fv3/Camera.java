@@ -118,6 +118,7 @@ public class Camera
             this.vpAspect = copy.vpAspect; 
             this.projection = copy.projection;
             this.modelView = copy.modelView;
+            //this.once = true//
         }
     }
 
@@ -216,9 +217,6 @@ public class Camera
                 }
             }
             if (!once){
-                double midX = ((maxX - minX)/2)+minX;
-                double midY = ((maxY - minY)/2)+minY;
-                double midZ = ((maxZ - minZ)/2)+minZ;
 
                 double d = Vector.Diameter(minX, maxX,
                                            minY, maxY,
@@ -239,13 +237,13 @@ public class Camera
         this.eyeX = x;
         this.eyeY = y;
         this.eyeZ = z;
-        return this;
+        return this.target();
     }
     public Camera moveby(double dx, double dy, double dz){
         this.eyeX += dx;
         this.eyeY += dy;
         this.eyeZ += dz;
-        return this;
+        return this.target();
     }
     public Camera view(double x, double y, double z, double d){
         this.diameter = d;
@@ -399,6 +397,19 @@ public class Camera
         this.centerX = x;
         this.centerY = y;
         this.centerZ = z;
+        return this.target();
+    }
+    public Camera lookby(double dx, double dy, double dz){
+        return this.lookto((this.centerX + dx),(this.centerY + dy),(this.centerZ + dz));
+    }
+    public Camera upto(double x, double y, double z){
+        this.upX = x;
+        this.upY = y;
+        this.upZ = z;
+        return this;
+    }
+    public Camera target(){
+
         if (0 != this.diameter){
 
             double radius = (this.diameter/2);
@@ -411,15 +422,6 @@ public class Camera
             this.near = 1;
             this.far = Math.max( (this.diameter+1), (target+radius+1));
         }
-        return this;
-    }
-    public Camera lookby(double dx, double dy, double dz){
-        return this.lookto((this.centerX + dx),(this.centerY + dy),(this.centerZ + dz));
-    }
-    public Camera upto(double x, double y, double z){
-        this.upX = x;
-        this.upY = y;
-        this.upZ = z;
         return this;
     }
     public String getName(){
