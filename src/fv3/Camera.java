@@ -237,38 +237,50 @@ public class Camera
     public Camera orthoFront(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
 
+        double dn = (2*s.diameter);
+        double dr = (dn + s.radius);
+
         double x = s.midX;
         double y = s.midY;
-        double z = s.midZ+s.diameter;
+        double z = s.midZ-dn;
 
-        return this.translate(x,y,z).ortho(1,(s.diameter+1));
+        return this.translate(x,y,z).ortho(1,dr);
     }
     public Camera orthoTop(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
 
+        double dn = (2*s.diameter);
+        double dr = (dn + s.radius);
+
         double x = s.midX;
-        double y = s.midY+s.diameter;
+        double y = s.midY+dn;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,(s.diameter+1));
+        return this.translate(x,y,z).ortho(1,dr);
     }
     public Camera orthoLeft(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
 
-        double x = s.midX-s.diameter;
+        double dn = (2*s.diameter);
+        double dr = (dn + s.radius);
+
+        double x = s.midX-dn;
         double y = s.midY;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,(s.diameter+1));
+        return this.translate(x,y,z).ortho(1,dr);
     }
     public Camera orthoRight(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
 
-        double x = s.midX+s.diameter;
+        double dn = (2*s.diameter);
+        double dr = (dn + s.radius);
+
+        double x = s.midX+dn;
         double y = s.midY;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,(s.diameter+1));
+        return this.translate(x,y,z).ortho(1,dr);
     }
     /**
      * @param fovy Field of view (degrees) in Y
