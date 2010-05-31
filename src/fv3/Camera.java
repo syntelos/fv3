@@ -244,7 +244,7 @@ public class Camera
         double y = s.midY;
         double z = s.midZ+dn;
 
-        return this.translate(x,y,z).ortho(1,dr);
+        return this.translate(-x,-y,-z).ortho(1,dr);
     }
     public Camera orthoTop(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
@@ -256,7 +256,7 @@ public class Camera
         double y = s.midY+dn;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,dr);
+        return this.translate(-x,-y,-z).ortho(1,dr);
     }
     public Camera orthoLeft(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
@@ -268,7 +268,7 @@ public class Camera
         double y = s.midY;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,dr);
+        return this.translate(-x,-y,-z).ortho(1,dr);
     }
     public Camera orthoRight(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
@@ -280,7 +280,7 @@ public class Camera
         double y = s.midY;
         double z = s.midZ;
 
-        return this.translate(x,y,z).ortho(1,dr);
+        return this.translate(-x,-y,-z).ortho(1,dr);
     }
     /**
      * @param fovy Field of view (degrees) in Y
