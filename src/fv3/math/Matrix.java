@@ -1,7 +1,6 @@
 /*
  * fv3.math
  * Copyright (c) 2009 John Pritchard, all rights reserved.
- * Portions Copyright (C) 1996-2008 by Jan Eric Kyprianidis, all rights reserved.
  *     
  * This program is free  software: you can redistribute it and/or modify 
  * it under the terms of the GNU Lesser General Public License as published 
@@ -170,26 +169,11 @@ public class Matrix
         }
         return this;
     }
-    /**
-     * <pre>
-     *          |  *    *    *    *  |
-     *          |                    |
-     *          |  *    *    *    *  |
-     *      M = |                    |
-     *          |  *    *    *    *  |
-     *          |                    |
-     *          |  A    B    C    *  |
-     * 
-     * A = (M00 * X) + (M10 * Y) + (M20 * Z)
-     * B = (M01 * X) + (M11 * Y) + (M21 * Z)
-     * C = (M02 * X) + (M12 * Y) + (M22 * Z)
-     * </pre>
-     */
     public final Matrix translate(double x, double y, double z){
         double[] m = this.m;
 
         for (int i = 0; i < 3; i++) {
-            m[I(3,i)] += m[I(0,i)] * x + m[I(1,i)] * y + m[I(2,i)] * z;
+            m[I(i,3)] += m[I(i,0)] * x + m[I(i,1)] * y + m[I(i,2)] * z;
         }
         return this;
     }
@@ -197,29 +181,14 @@ public class Matrix
         double[] vv = v.array();
         return this.translate(vv[Vector.X],vv[Vector.Y],vv[Vector.Z]);
     }
-    /**
-     * <pre>
-     *          |  A    A    A    A  |
-     *          |                    |
-     *          |  B    B    B    B  |
-     *      M = |                    |
-     *          |  C    C    C    C  |
-     *          |                    |
-     *          |  *    *    *    *  |
-     * 
-     * A = (A * X)
-     * B = (B * Y)
-     * C = (C * Z)
-     * </pre>
-     */
     public final Matrix scale(double s){
         if (1.0 != s){
             double[] m = this.m;
 
             for (int i = 0; i < 4; i++) {
-                m[I(0,i)] *= s;
-                m[I(1,i)] *= s;
-                m[I(2,i)] *= s;
+                m[I(i,0)] *= s;
+                m[I(i,1)] *= s;
+                m[I(i,2)] *= s;
             }
         }
         return this;
@@ -229,9 +198,9 @@ public class Matrix
         double[] m = this.m;
 
         for (int i = 0; i < 4; i++) {
-            m[I(0,i)] *= x;
-            m[I(1,i)] *= y;
-            m[I(2,i)] *= z;
+            m[I(i,0)] *= x;
+            m[I(i,1)] *= y;
+            m[I(i,2)] *= z;
         }
         return this;
     }
@@ -337,35 +306,6 @@ public class Matrix
         R[M22] =  cx * cy;
 
         return this.mul(R);
-    }
-    /**
-     * @return The determinant of this matrix.  
-     */
-    public final double det(){
-        double[] m = this.m;
-
-        double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
-
-        a1 = m[M00];
-        b1 = m[M10];
-        c1 = m[M20];
-        d1 = m[M30];
-        a2 = m[M01];
-        b2 = m[M11];
-        c2 = m[M21];
-        d2 = m[M31];
-        a3 = m[M02];
-        b3 = m[M12];
-        c3 = m[M22];
-        d3 = m[M32];
-        a4 = m[M03];
-        b4 = m[M13];
-        c4 = m[M23];
-        d4 = m[M33];
-        return (a1 * Det3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4) -
-                b1 * Det3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4) +
-                c1 * Det3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4) -
-                d1 * Det3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
     }
     public final double m00(){
         return this.m[M00];
@@ -591,6 +531,9 @@ public class Matrix
         this.m[M33] = m33;
         return this;
     }
+    public final Vector getTranslation(){
+        return new Vector(this.m[M03],this.m[M13],this.m[M23]);
+    }
 
     public String toString(){
         double[] m = this.m;
@@ -599,11 +542,9 @@ public class Matrix
 
 
     /** 
-     * Double array (1) index
-     * 
-     * @param m Row index
-     * @param n Column index
-     * @return Double array (1) index
+     * @param m Row Major Row Index
+     * @param n Row Major Column Index
+     * @return GL Array Index
      */
     public final static int I(int m, int n){
         switch (m){
@@ -626,20 +567,6 @@ public class Matrix
                                               0.0, 0.0, 1.0, 0.0, 
                                               0.0, 0.0, 0.0, 1.0};
 
-
-    private final static double Det3x3(double a1, double a2, double a3,
-                                       double b1, double b2, double b3,
-                                       double c1, double c2, double c3)
-    {
-        return (a1*Det2x2(b2, b3, c2, c3) -
-                b1*Det2x2(a2, a3, c2, c3) +
-                c1*Det2x2(a2, a3, b2, b3));
-    }
-    private final static double Det2x2( double a, double b, 
-                                        double c, double d)
-    {
-        return ((a)*(d) - (b)*(c));
-    }
 
     /*
      * Matrix Tests

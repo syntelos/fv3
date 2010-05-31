@@ -69,10 +69,6 @@ public class Camera
 
     public final int index;
 
-    protected volatile Vector eye, center;
-
-    protected volatile double diameter = 0;
-
     protected volatile double left, right, bottom = -1, top = 1, near, far, fovy = 50, vpAspect;
 
     protected volatile boolean vp = false;
@@ -98,9 +94,6 @@ public class Camera
     public Camera(char name, Camera copy){
         this(name);
         if (null != copy){
-            this.eye = copy.eye;
-            this.center = copy.center;
-            this.diameter = copy.diameter;
             this.left = copy.left;
             this.right = copy.right;
             this.bottom = copy.bottom;
@@ -108,12 +101,12 @@ public class Camera
             this.near = copy.near; 
             this.far = copy.far; 
             this.fovy = copy.fovy;
+            this.vpAspect = copy.vpAspect; 
             this.vp = copy.vp;
             this.vpX = copy.vpX;
             this.vpY = copy.vpY;
             this.vpWidth = copy.vpWidth;
             this.vpHeight = copy.vpHeight;
-            this.vpAspect = copy.vpAspect; 
             this.projection = copy.projection;
 
             if (null != copy.screenMatrix)
@@ -150,71 +143,28 @@ public class Camera
         return screenMatrix;
     }
     public Vector getEye(){
-        return this.eye;
-    }
-    public Vector getCenter(){
-        return this.center;
-    }
-    public boolean hasDiameter(){
-        return (0 != this.diameter);
-    }
-    public double getDiameter(){
-        return this.diameter;
-    }
-    public Camera setDiameter(double d){
-        if (0.0 < d){
-            this.diameter = d;
-            return this;
-        }
+
+        Matrix screenMatrix = this.screenMatrix;
+        if (null == screenMatrix)
+            return new Vector();
         else
-            throw new IllegalArgumentException("Diameter must be positive");
+            return screenMatrix.getTranslation();
     }
-    public Camera diameter(Bounds bounds){
-
-        return this.setDiameter(Vector.Diameter(bounds));
+    public Camera clear(){
+        this.screenMatrix = null;
+        return this;
     }
-    public Camera diameter(Component component){
-
-        Bounds.CircumSphere s = new Bounds.CircumSphere(component);
-
-        return this.setDiameter(s.diameter);
+    public Camera translate(double x, double y, double z){
+        this.getScreenMatrix().translate(x,y,z);
+        return this;
     }
-    public Camera diameter(Bounds.CircumSphere s){
-
-        return this.setDiameter(s.diameter);
+    public Camera scale(double x, double y, double z){
+        this.getScreenMatrix().scale(x,y,z);
+        return this;
     }
-    /**
-     * Called before "view" 
-     */
-    public Camera moveto(double x, double y, double z){
-        this.eye = new Vector(x,y,z);
-        return this.project();
-    }
-    public Camera moveby(double dx, double dy, double dz){
-        if (null == this.eye)
-            this.eye = new Vector(dx,dy,dz);
-        else
-            this.eye.add( dx, dy, dz);
-
-        return this.project();
-    }
-    public Camera view(double x, double y, double z, double d){
-        this.diameter = d;
-        return this.lookto(x,y,z);
-    }
-    public Camera view(Bounds bounds){
-
-        double d = Vector.Diameter(bounds);
-
-        return this.view(bounds.getBoundsMidX(),bounds.getBoundsMidY(),bounds.getBoundsMidZ(),d);
-    }
-    public Camera view(Component component){
-
-        return this.view(new Bounds.CircumSphere(component));
-    }
-    public Camera view(Bounds.CircumSphere s){
-
-        return this.view(s.midX,s.midY,s.midZ,s.diameter);
+    public Camera rotate(double x, double y, double z){
+        this.getScreenMatrix().rotate(x,y,z);
+        return this;
     }
     public Camera frustrum(double left, double right, double bottom, double top, double near, double far){
         if (0.0 < near){
@@ -225,14 +175,12 @@ public class Camera
             this.top = top;
             this.near = near;
             this.far = far;
+
             return this;
         }
         else
             throw new IllegalArgumentException("Near must be positive.");
     }
-    /**
-     * Called after "view", updates the projection.
-     */
     public Camera frustrum(double near, double far){
         if (0.0 < near){
             this.projection = Projection.Frustrum;
@@ -248,10 +196,11 @@ public class Camera
             }
             this.bottom = -1.0;
             this.top = +1.0;
+
+            return this;
         }
         else
             throw new IllegalArgumentException("Near must be positive.");
-        return this;
     }
     public Camera ortho(double left, double right, double bottom, double top, double near, double far){
         if (0.0 < near){
@@ -262,14 +211,12 @@ public class Camera
             this.top = top;
             this.near = near;
             this.far = far;
+
             return this;
         }
         else
             throw new IllegalArgumentException("Near must be positive.");
     }
-    /**
-     * Called after "view", updates the projection.
-     */
     public Camera ortho(double near, double far){
         if (0.0 < near){
             this.projection = Projection.Ortho;
@@ -281,38 +228,47 @@ public class Camera
             }
             this.bottom = -1.0;
             this.top = +1.0;
+
+            return this;
         }
         else
             throw new IllegalArgumentException("Near must be positive.");
-        return this;
     }
     public Camera orthoFront(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-        ///////////////////////////////////
-        ///////////////////////////////////
-        ///////////////////////////////////
-        return this.ortho(1,(s.diameter+1));
+
+        double x = s.midX;
+        double y = s.midY;
+        double z = s.midZ+s.diameter;
+
+        return this.translate(x,y,z).ortho(1,(s.diameter+1));
     }
     public Camera orthoTop(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-        ///////////////////////////////////
-        ///////////////////////////////////
-        ///////////////////////////////////
-        return this.ortho(1,(s.diameter+1));
+
+        double x = s.midX;
+        double y = s.midY+s.diameter;
+        double z = s.midZ;
+
+        return this.translate(x,y,z).ortho(1,(s.diameter+1));
     }
     public Camera orthoLeft(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-        ///////////////////////////////////
-        ///////////////////////////////////
-        ///////////////////////////////////
-        return this.ortho(1,(s.diameter+1));
+
+        double x = s.midX-s.diameter;
+        double y = s.midY;
+        double z = s.midZ;
+
+        return this.translate(x,y,z).ortho(1,(s.diameter+1));
     }
     public Camera orthoRight(Component c){
         Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-        ///////////////////////////////////
-        ///////////////////////////////////
-        ///////////////////////////////////
-        return this.ortho(1,(s.diameter+1));
+
+        double x = s.midX+s.diameter;
+        double y = s.midY;
+        double z = s.midZ;
+
+        return this.translate(x,y,z).ortho(1,(s.diameter+1));
     }
     /**
      * @param fovy Field of view (degrees) in Y
@@ -325,42 +281,6 @@ public class Camera
         }
         else
             throw new IllegalArgumentException("Field of view must be positive");
-    }
-    /**
-     * Called after "setDiameter".
-     */
-    public Camera lookto(double x, double y, double z){
-
-        this.center = new Vector(x,y,z);
-
-        return this.project();
-    }
-    public Camera lookby(double dx, double dy, double dz){
-        if (null == this.center)
-            this.center = new Vector(dx,dy,dz);
-        else
-            this.center.add(dx,dy,dz);
-
-        return this.project();
-    }
-    public Camera project(){
-
-        if (0 != this.diameter && null != this.eye && null != this.center){
-
-            double radius = (this.diameter/2);
-            double target = this.eye.distance(this.center);
-
-            double cx = this.center.x();
-            double cy = this.center.y();
-
-            this.left = cx - radius;
-            this.right = cx + radius;
-            this.bottom = cy - radius;
-            this.top = cy + radius;
-            this.near = 1;
-            this.far = Math.max( (this.diameter+1), (target+radius+1));
-        }
-        return this;
     }
     public String getName(){
         return String.valueOf(this.name);

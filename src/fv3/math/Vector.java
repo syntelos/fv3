@@ -1,7 +1,6 @@
 /*
  * fv3.math
  * Copyright (c) 2009 John Pritchard, all rights reserved.
- * Portions Copyright (C) 1996-2008 by Jan Eric Kyprianidis, all rights reserved.
  *     
  * This program is free  software: you can redistribute it and/or modify 
  * it under the terms of the GNU Lesser General Public License as published 
@@ -186,9 +185,9 @@ public class Vector
         double[] mm = m.array();
         double[] a = c.clone();
 
-        c[X] = mm[Matrix.M00] * a[X] + mm[Matrix.M10] * a[Y] + mm[Matrix.M20] * a[Z] + mm[Matrix.M30];
-        c[Y] = mm[Matrix.M01] * a[X] + mm[Matrix.M11] * a[Y] + mm[Matrix.M21] * a[Z] + mm[Matrix.M31];
-        c[Z] = mm[Matrix.M02] * a[X] + mm[Matrix.M12] * a[Y] + mm[Matrix.M22] * a[Z] + mm[Matrix.M32];
+        c[X] = mm[Matrix.M00] * a[X] + mm[Matrix.M01] * a[Y] + mm[Matrix.M02] * a[Z] + mm[Matrix.M03];
+        c[Y] = mm[Matrix.M10] * a[X] + mm[Matrix.M11] * a[Y] + mm[Matrix.M12] * a[Z] + mm[Matrix.M13];
+        c[Z] = mm[Matrix.M20] * a[X] + mm[Matrix.M21] * a[Y] + mm[Matrix.M22] * a[Z] + mm[Matrix.M23];
 
         return this;
     }

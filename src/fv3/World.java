@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.media.opengl.GL2;
+import com.sun.javafx.newt.KeyEvent;
 
 /**
  * The world of the screen may contain many regions and components
@@ -155,15 +156,6 @@ public class World
             throw new IllegalArgumentException(String.format("0x%x",(int)name));
     }
     /**
-     * Include a camera in the set of cameras without making it
-     * current.
-     */
-    public Camera defineCamera(Camera camera){
-
-        this.cameras[camera.index] = camera;
-        return camera;
-    }
-    /**
      * Include a camera in the set of cameras, making it current.
      */
     public Camera useCamera(Camera camera){
@@ -171,6 +163,42 @@ public class World
         this.cameras[camera.index] = camera;
         this.cameraChange = (camera.index != this.cameraCurrent);
         this.cameraCurrent = camera.index;
+        return camera;
+    }
+    /**
+     * Include a camera in the set of cameras without making it
+     * current.
+     */
+    public Camera defineCamera(char name){
+
+        if ('A' <= name && 'Z' >= name){
+
+            int idx = name-'A';
+
+            if (null == this.cameras[idx])
+                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
+
+            return this.cameras[idx];
+        }
+        else if ('a' <= name && 'z' >= name){
+            
+            int idx = name-'a';
+
+            if (null == this.cameras[idx])
+                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
+
+            return this.cameras[idx];
+        }
+        else
+            throw new IllegalArgumentException(String.format("0x%x",(int)name));
+    }
+    /**
+     * Include a camera in the set of cameras without making it
+     * current.
+     */
+    public Camera defineCamera(Camera camera){
+
+        this.cameras[camera.index] = camera;
         return camera;
     }
 
@@ -220,5 +248,14 @@ public class World
     }
     public Component unload(URL jnlp) throws IOException {
         throw new UnsupportedOperationException("To be done");
+    }
+    public void keyTyped(KeyEvent e) {
+        char ch = e.getKeyChar();
+        if ('a' <= ch && ch <= 'z')
+            this.useCamera(ch);
+        else if ('A' <= ch && ch <= 'Z')
+            this.useCamera(ch);
+        else
+            super.keyTyped(e);
     }
 }
