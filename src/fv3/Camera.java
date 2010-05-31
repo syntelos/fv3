@@ -328,17 +328,12 @@ public class Camera
         switch (this.projection){
         case Frustrum:
             gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
-            System.out.printf("glFrustrum(%g,%g,%g,%g,%g,%g)\n",this.left,this.right,this.bottom,
-                              this.top, this.near, this.far);
             break;
         case Ortho:
             gl.glOrtho(this.left, this.right, this.bottom, this.top, this.near, this.far);
-            System.out.printf("glOrtho(%g,%g,%g,%g,%g,%g)\n",this.left,this.right,this.bottom,
-                              this.top, this.near, this.far);
             break;
         case Perspective:
             glu.gluPerspective(this.fovy,this.vpAspect,this.near,this.far);
-            System.out.printf("gluPerspective(%g,%g,%g,%g)\n",this.fovy,this.vpAspect,this.near,this.far);
             break;
         default:
             throw new IllegalStateException();
@@ -358,6 +353,28 @@ public class Camera
     }
 
     public String toString(){
-        return String.valueOf(this.name);
+        Vector eye = this.getEye();
+
+        switch (this.projection){
+        case Frustrum:
+
+            return String.format("%c (%g, %g, %g) F(%g,%g,%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
+                                 this.left,this.right,this.bottom,
+                                 this.top, this.near, this.far);
+
+        case Ortho:
+
+            return String.format("%c (%g, %g, %g) O(%g,%g,%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
+                                 this.left,this.right,this.bottom,
+                                 this.top, this.near, this.far);
+
+        case Perspective:
+
+            return String.format("%c (%g, %g, %g) P(%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
+                                 this.fovy,this.vpAspect,this.near,this.far);
+
+        default:
+            throw new IllegalStateException();
+        }
     }
 }

@@ -123,6 +123,22 @@ public class World
     public Camera getCamera(){
         return this.cameras[this.cameraCurrent];
     }
+    public Camera getCamera(char name){
+        if ('A' <= name && 'Z' >= name){
+
+            int idx = name-'A';
+
+            return this.cameras[idx];
+        }
+        else if ('a' <= name && 'z' >= name){
+            
+            int idx = name-'a';
+
+            return this.cameras[idx];
+        }
+        else
+            throw new IllegalArgumentException(String.format("0x%x",(int)name));
+    }
     /**
      * @param name Camera name, an ASCII alpha letter (A-Z == a-z).
      * @return The new current camera.  If the named camera didn't
@@ -142,11 +158,11 @@ public class World
             return this.cameras[idx];
         }
         else if ('a' <= name && 'z' >= name){
-            
+
             int idx = name-'a';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
+                this.cameras[idx] = new Camera(Character.toUpperCase(name),this.cameras[this.cameraCurrent]);
 
             this.cameraChange = (idx != this.cameraCurrent);
             this.cameraCurrent = idx;
@@ -181,11 +197,11 @@ public class World
             return this.cameras[idx];
         }
         else if ('a' <= name && 'z' >= name){
-            
+
             int idx = name-'a';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
+                this.cameras[idx] = new Camera(Character.toUpperCase(name),this.cameras[this.cameraCurrent]);
 
             return this.cameras[idx];
         }

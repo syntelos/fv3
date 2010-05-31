@@ -55,10 +55,10 @@ public class Gears
         this.add(new Gear3());
 
         //this.defineCamera('A').moveto(3,0,6).view(this).frustrum(5.0,60.0);
-        this.defineCamera('A').orthoFront(this);
-        this.defineCamera('B').orthoTop(this);
-        this.defineCamera('C').orthoLeft(this);
-        this.defineCamera('D').orthoRight(this);
+        System.out.println(this.defineCamera('A').orthoFront(this));
+        System.out.println(this.defineCamera('B').orthoTop(this));
+        System.out.println(this.defineCamera('C').orthoLeft(this));
+        System.out.println(this.defineCamera('D').orthoRight(this));
     }
 
 
