@@ -552,13 +552,13 @@ public class Matrix
     public final static int I(int m, int n){
         switch (m){
         case 0:
-            return n;
+            return (4*n);
         case 1:
-            return (4+n);
+            return (1+(4*n));
         case 2:
-            return (8+n);
+            return (2+(4*n));
         case 3:
-            return (12+n);
+            return (3+(4*n));
         default:
             throw new IllegalArgumentException(String.valueOf(n));
         }
