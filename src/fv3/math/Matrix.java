@@ -181,6 +181,9 @@ public class Matrix
         double[] vv = v.array();
         return this.translate(vv[Vector.X],vv[Vector.Y],vv[Vector.Z]);
     }
+    public final Vector getTranslation(){
+        return new Vector(this.m[M03],this.m[M13],this.m[M23]);
+    }
     public final Matrix scale(double s){
         if (1.0 != s){
             double[] m = this.m;
@@ -203,6 +206,9 @@ public class Matrix
             m[I(i,2)] *= z;
         }
         return this;
+    }
+    public final Vector getScale(){
+        return new Vector(this.m[M00],this.m[M11],this.m[M22]);
     }
     public final Matrix rotate(AxisAngle a){
         double[] axis = a.normalize().array();
@@ -530,9 +536,6 @@ public class Matrix
     public final Matrix setM33(double m33){
         this.m[M33] = m33;
         return this;
-    }
-    public final Vector getTranslation(){
-        return new Vector(this.m[M03],this.m[M13],this.m[M23]);
     }
 
     public String toString(){
