@@ -242,7 +242,7 @@ public class Camera
 
         double x = s.midX;
         double y = s.midY;
-        double z = s.midZ-dn;
+        double z = s.midZ+dn;
 
         return this.translate(x,y,z).ortho(1,dr);
     }
