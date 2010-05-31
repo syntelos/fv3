@@ -110,6 +110,13 @@ public class World
 
 
     /**
+     * @return Current camera by name
+     */
+    public char currentCamera(){
+        char name = (char)(this.cameraCurrent+'A');
+        return name;
+    }
+    /**
      * @return The current camera.  The default camera is "A".
      */
     public Camera getCamera(){

@@ -18,6 +18,7 @@
 package fv3;
 
 import fv3.math.Vector;
+import fv3.math.Matrix;
 import fv3.tk.Fv3Screen;
 
 import lxl.List;
@@ -41,12 +42,20 @@ import javax.media.opengl.glu.GLU;
  * <h3>Operation</h3>
  * 
  * As called from {@link World}, the root of the scene- event tree,
- * the camera loads both the projection and modelview matrices to
- * identity in its init and display methods.
+ * the camera loads both the projection and modelview matrices in its
+ * init and display methods.
+ * 
+ * Because the Camera modelview matrix is loaded first on the
+ * modelview matrix stack, it is effectively pre-multiplied (M * C)
+ * into the modelview matrix and therefore operates as a screen matrix
+ * -- rather than post-multiplied (C * M) and operating as an object
+ * matrix.
  * 
  * <h3>Lifecycle</h3>
  * 
- * Cameras have end of life event like "destroy".
+ * Cameras are defined in world and component constructors, before the
+ * init event for a primary camera, and before a camera's first use
+ * for any secondary camera's.
  * 
  */
 public class Camera
@@ -55,20 +64,16 @@ public class Camera
     public enum Projection {
         Frustrum, Ortho, Perspective;
     }
-    public enum ModelView {
-        LookAt, None;
-    }
 
     public final char name;
 
     public final int index;
 
-    protected volatile double eyeX = 0, eyeY = 0, eyeZ = 6;
-    protected volatile double centerX = 0, centerY = 0, centerZ = 1;
-    protected volatile double upX = 0, upY = 1, upZ = 0;
+    protected volatile Vector eye, center;
+
     protected volatile double diameter = 0;
 
-    protected volatile double left, right, bottom, top, near, far, fovy = 50, vpAspect;
+    protected volatile double left, right, bottom = -1, top = 1, near, far, fovy = 50, vpAspect;
 
     protected volatile boolean vp = false;
 
@@ -76,7 +81,7 @@ public class Camera
 
     protected volatile Projection projection = Projection.Frustrum;
 
-    protected volatile ModelView modelView = ModelView.LookAt;
+    protected volatile Matrix screenMatrix;
 
     private volatile boolean once = true;
 
@@ -93,15 +98,8 @@ public class Camera
     public Camera(char name, Camera copy){
         this(name);
         if (null != copy){
-            this.eyeX = copy.eyeX;
-            this.eyeY = copy.eyeY;
-            this.eyeZ = copy.eyeZ;
-            this.centerX = copy.centerX;
-            this.centerY = copy.centerY;
-            this.centerZ = copy.centerZ;
-            this.upX = copy.upX;
-            this.upY = copy.upY;
-            this.upZ = copy.upZ;
+            this.eye = copy.eye;
+            this.center = copy.center;
             this.diameter = copy.diameter;
             this.left = copy.left;
             this.right = copy.right;
@@ -117,7 +115,10 @@ public class Camera
             this.vpHeight = copy.vpHeight;
             this.vpAspect = copy.vpAspect; 
             this.projection = copy.projection;
-            this.modelView = copy.modelView;
+
+            if (null != copy.screenMatrix)
+                this.screenMatrix = new Matrix(copy.screenMatrix);
+
             //this.once = true//
         }
     }
@@ -134,33 +135,25 @@ public class Camera
         else
             throw new IllegalArgumentException();
     }
-    public Camera.ModelView getModelView(){
-        return this.modelView;
+    public boolean hasScreenMatrix(){
+        return (null != this.screenMatrix);
     }
-    public Camera setModelView(Camera.ModelView p){
-        if (null != p){
-            this.modelView = p;
-            return this;
+    public boolean hasNotScreenMatrix(){
+        return (null == this.screenMatrix);
+    }
+    public Matrix getScreenMatrix(){
+        Matrix screenMatrix = this.screenMatrix;
+        if (null == screenMatrix){
+            screenMatrix = new Matrix();
+            this.screenMatrix = screenMatrix;
         }
-        else
-            throw new IllegalArgumentException();
+        return screenMatrix;
     }
-    public Camera modelViewNone(){
-        this.modelView = Camera.ModelView.None;
-        return this;
+    public Vector getEye(){
+        return this.eye;
     }
-    public Camera modelViewLookAt(){
-        this.modelView = Camera.ModelView.LookAt;
-        return this;
-    }
-    public double[] getEye(){
-        return new double[]{this.eyeX,this.eyeY,this.eyeZ};
-    }
-    public double[] getCenter(){
-        return new double[]{this.centerX,this.centerY,this.centerZ};
-    }
-    public double[] getUp(){
-        return new double[]{this.upX,this.upY,this.upZ};
+    public Vector getCenter(){
+        return this.center;
     }
     public boolean hasDiameter(){
         return (0 != this.diameter);
@@ -182,68 +175,28 @@ public class Camera
     }
     public Camera diameter(Component component){
 
-        if (component.hasFv3Bounds())
+        Bounds.CircumSphere s = new Bounds.CircumSphere(component);
 
-            return this.diameter(component.getFv3Bounds());
+        return this.setDiameter(s.diameter);
+    }
+    public Camera diameter(Bounds.CircumSphere s){
 
-        else if (component instanceof Region){
-            double minX = 0, maxX = 0;
-            double minY = 0, maxY = 0;
-            double minZ = 0, maxZ = 0;
-
-            boolean once = true;
-
-            Region region = (Region)component;
-            for (Component child : region.getChildren()){
-                if (child.hasFv3Bounds()){
-                    Bounds bounds = child.getFv3Bounds();
-                    if (once){
-                        once = false;
-                        minX = bounds.getBoundsMinX();
-                        maxX = bounds.getBoundsMaxX();
-                        minY = bounds.getBoundsMinY();
-                        maxY = bounds.getBoundsMaxY();
-                        minZ = bounds.getBoundsMinZ();
-                        maxZ = bounds.getBoundsMaxZ();
-                    }
-                    else {
-                        minX = Math.min(minX,bounds.getBoundsMinX());
-                        maxX = Math.max(maxX,bounds.getBoundsMaxX());
-                        minY = Math.min(minY,bounds.getBoundsMinY());
-                        maxY = Math.max(maxY,bounds.getBoundsMaxY());
-                        minZ = Math.min(minZ,bounds.getBoundsMinZ());
-                        maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
-                    }
-                }
-            }
-            if (!once){
-
-                double d = Vector.Diameter(minX, maxX,
-                                           minY, maxY,
-                                           minZ, maxZ);
-
-                return this.setDiameter(d);
-            }
-            else
-                throw new IllegalStateException("No bounds found in region");
-        }
-        else
-            throw new IllegalArgumentException("Component has no bounds and is not region");
+        return this.setDiameter(s.diameter);
     }
     /**
      * Called before "view" 
      */
     public Camera moveto(double x, double y, double z){
-        this.eyeX = x;
-        this.eyeY = y;
-        this.eyeZ = z;
-        return this.target();
+        this.eye = new Vector(x,y,z);
+        return this.project();
     }
     public Camera moveby(double dx, double dy, double dz){
-        this.eyeX += dx;
-        this.eyeY += dy;
-        this.eyeZ += dz;
-        return this.target();
+        if (null == this.eye)
+            this.eye = new Vector(dx,dy,dz);
+        else
+            this.eye.add( dx, dy, dz);
+
+        return this.project();
     }
     public Camera view(double x, double y, double z, double d){
         this.diameter = d;
@@ -257,56 +210,11 @@ public class Camera
     }
     public Camera view(Component component){
 
-        if (component.hasFv3Bounds())
+        return this.view(new Bounds.CircumSphere(component));
+    }
+    public Camera view(Bounds.CircumSphere s){
 
-            return this.view(component.getFv3Bounds());
-
-        else if (component instanceof Region){
-            double minX = 0, maxX = 0;
-            double minY = 0, maxY = 0;
-            double minZ = 0, maxZ = 0;
-
-            boolean once = true;
-
-            Region region = (Region)component;
-            for (Component child : region.getChildren()){
-                if (child.hasFv3Bounds()){
-                    Bounds bounds = child.getFv3Bounds();
-                    if (once){
-                        once = false;
-                        minX = bounds.getBoundsMinX();
-                        maxX = bounds.getBoundsMaxX();
-                        minY = bounds.getBoundsMinY();
-                        maxY = bounds.getBoundsMaxY();
-                        minZ = bounds.getBoundsMinZ();
-                        maxZ = bounds.getBoundsMaxZ();
-                    }
-                    else {
-                        minX = Math.min(minX,bounds.getBoundsMinX());
-                        maxX = Math.max(maxX,bounds.getBoundsMaxX());
-                        minY = Math.min(minY,bounds.getBoundsMinY());
-                        maxY = Math.max(maxY,bounds.getBoundsMaxY());
-                        minZ = Math.min(minZ,bounds.getBoundsMinZ());
-                        maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
-                    }
-                }
-            }
-            if (!once){
-                double midX = ((maxX - minX)/2)+minX;
-                double midY = ((maxY - minY)/2)+minY;
-                double midZ = ((maxZ - minZ)/2)+minZ;
-
-                double d = Vector.Diameter(minX, maxX,
-                                           minY, maxY,
-                                           minZ, maxZ);
-
-                return this.view(midX,midY,midZ,d);
-            }
-            else
-                throw new IllegalStateException("No bounds found in region");
-        }
-        else
-            throw new IllegalArgumentException("Component has no bounds and is not region");
+        return this.view(s.midX,s.midY,s.midZ,s.diameter);
     }
     public Camera frustrum(double left, double right, double bottom, double top, double near, double far){
         if (0.0 < near){
@@ -378,6 +286,34 @@ public class Camera
             throw new IllegalArgumentException("Near must be positive.");
         return this;
     }
+    public Camera orthoFront(Component c){
+        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        return this.ortho(1,(s.diameter+1));
+    }
+    public Camera orthoTop(Component c){
+        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        return this.ortho(1,(s.diameter+1));
+    }
+    public Camera orthoLeft(Component c){
+        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        return this.ortho(1,(s.diameter+1));
+    }
+    public Camera orthoRight(Component c){
+        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        return this.ortho(1,(s.diameter+1));
+    }
     /**
      * @param fovy Field of view (degrees) in Y
      */
@@ -394,31 +330,33 @@ public class Camera
      * Called after "setDiameter".
      */
     public Camera lookto(double x, double y, double z){
-        this.centerX = x;
-        this.centerY = y;
-        this.centerZ = z;
-        return this.target();
+
+        this.center = new Vector(x,y,z);
+
+        return this.project();
     }
     public Camera lookby(double dx, double dy, double dz){
-        return this.lookto((this.centerX + dx),(this.centerY + dy),(this.centerZ + dz));
-    }
-    public Camera upto(double x, double y, double z){
-        this.upX = x;
-        this.upY = y;
-        this.upZ = z;
-        return this;
-    }
-    public Camera target(){
+        if (null == this.center)
+            this.center = new Vector(dx,dy,dz);
+        else
+            this.center.add(dx,dy,dz);
 
-        if (0 != this.diameter){
+        return this.project();
+    }
+    public Camera project(){
+
+        if (0 != this.diameter && null != this.eye && null != this.center){
 
             double radius = (this.diameter/2);
-            double target = new Vector(this.eyeX,this.eyeY,this.eyeZ).distance(new Vector(this.centerX,this.centerY,this.centerZ));
+            double target = this.eye.distance(this.center);
 
-            this.left = this.centerX - radius;
-            this.right = this.centerX + radius;
-            this.bottom = this.centerY - radius;
-            this.top = this.centerY + radius;
+            double cx = this.center.x();
+            double cy = this.center.y();
+
+            this.left = cx - radius;
+            this.right = cx + radius;
+            this.bottom = cy - radius;
+            this.top = cy + radius;
             this.near = 1;
             this.far = Math.max( (this.diameter+1), (target+radius+1));
         }
@@ -490,32 +428,16 @@ public class Camera
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         
-        gl.glLoadIdentity();
+        Matrix screenMatrix = this.screenMatrix;
 
-        switch (this.modelView){
-        case LookAt:
-            glu.gluLookAt(this.eyeX,this.eyeY,this.eyeZ,
-                          this.centerX, this.centerY, this.centerZ,
-                          this.upX, this.upY, this.upZ);
+        if (null == screenMatrix)
+            gl.glLoadIdentity();
+        else
+            gl.glLoadMatrixd(screenMatrix.buffer());
 
-            if (this.once){
-                this.once = false;
-                System.out.printf("gluLookAt(%g,%g,%g,%g,%g,%g,%g,%g,%g)\n",this.eyeX,this.eyeY,this.eyeZ,
-                                  this.centerX, this.centerY, this.centerZ,
-                                  this.upX, this.upY, this.upZ);
-            }
-            break;
-        case None:
-            break;
-        default:
-            throw new IllegalStateException();
-        }
     }
 
     public String toString(){
-        return String.format("%c (%g,%g,%g)->(%g,%g,%g);(%g,%g,%g)",this.name,
-                             this.eyeX,this.eyeY,this.eyeZ,
-                             this.centerX,this.centerY,this.centerZ,
-                             this.upX,this.upY,this.upZ);
+        return String.valueOf(this.name);
     }
 }

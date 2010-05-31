@@ -46,10 +46,10 @@ public interface Component
     public boolean hasNotFv3Matrix();
     /**
      * @return If not a region, return "has matrix".  If a region,
-     * whether a containing region should push this matrix before
-     * calling display.  Should be true when: the component has a
-     * matrix, the component has children or other operable display
-     * code, and the component will not push the matrix itself.
+     * return whether a containing region should push and load this
+     * matrix before calling display.  Should be true when the
+     * component has a matrix and the component will not push the
+     * matrix itself.
      */
     public boolean pushFv3Matrix();
     /**

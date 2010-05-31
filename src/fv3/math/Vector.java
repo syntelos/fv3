@@ -97,6 +97,13 @@ public class Vector
         a[Z] = a[Z] + b[Z];
         return this;
     }
+    public final Vector add(double dx, double dy, double dz){
+        double[] a = this.v;
+        a[X] = a[X] + dx;
+        a[Y] = a[Y] + dy;
+        a[Z] = a[Z] + dz;
+        return this;
+    }
     public final Vector sub(Vector v){
         double[] a = this.v;
         double[] b = v.v;

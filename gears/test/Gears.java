@@ -58,7 +58,7 @@ public class Gears
         this.add(new Gear2());
         this.add(new Gear3());
 
-        this.getCamera().moveto(3,0,6).view(this).frustrum(5.0,60.0).modelViewNone();
+        this.getCamera().moveto(3,0,6).view(this).frustrum(5.0,60.0);
     }
 
 
