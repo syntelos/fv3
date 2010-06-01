@@ -103,7 +103,9 @@ public class Ortho
             double y = s.midY;
             double z = s.midZ;
 
-            double t = s.diameter;
+            double t = (s.diameter/2);
+
+            System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
 
             return m.translate(x,y,(z+t));
         }
