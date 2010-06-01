@@ -356,6 +356,6 @@ public class Camera
         else
             view = this.view.toString("\t","\n");
 
-        return String.format("%c \n%s\n%s",this.name,projection,view);
+        return String.format("%c\tP\n%s\n\tV\n%s",this.name,projection,view);
     }
 }

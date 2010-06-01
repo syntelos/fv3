@@ -75,9 +75,15 @@ public class Ortho
         double X = ( 2.0 / (right - left));
         double Y = ( 2.0 / (top - bottom));
         double Z = (-2.0 / (far - near));
-        double Tx = -( (right + left) / (right - left));
-        double Ty = -( (top + bottom) / (top - bottom));
-        double Tz = -( (far + near) / (far - near));
+        double Tx = ( (right + left) / (right - left));
+        if (0.0 != Tx)
+            Tx = -(Tx);
+        double Ty = ( (top + bottom) / (top - bottom));
+        if (0.0 != Ty)
+            Ty = -(Ty);
+        double Tz = ( (far + near) / (far - near));
+        if (0.0 != Tz)
+            Tz = -(Tz);
 
         m.m00(X);
         m.m11(Y);
