@@ -55,7 +55,7 @@ package fv3.math;
  * 
  * From Row Major notation, this class maps storage location for Open
  * GL.  GL's matrix notation and storage, as in the red book, is Row
- * Minor.  
+ * Minor (Column Major).  
  * 
  * Row Minor Notation can be confusing from the perspective of the
  * programming language, while it's natural from the relative

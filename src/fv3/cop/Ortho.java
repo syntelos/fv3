@@ -21,7 +21,12 @@ public class Ortho
         super();
         if (null != s){
             this.s = s;
-            this.far = (2* s.diameter);
+            double d = s.diameter;
+            this.left = s.midX-d;
+            this.right = s.midX+d;
+            this.top = s.midY+d;
+            this.bottom = s.midY-d;
+            this.far = (1 + d);
         }
         else
             throw new IllegalArgumentException();
@@ -95,21 +100,21 @@ public class Ortho
         return m;
     }
     public Matrix view(Camera c){
-        Bounds.CircumSphere s = this.s;
-        if (null != s){
-            Matrix m = c.getView();
+//         Bounds.CircumSphere s = this.s;
+//         if (null != s){
+//             Matrix m = c.getView();
 
-            double x = s.midX;
-            double y = s.midY;
-            double z = s.midZ;
+//             double x = s.midX;
+//             double y = s.midY;
+//             double z = s.midZ;
 
-            double t = -(s.diameter/2.0);
+//             double t = -(s.diameter);
 
-            System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
+//             System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
 
-            return m.translate(x,y,(z+t));
-        }
-        else
+//             return m.translate(x,y,(z+t));
+//         }
+//         else
             return null;
     }
 }
