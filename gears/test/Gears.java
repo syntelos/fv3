@@ -50,18 +50,18 @@ public class Gears
 
     public Gears(){
         super();
-        //this.translate(0,0,-40);
 
         this.add(new Light(0,LightPos));
         this.add(new Gear1());
         this.add(new Gear2());
         this.add(new Gear3());
 
-        //this.defineCamera('A').moveto(3,0,6).view(this).frustrum(5.0,60.0);
         this.defineCamera('A').orthoFront(this);
-        this.defineCamera('B').orthoTop(this);
-        this.defineCamera('C').orthoLeft(this);
-        this.defineCamera('D').orthoRight(this);
+        this.defineCamera('B').orthoBack(this);
+        this.defineCamera('C').orthoTop(this);
+        this.defineCamera('D').orthoBottom(this);
+        this.defineCamera('E').orthoLeft(this);
+        this.defineCamera('F').orthoRight(this);
     }
 
 

@@ -77,8 +77,7 @@ public class Perspective
         return m;
     }
     public Matrix view(Camera c){
-        Matrix m = c.getView();
 
-        return m;
+        return null;
     }
 }

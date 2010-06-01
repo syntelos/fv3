@@ -7,16 +7,16 @@ import fv3.math.Matrix;
 /**
  * 
  */
-public class OrthoLeft
+public class OrthoBottom
     extends Ortho
 {
+    protected Matrix view = new Matrix().rotateX(-PI2);
 
-    protected Matrix view = new Matrix().rotateY(PI2);
 
-
-    public OrthoLeft(Bounds.CircumSphere s){
+    public OrthoBottom(Bounds.CircumSphere s){
         super(s);
     }
+
 
 
     public Matrix view(Camera c){

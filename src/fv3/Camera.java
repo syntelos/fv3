@@ -66,15 +66,8 @@ public class Camera
      * An operator is called from the camera init event, once the
      * camera has the viewport aspect ratio.  
      * 
-     * The operator works on the camera matrix to produce the final
-     * camera matrix.  A null matrix is an identity matrix, and the
-     * initial state of a matrix is the identity matrix.  Typically
-     * the operator should accomodate any preexisting matrices if it
-     * is to be correct.
-     * 
-     * If the operator has no work to do on a matrix, one is not
-     * created and the identity matrix is loaded rather than the
-     * camera matrix.
+     * The camera init event is called on camera start and camera
+     * change, from the init state and from the run state.
      * 
      * The operator methods are called in the order of projection,
      * then view.  Shared computation can be performed once in the
@@ -91,14 +84,12 @@ public class Camera
         public Bounds.CircumSphere getCircumSphere();
 
         /**
-         * @return The end state for the camera projection matrix.
-         * Null for no preexisting matrix and no work to do -- for the
+         * @return The camera projection matrix.  Null for the
          * identity matrix.
          */
         public Matrix projection(Camera c);
         /**
-         * @return The end state for the camera view matrix.  Null for
-         * no preexisting matrix and no work to do -- for the identity
+         * @return The camera view matrix.  Null for the identity
          * matrix.
          */
         public Matrix view(Camera c);
@@ -273,6 +264,10 @@ public class Camera
     }
     public Camera orthoTop(Component c){
         this.operator = new OrthoTop(new Bounds.CircumSphere(c));
+        return this;
+    }
+    public Camera orthoBottom(Component c){
+        this.operator = new OrthoBottom(new Bounds.CircumSphere(c));
         return this;
     }
     public Camera orthoLeft(Component c){

@@ -11,6 +11,8 @@ public class OrthoRight
     extends Ortho
 {
 
+    protected Matrix view = new Matrix().rotateY(-PI2);
+
 
     public OrthoRight(Bounds.CircumSphere s){
         super(s);
@@ -19,8 +21,6 @@ public class OrthoRight
 
     public Matrix view(Camera c){
 
-        Matrix m = c.getView();
-
-        return m.rotateY(-PI2);
+        return this.view;
     }
 }
