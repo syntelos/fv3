@@ -95,6 +95,18 @@ public class Camera
         public Matrix view(Camera c);
     }
 
+    public final static boolean Debug;
+    static {
+        boolean value = false;
+        try {
+            String config = System.getProperty("fv3.Camera.Debug");
+            value = (null != config && "true".equals(config));
+        }
+        catch (Exception ignore){
+        }
+        Debug = value;
+    }
+
 
     public final char name;
 
@@ -320,6 +332,9 @@ public class Camera
 
                 this.view = operator.view(this);
             }
+
+            if (Camera.Debug)
+                System.err.println(this);
         }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
