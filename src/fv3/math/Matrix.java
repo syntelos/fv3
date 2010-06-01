@@ -547,7 +547,7 @@ public class Matrix
         if (null == in)
             in = "";
         double[] m = this.m;
-        return String.format("%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f", pr, m[0], m[1], m[2], m[3], in, pr, m[4], m[5], m[6], m[7], in, pr, m[8], m[9], m[10], m[11], in, pr, m[12], m[13], m[14], m[15]);
+        return String.format("%s%g %g %g %g%s%s%g %g %g %g%s%s%g %g %g %g%s%s%g %g %g %g", pr, m[0], m[1], m[2], m[3], in, pr, m[4], m[5], m[6], m[7], in, pr, m[8], m[9], m[10], m[11], in, pr, m[12], m[13], m[14], m[15]);
     }
 
 
