@@ -88,9 +88,9 @@ public class Ortho
         m.m00(X);
         m.m11(Y);
         m.m22(X);
-        m.m30(Tx);
-        m.m31(Ty);
-        m.m32(Tz);
+        m.m03(Tx);
+        m.m13(Ty);
+        m.m23(Tz);
 
         return m;
     }

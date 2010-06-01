@@ -66,9 +66,9 @@ public class Gears
         super.init(gl);
 
         System.out.println(this.getCamera('A'));
-        System.out.println(this.getCamera('B'));
-        System.out.println(this.getCamera('C'));
-        System.out.println(this.getCamera('D'));
+        //         System.out.println(this.getCamera('B'));
+        //         System.out.println(this.getCamera('C'));
+        //         System.out.println(this.getCamera('D'));
     }
     public void display(GL2 gl){
         Angle += 1.0f;
