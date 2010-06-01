@@ -85,6 +85,11 @@ public class Camera
      * @see fv3.cop.Perspective
      */
     public interface Operator {
+
+        public boolean hasCircumSphere();
+
+        public Bounds.CircumSphere getCircumSphere();
+
         /**
          * @return The end state for the camera projection matrix.
          * Null for no preexisting matrix and no work to do -- for the

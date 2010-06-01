@@ -39,6 +39,12 @@ public class Frustrum
     }
 
 
+    public boolean hasCircumSphere(){
+        return false;
+    }
+    public Bounds.CircumSphere getCircumSphere(){
+        return null;
+    }
     protected void init(Camera c){
 
         double aspect = c.getAspect();

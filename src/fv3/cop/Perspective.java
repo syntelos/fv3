@@ -15,6 +15,8 @@ public class Perspective
     protected final static double DEG2RAD = (Math.PI / 180);
 
 
+    protected volatile Bounds.CircumSphere s;
+
     protected volatile double near = 1, far;
 
     /**
@@ -42,6 +44,7 @@ public class Perspective
     public Perspective(Bounds.CircumSphere s, double fovy){
         super();
         if (null != s && 0.0 < fovy){
+            this.s = s;
             this.far = (2* s.diameter);
             this.fovy = (fovy * DEG2RAD);
         }
@@ -50,6 +53,12 @@ public class Perspective
     }
 
 
+    public boolean hasCircumSphere(){
+        return (null != this.s);
+    }
+    public Bounds.CircumSphere getCircumSphere(){
+        return this.s;
+    }
     public Matrix projection(Camera c){
 
         double a = c.getAspect();

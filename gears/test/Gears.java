@@ -2,7 +2,7 @@
 package test;
 
 import fv3.Camera;
-
+import fv3.model.CircumCube;
 import fv3.nui.Light;
 
 import fv3.tk.Animator;
@@ -59,6 +59,8 @@ public class Gears
         this.defineCamera('B').orthoTop(this);
         this.defineCamera('C').orthoLeft(this);
         this.defineCamera('D').orthoRight(this);
+
+        this.add(new CircumCube(this.getCamera('A').getOperator().getCircumSphere()));
     }
 
 

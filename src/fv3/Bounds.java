@@ -18,6 +18,12 @@
 package fv3;
 
 import fv3.math.Vector;
+import fv3.model.Begin;
+import fv3.model.End;
+import fv3.model.Model;
+import fv3.model.Vertex;
+
+import javax.media.opengl.GL2;
 
 /**
  * Interface implemented by components having bounds.  All methods
@@ -27,6 +33,19 @@ import fv3.math.Vector;
  */
 public interface Bounds
 {
+    public double getBoundsMinX();
+    public double getBoundsMidX();
+    public double getBoundsMaxX();
+
+    public double getBoundsMinY();
+    public double getBoundsMidY();
+    public double getBoundsMaxY();
+
+    public double getBoundsMinZ();
+    public double getBoundsMidZ();
+    public double getBoundsMaxZ();
+
+
     /**
      * Common bounds adaptor used by {@link fv3.Camera}.
      */
@@ -181,17 +200,75 @@ public interface Bounds
         public double getBoundsMaxZ(){
             return this.maxZ;
         }
+        /**
+         * Boundary cube 
+         */
+        public void glBoundary(Model model){
+
+            model.add(new Begin(GL2.GL_LINES));
+            /*
+             * Boundary X
+             */
+            model.add(new Vertex( minX, maxY, minZ)); //(Xa)
+            model.add(new Vertex( maxX, maxY, minZ));
+
+            model.add(new Vertex( minX, maxY, maxZ)); //(Xb)
+            model.add(new Vertex( maxX, maxY, maxZ));
+
+            model.add(new Vertex( minX, minY, maxZ)); //(Xc)
+            model.add(new Vertex( maxX, minY, maxZ));
+
+            model.add(new Vertex( minX, minY, minZ)); //(Xd)
+            model.add(new Vertex( maxX, minY, minZ));
+            /*
+             * Boundary Y
+             */
+            model.add(new Vertex( minX, minY, minZ)); //(Ya)
+            model.add(new Vertex( minX, maxY, minZ));
+
+            model.add(new Vertex( minX, minY, maxZ)); //(Yb)
+            model.add(new Vertex( minX, maxY, maxZ));
+
+            model.add(new Vertex( maxX, minY, maxZ)); //(Yc)
+            model.add(new Vertex( maxX, maxY, maxZ));
+
+            model.add(new Vertex( maxX, minY, maxZ)); //(Yd)
+            model.add(new Vertex( maxX, maxY, minZ));
+            /*
+             * Boundary Z
+             */
+            model.add(new Vertex( minX, maxY, minZ)); //(Za)
+            model.add(new Vertex( minX, maxY, maxZ));
+
+            model.add(new Vertex( maxX, maxY, minZ)); //(Zb)
+            model.add(new Vertex( maxX, maxY, maxZ));
+
+            model.add(new Vertex( maxX, minY, minZ)); //(Zc)
+            model.add(new Vertex( maxX, minY, maxZ));
+
+            model.add(new Vertex( minX, minY, minZ)); //(Zd)
+            model.add(new Vertex( minX, minY, maxZ));
+
+            model.add(new End());
+        }
+        /**
+         * Axes through cube center.
+         */
+        public void glCenter(Model model){
+
+            model.add(new Begin(GL2.GL_LINES));
+
+            model.add(new Vertex( minX, midY, midZ)); //(X)
+            model.add(new Vertex( maxX, midY, midZ));
+
+            model.add(new Vertex( midX, minY, midZ)); //(Y)
+            model.add(new Vertex( midX, maxY, midZ));
+
+            model.add(new Vertex( midX, midY, minZ)); //(Z)
+            model.add(new Vertex( midX, midY, maxZ));
+
+            model.add(new End());
+        }
     }
 
-    public double getBoundsMinX();
-    public double getBoundsMidX();
-    public double getBoundsMaxX();
-
-    public double getBoundsMinY();
-    public double getBoundsMidY();
-    public double getBoundsMaxY();
-
-    public double getBoundsMinZ();
-    public double getBoundsMidZ();
-    public double getBoundsMaxZ();
 }

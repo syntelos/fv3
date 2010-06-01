@@ -54,6 +54,12 @@ public class Ortho
     }
 
 
+    public boolean hasCircumSphere(){
+        return (null != this.s);
+    }
+    public Bounds.CircumSphere getCircumSphere(){
+        return this.s;
+    }
     protected void init(Camera c){
 
         double aspect = c.getAspect();
