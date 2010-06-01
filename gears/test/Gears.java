@@ -43,11 +43,6 @@ public class Gears
 
     private final static float LightPos[] = { 5.0f, 5.0f, 10.0f, 0.0f };
 
-    private final static float BB[] = { 0.0f, 0.01f, 0.8f, 1.0f };
-    private final static fv3.model.Object BB_PR[] = {
-        new Material(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, BB),
-        new ShadeModel(GL2.GL_FLAT)
-    };
 
     static float Angle = 0.0f;
 
@@ -67,8 +62,6 @@ public class Gears
         this.defineCamera('B').orthoTop(this);
         this.defineCamera('C').orthoLeft(this);
         this.defineCamera('D').orthoRight(this);
-
-        this.add(new CircumCube(BB_PR, this.getCamera('A').getOperator().getCircumSphere()));
     }
 
 
@@ -76,9 +69,6 @@ public class Gears
         super.init(gl);
 
         System.out.println(this.getCamera('A'));
-        //         System.out.println(this.getCamera('B'));
-        //         System.out.println(this.getCamera('C'));
-        //         System.out.println(this.getCamera('D'));
     }
     public void display(GL2 gl){
         Angle += 1.0f;
