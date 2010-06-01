@@ -348,14 +348,14 @@ public class Camera
         if (null == this.projection)
             projection = "";
         else
-            projection = this.projection.toString().replace('\n','|');
+            projection = this.projection.toString("\t","\n");
 
         String view;
         if (null == this.view)
             view = "";
         else
-            view = this.view.toString().replace('\n','|');
+            view = this.view.toString("\t","\n");
 
-        return String.format("%c (%s) (%s)",this.name,projection,view);
+        return String.format("%c \n%s\n%s",this.name,projection,view);
     }
 }
