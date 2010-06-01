@@ -95,8 +95,19 @@ public class Ortho
         return m;
     }
     public Matrix view(Camera c){
-        Matrix m = c.getView();
+        Bounds.CircumSphere s = this.s;
+        if (null != s){
+            Matrix m = c.getView();
 
-        return m;
+            double x = s.midX;
+            double y = s.midY;
+            double z = s.midZ;
+
+            double t = (2* s.diameter);
+
+            return m.translate(x,y,(z+t));
+        }
+        else
+            return null;
     }
 }
