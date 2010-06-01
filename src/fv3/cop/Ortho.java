@@ -80,7 +80,7 @@ public class Ortho
         }
     }
     public Matrix projection(Camera c){
-        this.init(c);
+        //this.init(c);
 
         Matrix m = c.getProjection();
 
