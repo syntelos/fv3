@@ -484,8 +484,6 @@ public final class Animator
 
                 Fv3glv.Instance(gl);
 
-                gl.glViewport(x,y,width,height);
-
                 fv3c.setGLU(GLU.createGLU(gl));
 
                 if (-1 < Animator.SwapInterval){
