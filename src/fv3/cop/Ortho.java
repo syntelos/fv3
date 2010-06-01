@@ -22,10 +22,11 @@ public class Ortho
         if (null != s){
             this.s = s;
             double d = s.diameter;
-//             this.left = s.midX-d;
-//             this.right = s.midX+d;
-//             this.top = s.midY+d;
-//             this.bottom = s.midY-d;
+            double r = s.radius;
+            this.left = s.midX-r;
+            this.right = s.midX+r;
+            this.top = s.midY+r;
+            this.bottom = s.midY-r;
             this.far = (1 + d);
         }
         else
