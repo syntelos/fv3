@@ -267,27 +267,27 @@ public class Camera
         return this;
     }
     public Camera orthoFront(Component c){
-        this.operator = new OrthoFront(new Bounds.CircumSphere(c));
+        this.operator = new OrthoFront(Bounds.CircumSphere.For(c));
         return this;
     }
     public Camera orthoBack(Component c){
-        this.operator = new OrthoBack(new Bounds.CircumSphere(c));
+        this.operator = new OrthoBack(Bounds.CircumSphere.For(c));
         return this;
     }
     public Camera orthoTop(Component c){
-        this.operator = new OrthoTop(new Bounds.CircumSphere(c));
+        this.operator = new OrthoTop(Bounds.CircumSphere.For(c));
         return this;
     }
     public Camera orthoBottom(Component c){
-        this.operator = new OrthoBottom(new Bounds.CircumSphere(c));
+        this.operator = new OrthoBottom(Bounds.CircumSphere.For(c));
         return this;
     }
     public Camera orthoLeft(Component c){
-        this.operator = new OrthoLeft(new Bounds.CircumSphere(c));
+        this.operator = new OrthoLeft(Bounds.CircumSphere.For(c));
         return this;
     }
     public Camera orthoRight(Component c){
-        this.operator = new OrthoRight(new Bounds.CircumSphere(c));
+        this.operator = new OrthoRight(Bounds.CircumSphere.For(c));
         return this;
     }
     /**
@@ -301,7 +301,7 @@ public class Camera
      * @param fovy Field of view (degrees) in Y
      */
     public Camera perspective(Component c, double fovy){
-        this.operator = new Perspective(new Bounds.CircumSphere(c),fovy);
+        this.operator = new Perspective(Bounds.CircumSphere.For(c),fovy);
         return this;
     }
     public String getName(){

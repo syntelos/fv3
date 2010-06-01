@@ -51,6 +51,8 @@ public class Component
 
     protected volatile boolean visible = true;
 
+    protected volatile Bounds bounds;
+
 
     public Component(){
         super();
@@ -109,13 +111,21 @@ public class Component
         return this.setFv3Matrix(new Matrix(m));
     }
     public boolean hasFv3Bounds(){
-        return false;
+        return (null != this.bounds);
     }
     public boolean hasNotFv3Bounds(){
-        return true;
+        return (null == this.bounds);
     }
     public Bounds getFv3Bounds(){
-        return null;
+        return this.bounds;
+    }
+    public Component setFv3Bounds(Bounds b){
+        this.bounds = b;
+        return this;
+    }
+    public Component setFv3Bounds(){
+        this.bounds = new Bounds.CircumSphere(this);
+        return this;
     }
     public final boolean isVisible(){
         return this.visible;

@@ -53,6 +53,16 @@ public interface Bounds
         extends java.lang.Object
         implements Bounds
     {
+        public final static CircumSphere For(Component c){
+            if (c.hasFv3Bounds()){
+                Bounds b = c.getFv3Bounds();
+                if (b instanceof CircumSphere)
+                    return (CircumSphere)b;
+            }
+            return new CircumSphere(c);
+        }
+
+
         public final double minX, minY, minZ;
         public final double midX, midY, midZ;
         public final double maxX, maxY, maxZ;

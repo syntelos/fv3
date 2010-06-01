@@ -56,6 +56,8 @@ public class Gears
         this.add(new Gear2());
         this.add(new Gear3());
 
+        this.setFv3Bounds();
+
         this.defineCamera('A').orthoFront(this);
         this.defineCamera('B').orthoBack(this);
         this.defineCamera('C').orthoTop(this);
