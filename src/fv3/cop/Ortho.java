@@ -18,6 +18,8 @@ public class Ortho
 
     protected volatile double left, right, top = 1, bottom = -1, near = 1, far;
 
+    protected volatile boolean init = true;
+
 
     public Ortho(Bounds.CircumSphere s){
         super();
@@ -63,21 +65,24 @@ public class Ortho
         return this.s;
     }
     protected void init(Camera c){
+        if (this.init){
+            this.init = false;
 
-        double aspect = c.getAspect();
+            double aspect = c.getAspect();
 
-        if (0 == this.left && 0 == this.right){
+            if (0 == this.left && 0 == this.right){
 
-            this.left = -(aspect);
-            this.right = +(aspect);
-        }
-        else if ( aspect < 1.0 ) {
-            this.bottom /= aspect;
-            this.top /= aspect;
-        }
-        else {
-            this.left *= aspect; 
-            this.right *= aspect;
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            else if ( aspect < 1.0 ) {
+                this.bottom /= aspect;
+                this.top /= aspect;
+            }
+            else {
+                this.left *= aspect; 
+                this.right *= aspect;
+            }
         }
     }
     public Matrix projection(Camera c){
@@ -85,9 +90,9 @@ public class Ortho
 
         Matrix m = c.getProjection();
 
-        double Sx = ( 2.0 / (right - left));
-        double Sy = ( 2.0 / (top - bottom));
-        double Sz = (-2.0 / (far - near));
+        double Sx = ( 1.0 / (right - left));
+        double Sy = ( 1.0 / (top - bottom));
+        double Sz = (-1.0 / (far - near));
 
         m.m00(Sx);
         m.m11(Sy);

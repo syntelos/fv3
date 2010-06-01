@@ -12,9 +12,36 @@ public class Frustrum
     implements Camera.Operator
 {
 
+    protected volatile Bounds.CircumSphere s;
+
     protected volatile double near, far, left, right, top = 1, bottom = -1;
 
+    protected volatile boolean init = true;
 
+
+    public Frustrum(Bounds.CircumSphere s){
+        super();
+        if (null != s){
+            this.s = s;
+            this.left = s.minX;
+            this.right = s.maxX;
+            this.bottom = s.minY;
+            this.top = s.maxY;
+            this.near = s.maxZ;
+            this.far = s.minZ;
+        }
+        else
+            throw new IllegalArgumentException();
+    }
+    public Frustrum(double near, double far){
+        super();
+        if (0.0 < near){
+            this.near = near;
+            this.far = far;
+        }
+        else
+            throw new IllegalArgumentException("Near must be positive");
+    }
     public Frustrum(double left, double right, double bottom, double top, double near, double far){
         if (0.0 < near){
 
@@ -28,15 +55,6 @@ public class Frustrum
         else
             throw new IllegalArgumentException("Near must be positive.");
     }
-    public Frustrum(double near, double far){
-        super();
-        if (0.0 < near){
-            this.near = near;
-            this.far = far;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive");
-    }
 
 
     public boolean hasCircumSphere(){
@@ -46,21 +64,24 @@ public class Frustrum
         return null;
     }
     protected void init(Camera c){
+        if (this.init){
+            this.init = false;
 
-        double aspect = c.getAspect();
+            double aspect = c.getAspect();
 
-        if (0 == this.left && 0 == this.right){
+            if (0 == this.left && 0 == this.right){
 
-            this.left = -(aspect);
-            this.right = +(aspect);
-        }
-        else if ( aspect < 1.0 ) {
-            this.bottom /= aspect;
-            this.top /= aspect;
-        }
-        else {
-            this.left *= aspect; 
-            this.right *= aspect;
+                this.left = -(aspect);
+                this.right = +(aspect);
+            }
+            else if ( aspect < 1.0 ) {
+                this.bottom /= aspect;
+                this.top /= aspect;
+            }
+            else {
+                this.left *= aspect; 
+                this.right *= aspect;
+            }
         }
     }
     public Matrix projection(Camera c){
