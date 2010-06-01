@@ -141,9 +141,8 @@ public class World
     }
     /**
      * @param name Camera name, an ASCII alpha letter (A-Z == a-z).
-     * @return The new current camera.  If the named camera didn't
-     * exist before this method call, one is created as a clone of the
-     * camera current before this method call.
+     * @return The new current camera when available, otherwise the
+     * pre-existing current camera. 
      */
     public Camera useCamera(char name){
         if ('A' <= name && 'Z' >= name){
@@ -151,22 +150,24 @@ public class World
             int idx = name-'A';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(name,this.cameras[this.cameraCurrent]);
-
-            this.cameraChange = (idx != this.cameraCurrent);
-            this.cameraCurrent = idx;
-            return this.cameras[idx];
+                return this.cameras[this.cameraCurrent];
+            else {
+                this.cameraChange = (idx != this.cameraCurrent);
+                this.cameraCurrent = idx;
+                return this.cameras[idx];
+            }
         }
         else if ('a' <= name && 'z' >= name){
 
             int idx = name-'a';
 
             if (null == this.cameras[idx])
-                this.cameras[idx] = new Camera(Character.toUpperCase(name),this.cameras[this.cameraCurrent]);
-
-            this.cameraChange = (idx != this.cameraCurrent);
-            this.cameraCurrent = idx;
-            return this.cameras[idx];
+                return this.cameras[this.cameraCurrent];
+            else {
+                this.cameraChange = (idx != this.cameraCurrent);
+                this.cameraCurrent = idx;
+                return this.cameras[idx];
+            }
         }
         else
             throw new IllegalArgumentException(String.format("0x%x",(int)name));
@@ -183,7 +184,8 @@ public class World
     }
     /**
      * Include a camera in the set of cameras without making it
-     * current.
+     * current.  If the named camera is not found, create a copy of
+     * the current camera.
      */
     public Camera defineCamera(char name){
 
