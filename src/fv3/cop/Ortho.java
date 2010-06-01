@@ -117,7 +117,7 @@ public class Ortho
             double y = s.midY;
             double z = s.midZ;
 
-            double t = -(_3 * s.diameter);
+            double t = (_3 * s.diameter);
 
             System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
 
