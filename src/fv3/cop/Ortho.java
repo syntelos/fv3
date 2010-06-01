@@ -90,9 +90,9 @@ public class Ortho
 
         Matrix m = c.getProjection();
 
-        double Sx = ( 1.0 / (right - left));
-        double Sy = ( 1.0 / (top - bottom));
-        double Sz = (-1.0 / (far - near));
+        double Sx = ( 1.3 / (right - left));
+        double Sy = ( 1.3 / (top - bottom));
+        double Sz = (-1.3 / (far - near));
 
         m.m00(Sx);
         m.m11(Sy);
