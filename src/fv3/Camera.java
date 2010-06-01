@@ -17,6 +17,8 @@
  */
 package fv3;
 
+import fv3.cop.*;
+
 import fv3.math.Vector;
 import fv3.math.Matrix;
 import fv3.tk.Fv3Screen;
@@ -28,10 +30,10 @@ import javax.media.opengl.glu.GLU;
 
 /**
  * The {@link World} manages a set of cameras, and can dynamically
- * change cameras by name.  Cameras perform both perspective and
+ * change cameras by name.  Cameras perform both projection and
  * modelview operations.
  * 
- * Perspective operations are performed in the "init" method, and
+ * Projection operations are performed in the "init" method, and
  * modelview operations are performed in the "display" method.  These
  * methods are named for the events of the same names that invoke them
  * from {@link World}.
@@ -47,9 +49,8 @@ import javax.media.opengl.glu.GLU;
  * 
  * Because the Camera modelview matrix is loaded first on the
  * modelview matrix stack, it is effectively pre-multiplied (M * C)
- * into the modelview matrix and therefore operates as a screen matrix
- * -- rather than post-multiplied (C * M) and operating as an object
- * matrix.
+ * into the modelview matrix and operates as a view matrix -- rather
+ * than post-multiplied (C * M) and operating as a model matrix.
  * 
  * <h3>Lifecycle</h3>
  * 
@@ -61,25 +62,57 @@ import javax.media.opengl.glu.GLU;
 public class Camera
     extends java.lang.Object
 {
-    public enum Projection {
-        Frustrum, Ortho, Perspective;
+    /**
+     * An operator is called from the camera init event, once the
+     * camera has the viewport aspect ratio.  
+     * 
+     * The operator works on the camera matrix to produce the final
+     * camera matrix.  A null matrix is an identity matrix, and the
+     * initial state of a matrix is the identity matrix.  Typically
+     * the operator should accomodate any preexisting matrices if it
+     * is to be correct.
+     * 
+     * If the operator has no work to do on a matrix, one is not
+     * created and the identity matrix is loaded rather than the
+     * camera matrix.
+     * 
+     * The operator methods are called in the order of projection,
+     * then view.  Shared computation can be performed once in the
+     * projection method.
+     * 
+     * @see fv3.cop.Frustrum
+     * @see fv3.cop.Ortho
+     * @see fv3.cop.Perspective
+     */
+    public interface Operator {
+        /**
+         * @return The end state for the camera projection matrix.
+         * Null for no preexisting matrix and no work to do -- for the
+         * identity matrix.
+         */
+        public Matrix projection(Camera c);
+        /**
+         * @return The end state for the camera view matrix.  Null for
+         * no preexisting matrix and no work to do -- for the identity
+         * matrix.
+         */
+        public Matrix view(Camera c);
     }
+
 
     public final char name;
 
     public final int index;
 
-    protected volatile double left, right, bottom = -1, top = 1, near, far, fovy = 50, vpAspect;
+    protected volatile Camera.Operator operator;
+
+    protected volatile double vpAspect;
 
     protected volatile boolean vp = false;
 
     protected volatile int vpX, vpY, vpWidth, vpHeight;
 
-    protected volatile Projection projection = Projection.Frustrum;
-
-    protected volatile Matrix screenMatrix;
-
-    private volatile boolean once = true;
+    protected volatile Matrix projection, view;
 
 
     public Camera(char name){
@@ -94,205 +127,159 @@ public class Camera
     public Camera(char name, Camera copy){
         this(name);
         if (null != copy){
-            this.left = copy.left;
-            this.right = copy.right;
-            this.bottom = copy.bottom;
-            this.top = copy.top; 
-            this.near = copy.near; 
-            this.far = copy.far; 
-            this.fovy = copy.fovy;
+            this.operator = copy.operator;
+
             this.vpAspect = copy.vpAspect; 
             this.vp = copy.vp;
             this.vpX = copy.vpX;
             this.vpY = copy.vpY;
             this.vpWidth = copy.vpWidth;
             this.vpHeight = copy.vpHeight;
-            this.projection = copy.projection;
 
-            if (null != copy.screenMatrix)
-                this.screenMatrix = new Matrix(copy.screenMatrix);
+            if (null != copy.projection)
+                this.projection = new Matrix(copy.projection);
 
-            //this.once = true//
+            if (null != copy.view)
+                this.view = new Matrix(copy.view);
         }
     }
 
 
-    public Camera.Projection getProjection(){
-        return this.projection;
+    public boolean isViewport(){
+        return this.vp;
     }
-    public Camera setProjection(Camera.Projection p){
-        if (null != p){
-            this.projection = p;
-            return this;
-        }
+    public Camera setViewport(int x, int y, int w, int h){
+        this.vp = true;
+        this.vpX = x;
+        this.vpY = y;
+        this.vpWidth = w;
+        this.vpHeight = h;
+        double wd = w;
+        double hd = h;
+        this.vpAspect = (wd/hd);
+        return this;
+    }
+    public Camera unsetViewport(){
+        this.vp = false;
+        return this;
+    }
+    public int getViewportX(){
+        return this.vpX;
+    }
+    public int getViewportY(){
+        return this.vpY;
+    }
+    public int getViewportWidth(){
+        return this.vpWidth;
+    }
+    public int getViewportHeight(){
+        return this.vpHeight;
+    }
+    public boolean hasAspect(){
+        return (0.0 != this.vpAspect);
+    }
+    public double getAspect(){
+        double aspect = this.vpAspect;
+        if (0.0 != aspect)
+            return aspect;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalStateException();
     }
-    public boolean hasScreenMatrix(){
-        return (null != this.screenMatrix);
+    public boolean hasOperator(){
+        return (null != this.operator);
     }
-    public boolean hasNotScreenMatrix(){
-        return (null == this.screenMatrix);
+    public boolean hasNotOperator(){
+        return (null == this.operator);
     }
-    public Matrix getScreenMatrix(){
-        Matrix screenMatrix = this.screenMatrix;
-        if (null == screenMatrix){
-            screenMatrix = new Matrix();
-            this.screenMatrix = screenMatrix;
+    public Camera.Operator getOperator(){
+        return this.operator;
+    }
+    public Camera setOperator(Camera.Operator cop){
+        this.operator = cop;
+        return this;
+    }
+    public boolean hasView(){
+        return (null != this.view);
+    }
+    public boolean hasNotView(){
+        return (null == this.view);
+    }
+    public Matrix getView(){
+        Matrix view = this.view;
+        if (null == view){
+            view = new Matrix();
+            this.view = view;
         }
-        return screenMatrix;
+        return view;
     }
-    public Vector getEye(){
-
-        Matrix screenMatrix = this.screenMatrix;
-        if (null == screenMatrix)
-            return new Vector();
-        else
-            return screenMatrix.getTranslation();
+    public boolean hasProjection(){
+        return (null != this.projection);
+    }
+    public boolean hasNotProjection(){
+        return (null == this.projection);
+    }
+    public Matrix getProjection(){
+        Matrix projection = this.projection;
+        if (null == projection){
+            projection = new Matrix();
+            this.projection = projection;
+        }
+        return projection;
     }
     public Camera clear(){
-        this.screenMatrix = null;
+        this.view = null;
         return this;
     }
     public Camera translate(double x, double y, double z){
-        this.getScreenMatrix().translate(x,y,z);
+        this.getView().translate(x,y,z);
         return this;
     }
     public Camera scale(double x, double y, double z){
-        this.getScreenMatrix().scale(x,y,z);
+        this.getView().scale(x,y,z);
         return this;
     }
     public Camera rotate(double x, double y, double z){
-        this.getScreenMatrix().rotate(x,y,z);
+        this.getView().rotate(x,y,z);
         return this;
     }
     public Camera frustrum(double left, double right, double bottom, double top, double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Frustrum;
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-            this.near = near;
-            this.far = far;
-
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
+        this.operator = new Frustrum(left,right,bottom,top,near,far);
+        return this;
     }
     public Camera frustrum(double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Frustrum;
-            this.near = near;
-            this.far = far;
-            if (0 != this.vpAspect){
-                this.left = -(vpAspect);
-                this.right = +(vpAspect);
-            }
-            else {
-                this.left = 0;
-                this.right = 0;
-            }
-            this.bottom = -1.0;
-            this.top = +1.0;
-
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
+        this.operator = new Frustrum(near,far);
+        return this;
     }
     public Camera ortho(double left, double right, double bottom, double top, double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Ortho;
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-            this.near = near;
-            this.far = far;
-
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
+        this.operator = new Ortho(left,right,bottom,top,near,far);
+        return this;
     }
     public Camera ortho(double near, double far){
-        if (0.0 < near){
-            this.projection = Projection.Ortho;
-            this.near = near;
-            this.far = far;
-            if (0 != this.vpAspect){
-                this.left = -(vpAspect);
-                this.right = +(vpAspect);
-            }
-            this.bottom = -1.0;
-            this.top = +1.0;
-
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive.");
+        this.operator = new Ortho(near,far);
+        return this;
     }
     public Camera orthoFront(Component c){
-        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-
-        double dn = (2*s.diameter);
-        double dr = (dn + s.radius);
-
-        double x = s.midX;
-        double y = s.midY;
-        double z = s.midZ+dn;
-
-        return this.translate(x,y,z).ortho(1,dr);
+        this.operator = new OrthoFront(new Bounds.CircumSphere(c));
+        return this;
     }
     public Camera orthoTop(Component c){
-        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-
-        double dn = (2*s.diameter);
-        double dr = (dn + s.radius);
-
-        double x = s.midX;
-        double y = s.midY+dn;
-        double z = s.midZ;
-
-        return this.translate(x,y,z).ortho(1,dr);
+        this.operator = new OrthoTop(new Bounds.CircumSphere(c));
+        return this;
     }
     public Camera orthoLeft(Component c){
-        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-
-        double dn = (2*s.diameter);
-        double dr = (dn + s.radius);
-
-        double x = s.midX-dn;
-        double y = s.midY;
-        double z = s.midZ;
-
-        return this.translate(x,y,z).ortho(1,dr);
+        this.operator = new OrthoLeft(new Bounds.CircumSphere(c));
+        return this;
     }
     public Camera orthoRight(Component c){
-        Bounds.CircumSphere s = new Bounds.CircumSphere(c);
-
-        double dn = (2*s.diameter);
-        double dr = (dn + s.radius);
-
-        double x = s.midX+dn;
-        double y = s.midY;
-        double z = s.midZ;
-
-        return this.translate(x,y,z).ortho(1,dr);
+        this.operator = new OrthoRight(new Bounds.CircumSphere(c));
+        return this;
     }
     /**
      * @param fovy Field of view (degrees) in Y
      */
     public Camera perspective(double fovy){
-        if (0.0 < fovy){
-            this.projection = Projection.Perspective;
-            this.fovy = fovy;
-            return this;
-        }
-        else
-            throw new IllegalArgumentException("Field of view must be positive");
+        this.operator = new Perspective(fovy);
+        return this;
     }
     public String getName(){
         return String.valueOf(this.name);
@@ -300,14 +287,10 @@ public class Camera
     public void init(GL2 gl, GLU glu){
         {
 
-            if (this.vp){
-                double vpw = this.vpWidth;
-                double vph = this.vpHeight;
-                this.vpAspect = (vpw / vph);
+            if (this.vp)
 
                 gl.glViewport(this.vpX,this.vpY,this.vpWidth,this.vpHeight);
-                System.out.printf("glViewport(%g,%g,%g,%g)\n",this.vpX,this.vpY,this.vpWidth,this.vpHeight);
-            }
+
             else {
 
                 Fv3Screen fv3s = Fv3Screen.Current();
@@ -319,74 +302,53 @@ public class Camera
             }
 
 
-            if (0 == this.left && 0 == this.right){
+            Camera.Operator operator = this.operator;
+            if (null != operator){
 
-                this.left = -(vpAspect);
-                this.right = +(vpAspect);
-            }
-            else if ( this.vpAspect < 1.0 ) {
-                this.bottom /= this.vpAspect;
-                this.top /= this.vpAspect;
-            }
-            else {
-                this.left *= this.vpAspect; 
-                this.right *= this.vpAspect;
+                this.projection = operator.projection(this);
+
+                this.view = operator.view(this);
             }
         }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
 
-        switch (this.projection){
-        case Frustrum:
-            gl.glFrustum(this.left, this.right, this.bottom, this.top, this.near, this.far);
-            break;
-        case Ortho:
-            gl.glOrtho(this.left, this.right, this.bottom, this.top, this.near, this.far);
-            break;
-        case Perspective:
-            glu.gluPerspective(this.fovy,this.vpAspect,this.near,this.far);
-            break;
-        default:
-            throw new IllegalStateException();
-        }
+        Matrix projection = this.projection;
+
+        if (null == projection)
+            gl.glLoadIdentity();
+        else
+            gl.glLoadMatrixd(projection.buffer());
+
     }
     public void display(GL2 gl, GLU glu){
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         
-        Matrix screenMatrix = this.screenMatrix;
+        Matrix view = this.view;
 
-        if (null == screenMatrix)
+        if (null == view)
             gl.glLoadIdentity();
         else
-            gl.glLoadMatrixd(screenMatrix.buffer());
+            gl.glLoadMatrixd(view.buffer());
 
     }
 
     public String toString(){
-        Vector eye = this.getEye();
 
-        switch (this.projection){
-        case Frustrum:
+        String projection;
+        if (null == this.projection)
+            projection = "";
+        else
+            projection = this.projection.toString().replace('\n','|');
 
-            return String.format("%c (%g, %g, %g) F(%g,%g,%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
-                                 this.left,this.right,this.bottom,
-                                 this.top, this.near, this.far);
+        String view;
+        if (null == this.view)
+            view = "";
+        else
+            view = this.view.toString().replace('\n','|');
 
-        case Ortho:
-
-            return String.format("%c (%g, %g, %g) O(%g,%g,%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
-                                 this.left,this.right,this.bottom,
-                                 this.top, this.near, this.far);
-
-        case Perspective:
-
-            return String.format("%c (%g, %g, %g) P(%g,%g,%g,%g)",this.name,eye.x(),eye.y(),eye.z(),
-                                 this.fovy,this.vpAspect,this.near,this.far);
-
-        default:
-            throw new IllegalStateException();
-        }
+        return String.format("%c (%s) (%s)",this.name,projection,view);
     }
 }
