@@ -62,11 +62,20 @@ public class Frustrum
 
         Matrix m = c.getProjection();
 
+        double N2 = (2*near);
+        m.m00(N2 / (right - left));
+        m.m11(N2 / (top - bottom));
+        m.m02( (right + left) / (right - left));
+        m.m12( (top + bottom) / (top - bottom));
+        m.m22( (far + near) / (far - near));
+        m.m23( (N2 * far) / (far - near));
+        m.m32(-1);
+        m.m33(0);
+
         return m;
     }
     public Matrix view(Camera c){
-        Matrix m = c.getView();
 
-        return m;
+        return null;
     }
 }

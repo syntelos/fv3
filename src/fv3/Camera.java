@@ -277,8 +277,15 @@ public class Camera
     /**
      * @param fovy Field of view (degrees) in Y
      */
-    public Camera perspective(double fovy){
-        this.operator = new Perspective(fovy);
+    public Camera perspective(double near, double far, double fovy){
+        this.operator = new Perspective(near,far,fovy);
+        return this;
+    }
+    /**
+     * @param fovy Field of view (degrees) in Y
+     */
+    public Camera perspective(Component c, double fovy){
+        this.operator = new Perspective(new Bounds.CircumSphere(c),fovy);
         return this;
     }
     public String getName(){

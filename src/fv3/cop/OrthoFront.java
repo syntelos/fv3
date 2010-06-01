@@ -17,14 +17,4 @@ public class OrthoFront
     }
 
 
-    public Matrix projection(Camera c){
-        Matrix m = c.getProjection();
-
-        return m;
-    }
-    public Matrix view(Camera c){
-        Matrix m = c.getView();
-
-        return m;
-    }
 }
