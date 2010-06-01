@@ -262,6 +262,10 @@ public class Camera
         this.operator = new OrthoFront(new Bounds.CircumSphere(c));
         return this;
     }
+    public Camera orthoBack(Component c){
+        this.operator = new OrthoBack(new Bounds.CircumSphere(c));
+        return this;
+    }
     public Camera orthoTop(Component c){
         this.operator = new OrthoTop(new Bounds.CircumSphere(c));
         return this;
