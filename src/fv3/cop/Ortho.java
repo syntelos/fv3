@@ -109,6 +109,7 @@ public class Ortho
         return m;
     }
     public Matrix view(Camera c){
+        /*
         Bounds.CircumSphere s = this.s;
         if (null != s){
             Matrix m = c.getView();
@@ -124,6 +125,7 @@ public class Ortho
             return m.translate(x,y,(z+t));
         }
         else
+        */
             return null;
     }
 }
