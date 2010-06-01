@@ -19,6 +19,8 @@ public class OrthoRight
 
     public Matrix view(Camera c){
 
-        return null;
+        Matrix m = c.getView();
+
+        return m.rotateY(-PI2);
     }
 }

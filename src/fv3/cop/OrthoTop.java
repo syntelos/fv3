@@ -20,6 +20,8 @@ public class OrthoTop
 
     public Matrix view(Camera c){
 
-        return null;
+        Matrix m = c.getView();
+
+        return m.rotateX(PI2);
     }
 }

@@ -12,6 +12,8 @@ public class Ortho
     implements Camera.Operator
 {
     protected final static double MZ = -0.0;
+    protected final static double PI = Math.PI;
+    protected final static double PI2 = (Math.PI / 2.0);
 
 
     protected volatile Bounds.CircumSphere s;
@@ -112,23 +114,7 @@ public class Ortho
         return m;
     }
     public Matrix view(Camera c){
-        /*
-        Bounds.CircumSphere s = this.s;
-        if (null != s){
-            Matrix m = c.getView();
 
-            double x = s.midX;
-            double y = s.midY;
-            double z = s.midZ;
-
-            double t = (_3 * s.diameter);
-
-            System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
-
-            return m.translate(x,y,(z+t));
-        }
-        else
-        */
-            return null;
+        return null;
     }
 }
