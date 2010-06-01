@@ -103,7 +103,7 @@ public class Ortho
             double y = s.midY;
             double z = s.midZ;
 
-            double t = (2* s.diameter);
+            double t = s.diameter;
 
             return m.translate(x,y,(z+t));
         }
