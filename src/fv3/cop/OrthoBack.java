@@ -11,7 +11,7 @@ public class OrthoBack
     extends Ortho
 {
 
-    protected Matrix view = new Matrix().rotateX(PI);
+    protected Matrix view = new Matrix().rotateY(PI);
 
 
     public OrthoBack(Bounds.CircumSphere s){
