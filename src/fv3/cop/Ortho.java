@@ -11,6 +11,7 @@ public class Ortho
     extends Object
     implements Camera.Operator
 {
+    protected final static double _3 = (10.0/3.0);
 
     protected volatile Bounds.CircumSphere s;
 
@@ -22,12 +23,13 @@ public class Ortho
         if (null != s){
             this.s = s;
             double d = s.diameter;
-            double r = s.radius;
-            this.left = s.midX-r;
-            this.right = s.midX+r;
-            this.top = s.midY+r;
-            this.bottom = s.midY-r;
-            this.far = (1 + d);
+//             double r = s.radius;
+//             this.left = s.midX-r;
+//             this.right = s.midX+r;
+//             this.top = s.midY+r;
+//             this.bottom = s.midY-r;
+            this.near = 5;
+            this.far = (5 * d);
         }
         else
             throw new IllegalArgumentException();
@@ -107,21 +109,21 @@ public class Ortho
         return m;
     }
     public Matrix view(Camera c){
-//         Bounds.CircumSphere s = this.s;
-//         if (null != s){
-//             Matrix m = c.getView();
+        Bounds.CircumSphere s = this.s;
+        if (null != s){
+            Matrix m = c.getView();
 
-//             double x = s.midX;
-//             double y = s.midY;
-//             double z = s.midZ;
+            double x = s.midX;
+            double y = s.midY;
+            double z = s.midZ;
 
-//             double t = -(s.diameter);
+            double t = -(_3 * s.diameter);
 
-//             System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
+            System.out.printf("Ortho (%g,%g,%g,%g)\n",x,y,z,s.diameter);
 
-//             return m.translate(x,y,(z+t));
-//         }
-//         else
+            return m.translate(x,y,(z+t));
+        }
+        else
             return null;
     }
 }
