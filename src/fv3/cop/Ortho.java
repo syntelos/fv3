@@ -11,7 +11,8 @@ public class Ortho
     extends Object
     implements Camera.Operator
 {
-    protected final static double _3 = (10.0/3.0);
+    protected final static double MZ = -0.0;
+
 
     protected volatile Bounds.CircumSphere s;
 
@@ -93,8 +94,11 @@ public class Ortho
         m.m22(Sx);
 
         double Tx = -( (right + left) / (right - left));
+        if (MZ == Tx) Tx = 0.0;
         double Ty = -( (top + bottom) / (top - bottom));
+        if (MZ == Ty) Ty = 0.0;
         double Tz = -( (far + near) / (far - near));
+        if (MZ == Tz) Tz = 0.0;
 
         m.m03(Tx);
         m.m13(Ty);
