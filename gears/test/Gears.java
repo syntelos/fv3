@@ -55,7 +55,7 @@ public class Gears
 
     public Gears(){
         super();
-        this.translate(0,0,-40);
+        //this.translate(0,0,-40);
 
         this.add(new Light(0,LightPos));
         this.add(new Gear1());

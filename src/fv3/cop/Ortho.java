@@ -22,14 +22,12 @@ public class Ortho
         super();
         if (null != s){
             this.s = s;
-            double d = s.diameter;
-//             double r = s.radius;
-//             this.left = s.midX-r;
-//             this.right = s.midX+r;
-//             this.top = s.midY+r;
-//             this.bottom = s.midY-r;
-            this.near = 5;
-            this.far = (5 * d);
+            this.left = s.minX;
+            this.right = s.maxX;
+            this.bottom = s.minY;
+            this.top = s.maxY;
+            this.near = s.minZ;
+            this.far = s.maxZ;
         }
         else
             throw new IllegalArgumentException();
