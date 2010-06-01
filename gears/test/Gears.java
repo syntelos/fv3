@@ -3,6 +3,8 @@ package test;
 
 import fv3.Camera;
 import fv3.model.CircumCube;
+import fv3.model.Material ;
+import fv3.model.ShadeModel ;
 import fv3.nui.Light;
 
 import fv3.tk.Animator;
@@ -41,6 +43,8 @@ public class Gears
 
     private final static float LightPos[] = { 5.0f, 5.0f, 10.0f, 0.0f };
 
+    private final static float BB[] = { 0.0f, 0.01f, 0.8f, 1.0f };
+
     static float Angle = 0.0f;
 
 
@@ -60,7 +64,8 @@ public class Gears
         this.defineCamera('C').orthoLeft(this);
         this.defineCamera('D').orthoRight(this);
 
-        this.add(new CircumCube(this.getCamera('A').getOperator().getCircumSphere()));
+        this.add(new CircumCube((new Material(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, BB)),
+                                this.getCamera('A').getOperator().getCircumSphere()));
     }
 
 

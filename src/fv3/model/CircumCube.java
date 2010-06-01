@@ -25,6 +25,16 @@ public class CircumCube
     extends Model
 {
 
+    public CircumCube(fv3.model.Object prefix, Bounds.CircumSphere s){
+        super();
+        this.add(prefix);
+        s.glBoundary(this);
+    }
+    public CircumCube(fv3.model.Object[] prefix, Bounds.CircumSphere s){
+        super();
+        this.add(prefix);
+        s.glBoundary(this);
+    }
     public CircumCube(Bounds.CircumSphere s){
         super();
         s.glBoundary(this);
