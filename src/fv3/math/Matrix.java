@@ -164,7 +164,7 @@ public class Matrix
                 for (k = 0; k < 4; k++){
                     ab += (a[I(k,i)] * b[I(j,k)]);
                 }
-                m[I(j,i)] = ab;
+                m[I(j,i)] = Z(ab);
             }
         }
         return this;
@@ -320,11 +320,11 @@ public class Matrix
         return this.m[M00];
     }
     public final Matrix m00(double m00){
-        this.m[M00] = m00;
+        this.m[M00] = Z(m00);
         return this;
     }
     public final Matrix setM00(double m00){
-        this.m[M00] = m00;
+        this.m[M00] = Z(m00);
         return this;
     }
     public final double m01(){
@@ -334,11 +334,11 @@ public class Matrix
         return this.m[M01];
     }
     public final Matrix m01(double m01){
-        this.m[M01] = m01;
+        this.m[M01] = Z(m01);
         return this;
     }
     public final Matrix setM01(double m01){
-        this.m[M01] = m01;
+        this.m[M01] = Z(m01);
         return this;
     }
     public final double m02(){
@@ -348,11 +348,11 @@ public class Matrix
         return this.m[M02];
     }
     public final Matrix m02(double m02){
-        this.m[M02] = m02;
+        this.m[M02] = Z(m02);
         return this;
     }
     public final Matrix setM02(double m02){
-        this.m[M02] = m02;
+        this.m[M02] = Z(m02);
         return this;
     }
     public final double m03(){
@@ -362,11 +362,11 @@ public class Matrix
         return this.m[M03];
     }
     public final Matrix m03(double m03){
-        this.m[M03] = m03;
+        this.m[M03] = Z(m03);
         return this;
     }
     public final Matrix setM03(double m03){
-        this.m[M03] = m03;
+        this.m[M03] = Z(m03);
         return this;
     }
     public final double m10(){
@@ -376,11 +376,11 @@ public class Matrix
         return this.m[M10];
     }
     public final Matrix m10(double m10){
-        this.m[M10] = m10;
+        this.m[M10] = Z(m10);
         return this;
     }
     public final Matrix setM10(double m10){
-        this.m[M10] = m10;
+        this.m[M10] = Z(m10);
         return this;
     }
     public final double m11(){
@@ -390,11 +390,11 @@ public class Matrix
         return this.m[M11];
     }
     public final Matrix m11(double m11){
-        this.m[M11] = m11;
+        this.m[M11] = Z(m11);
         return this;
     }
     public final Matrix setM11(double m11){
-        this.m[M11] = m11;
+        this.m[M11] = Z(m11);
         return this;
     }
     public final double m12(){
@@ -404,11 +404,11 @@ public class Matrix
         return this.m[M12];
     }
     public final Matrix m12(double m12){
-        this.m[M12] = m12;
+        this.m[M12] = Z(m12);
         return this;
     }
     public final Matrix setM12(double m12){
-        this.m[M12] = m12;
+        this.m[M12] = Z(m12);
         return this;
     }
     public final double m13(){
@@ -418,11 +418,11 @@ public class Matrix
         return this.m[M13];
     }
     public final Matrix m13(double m13){
-        this.m[M13] = m13;
+        this.m[M13] = Z(m13);
         return this;
     }
     public final Matrix setM13(double m13){
-        this.m[M13] = m13;
+        this.m[M13] = Z(m13);
         return this;
     }
     public final double m20(){
@@ -432,11 +432,11 @@ public class Matrix
         return this.m[M20];
     }
     public final Matrix m20(double m20){
-        this.m[M20] = m20;
+        this.m[M20] = Z(m20);
         return this;
     }
     public final Matrix setM20(double m20){
-        this.m[M20] = m20;
+        this.m[M20] = Z(m20);
         return this;
     }
     public final double m21(){
@@ -446,11 +446,11 @@ public class Matrix
         return this.m[M21];
     }
     public final Matrix m21(double m21){
-        this.m[M21] = m21;
+        this.m[M21] = Z(m21);
         return this;
     }
     public final Matrix setM21(double m21){
-        this.m[M21] = m21;
+        this.m[M21] = Z(m21);
         return this;
     }
     public final double m22(){
@@ -460,11 +460,11 @@ public class Matrix
         return this.m[M22];
     }
     public final Matrix m22(double m22){
-        this.m[M22] = m22;
+        this.m[M22] = Z(m22);
         return this;
     }
     public final Matrix setM22(double m22){
-        this.m[M22] = m22;
+        this.m[M22] = Z(m22);
         return this;
     }
     public final double m23(){
@@ -474,11 +474,11 @@ public class Matrix
         return this.m[M23];
     }
     public final Matrix m23(double m23){
-        this.m[M23] = m23;
+        this.m[M23] = Z(m23);
         return this;
     }
     public final Matrix setM23(double m23){
-        this.m[M23] = m23;
+        this.m[M23] = Z(m23);
         return this;
     }
     public final double m30(){
@@ -488,11 +488,11 @@ public class Matrix
         return this.m[M30];
     }
     public final Matrix m30(double m30){
-        this.m[M30] = m30;
+        this.m[M30] = Z(m30);
         return this;
     }
     public final Matrix setM30(double m30){
-        this.m[M30] = m30;
+        this.m[M30] = Z(m30);
         return this;
     }
     public final double m31(){
@@ -502,11 +502,11 @@ public class Matrix
         return this.m[M31];
     }
     public final Matrix m31(double m31){
-        this.m[M31] = m31;
+        this.m[M31] = Z(m31);
         return this;
     }
     public final Matrix setM31(double m31){
-        this.m[M31] = m31;
+        this.m[M31] = Z(m31);
         return this;
     }
     public final double m32(){
@@ -516,11 +516,11 @@ public class Matrix
         return this.m[M32];
     }
     public final Matrix m32(double m32){
-        this.m[M32] = m32;
+        this.m[M32] = Z(m32);
         return this;
     }
     public final Matrix setM32(double m32){
-        this.m[M32] = m32;
+        this.m[M32] = Z(m32);
         return this;
     }
     public final double m33(){
@@ -530,11 +530,11 @@ public class Matrix
         return this.m[M33];
     }
     public final Matrix m33(double m33){
-        this.m[M33] = m33;
+        this.m[M33] = Z(m33);
         return this;
     }
     public final Matrix setM33(double m33){
-        this.m[M33] = m33;
+        this.m[M33] = Z(m33);
         return this;
     }
 
@@ -547,7 +547,7 @@ public class Matrix
         if (null == in)
             in = "";
         double[] m = this.m;
-        return String.format("%s%g %g %g %g%s%s%g %g %g %g%s%s%g %g %g %g%s%s%g %g %g %g", pr, m[M00], m[M01], m[M02], m[M03], in, pr, m[M10], m[M11], m[M12], m[M13], in, pr, m[M20], m[M21], m[M22], m[M23], in, pr, m[M30], m[M31], m[M32], m[M33]);
+        return String.format("%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f %30.26f", pr, m[M00], m[M01], m[M02], m[M03], in, pr, m[M10], m[M11], m[M12], m[M13], in, pr, m[M20], m[M21], m[M22], m[M23], in, pr, m[M30], m[M31], m[M32], m[M33]);
     }
 
 

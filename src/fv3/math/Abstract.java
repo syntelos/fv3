@@ -37,6 +37,16 @@ public abstract class Abstract
     public final static double PI = Math.PI;
     public final static double PI2 = (Math.PI/2.0);
 
+    public final static boolean IsZero(double value){
+        return (EPSILON > Math.abs(value));
+    }
+    public final static double Z(double value){
+        if (EPSILON > Math.abs(value))
+            return 0.0;
+        else
+            return value;
+    }
+
 
     private volatile DoubleBuffer b;
 
