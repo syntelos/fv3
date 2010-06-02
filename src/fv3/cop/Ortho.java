@@ -18,7 +18,7 @@ public class Ortho
 
     protected volatile Bounds.CircumSphere s;
 
-    protected volatile double left, right, top = 1, bottom = -1, near = 1, far;
+    protected volatile double left, right, top = 1, bottom = -1, near = 1, far, aspect;
 
     protected volatile boolean init = true;
 
@@ -70,20 +70,24 @@ public class Ortho
         if (this.init){
             this.init = false;
 
-            double aspect = c.getAspect();
+            this.aspect = c.getAspect();
 
             if (0 == this.left && 0 == this.right){
 
-                this.left = -(aspect);
-                this.right = +(aspect);
+                this.left = -(this.aspect);
+                this.right = +(this.aspect);
             }
-            else if ( aspect < 1.0 ) {
-                this.bottom /= aspect;
-                this.top /= aspect;
-            }
-            else {
-                this.left *= aspect; 
-                this.right *= aspect;
+            else if (1.0 != this.aspect){
+
+                if ( this.aspect < 1.0 ) {
+
+                    this.bottom /= this.aspect;
+                    this.top /= this.aspect;
+                }
+                else {
+                    this.left *= this.aspect; 
+                    this.right *= this.aspect;
+                }
             }
         }
     }
@@ -92,16 +96,44 @@ public class Ortho
 
         Matrix m = c.getProjection();
 
-        double Sx = ( 2.0 / (right - left));
-        double Sy = ( 2.0 / (top - bottom));
-        double Sz = (-2.0 / (far - near));
+        if (1.0 == this.aspect){
 
-        double S = Math.min(Sx,Math.min(Sy,Sz));
+            double Dx = (right - left);
+            double Dy = (top - bottom);
+            if (Dx != Dy){
+                double Sxy;
+                if (Dx > Dy){
+                    Sxy = ( 2.0 / Dx);
+                }
+                else {
+                    Sxy = ( 2.0 / Dy);
+                }
 
-        m.m00(S);
-        m.m11(S);
-        m.m22(S);
+                double Sz = (-2.0 / (far - near));
 
+                m.m00(Sxy);
+                m.m11(Sxy);
+                m.m22(Sz);
+            }
+            else {
+
+                double Sxy = ( 2.0 / Dx);
+                double Sz = (-2.0 / (far - near));
+
+                m.m00(Sxy);
+                m.m11(Sxy);
+                m.m22(Sz);
+            }
+        }
+        else {
+            double Sx = ( 2.0 / (right - left));
+            double Sy = ( 2.0 / (top - bottom));
+            double Sz = (-2.0 / (far - near));
+
+            m.m00(Sx);
+            m.m11(Sy);
+            m.m22(Sz);
+        }
         double Tx = -( (right + left) / (right - left));
         if (MZ == Tx) Tx = 0.0;
         double Ty = -( (top + bottom) / (top - bottom));
