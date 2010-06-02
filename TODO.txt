@@ -1,9 +1,5 @@
                                               -*- outline -*-
 
-
-* fv3.model.Model
-** apply component matrix (when present) to dimensions
-
 * fv3.model
 ** i/o mesh formats 
 *** OBJ, 3DS, STL
