@@ -258,14 +258,6 @@ public class Camera
         this.operator = new Frustrum(near,far);
         return this;
     }
-    public Camera ortho(double left, double right, double bottom, double top, double near, double far){
-        this.operator = new Ortho(left,right,bottom,top,near,far);
-        return this;
-    }
-    public Camera ortho(double near, double far){
-        this.operator = new Ortho(near,far);
-        return this;
-    }
     public Camera orthoFront(Component c){
         this.operator = new OrthoFront(Bounds.CircumSphere.For(c));
         return this;

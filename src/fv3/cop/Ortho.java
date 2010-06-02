@@ -5,9 +5,15 @@ import fv3.Camera;
 import fv3.math.Matrix;
 
 /**
- * 
+ * Base class for orthographic cameras
+ * @see OrthoFront
+ * @see OrthoBack
+ * @see OrthoLeft
+ * @see OrthoRight
+ * @see OrthoTop
+ * @see OrthoBottom
  */
-public class Ortho
+public abstract class Ortho
     extends Object
     implements Camera.Operator
 {
@@ -18,45 +24,15 @@ public class Ortho
 
     protected volatile Bounds.CircumSphere s;
 
-    protected volatile double left, right, top = 1, bottom = -1, near = 1, far, aspect;
-
-    protected volatile boolean init = true;
+    protected volatile double aspect;
 
 
     public Ortho(Bounds.CircumSphere s){
         super();
-        if (null != s){
+        if (null != s)
             this.s = s;
-            this.left = s.minX;
-            this.right = s.maxX;
-            this.bottom = s.minY;
-            this.top = s.maxY;
-            this.near = s.maxZ;
-            this.far = s.minZ;
-        }
         else
             throw new IllegalArgumentException();
-    }
-    public Ortho(double near, double far){
-        super();
-        if (0.0 < near){
-            this.near = near;
-            this.far = far;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive");
-    }
-    public Ortho(double left, double right, double bottom, double top, double near, double far){
-        if (0.0 < near){
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-            this.near = near;
-            this.far = far;
-        }
-        else
-            throw new IllegalArgumentException("Near must be positive");
     }
 
 
@@ -66,76 +42,35 @@ public class Ortho
     public Bounds.CircumSphere getCircumSphere(){
         return this.s;
     }
-    protected void init(Camera c){
-        if (this.init){
-            this.init = false;
-
-            this.aspect = c.getAspect();
-
-            if (0 == this.left && 0 == this.right){
-
-                this.left = -(this.aspect);
-                this.right = +(this.aspect);
-            }
-            else if (1.0 != this.aspect){
-
-                if ( this.aspect < 1.0 ) {
-
-                    this.bottom /= this.aspect;
-                    this.top /= this.aspect;
-                }
-                else {
-                    this.left *= this.aspect; 
-                    this.right *= this.aspect;
-                }
-            }
-        }
-    }
     public Matrix projection(Camera c){
-        this.init(c);
+
+        this.aspect = c.getAspect();
 
         Matrix m = c.getProjection();
 
-        if (1.0 == this.aspect){
+        double ss = (2.0 / this.s.diameter);
 
-            double Sxy;
+        double Sx =  (ss);
+        double Sy =  (ss);
+        double Sz = -(ss);
 
-            double Dx = (right - left);
-            double Dy = (top - bottom);
-            if (Dx != Dy){
-                if (Dx > Dy)
-                    Sxy = ( 2.0 / Dx);
-                else 
-                    Sxy = ( 2.0 / Dy);
-            }
+        if (1.0 != this.aspect){
+
+            double a = (this.aspect / 2.0);
+
+            if ( this.aspect < 1.0 )
+                Sy /= a;
             else 
-                Sxy = ( 2.0 / Dx);
-
-            double Sz = (-2.0 / (far - near));
-
-            m.m00(Sxy);
-            m.m11(Sxy);
-            m.m22(Sz);
+                Sx *= a;
         }
-        else {
-            double Sx = ( 2.0 / (right - left));
-            double Sy = ( 2.0 / (top - bottom));
-            double Sz = (-2.0 / (far - near));
 
-            m.m00(Sx);
-            m.m11(Sy);
-            m.m22(Sz);
-        }
-        double Tx = -( (right + left) / (right - left));
-        if (MZ == Tx) Tx = 0.0;
-        double Ty = -( (top + bottom) / (top - bottom));
-        if (MZ == Ty) Ty = 0.0;
-        double Tz = -( (far + near) / (far - near));
-        if (MZ == Tz) Tz = 0.0;
+        m.m00(Sx);
+        m.m11(Sy);
+        m.m22(Sz);
 
-        m.m03(Tx);
-        m.m13(Ty);
-        m.m23(Tz);
+        m.m03(s.tX());
+        m.m13(s.tY());
+        m.m23(s.tZ());
 
         return m;
     }
