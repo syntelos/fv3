@@ -679,9 +679,9 @@ public class Gear1
     }
 
 
-    public void display(GL2 gl){
+//     public void display(GL2 gl){
 
-        gl.glRotatef(Gears.Angle, 0.0f, 0.0f, 1.0f);
-        super.display(gl);
-    }
+//         gl.glRotatef(Gears.Angle, 0.0f, 0.0f, 1.0f);
+//         super.display(gl);
+//     }
 }

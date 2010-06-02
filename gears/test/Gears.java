@@ -44,7 +44,7 @@ public class Gears
     private final static float LightPos[] = { 5.0f, 5.0f, 10.0f, 0.0f };
 
 
-    static float Angle = 0.0f;
+//     static float Angle = 0.0f;
 
 
 
@@ -69,8 +69,8 @@ public class Gears
     }
 
 
-    public void display(GL2 gl){
-        Angle += 1.0f;
-        super.display(gl);
-    }
+//     public void display(GL2 gl){
+//         Angle += 1.0f;
+//         super.display(gl);
+//     }
 }
