@@ -96,9 +96,11 @@ public class Ortho
         double Sy = ( 2.0 / (top - bottom));
         double Sz = (-2.0 / (far - near));
 
-        m.m00(Sx);
-        m.m11(Sy);
-        m.m22(Sx);
+        double S = Math.min(Sx,Math.min(Sy,Sz));
+
+        m.m00(S);
+        m.m11(S);
+        m.m22(S);
 
         double Tx = -( (right + left) / (right - left));
         if (MZ == Tx) Tx = 0.0;
