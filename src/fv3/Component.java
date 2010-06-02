@@ -87,13 +87,23 @@ public interface Component
 
     public Component scale(double s);
 
+    public Component scale(double x, double y, double z);
+
     public Component rotate(AxisAngle a);
-
+    /**
+     * @param a Angle in radians
+     */
     public Component rotateX(double a);
-
+    /**
+     * @param a Angle in radians
+     */
     public Component rotateY(double a);
-
+    /**
+     * @param a Angle in radians
+     */
     public Component rotateZ(double a);
-
+    /**
+     * Angles in radians
+     */
     public Component rotate(double ax, double ay, double az);
 }

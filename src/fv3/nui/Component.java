@@ -146,22 +146,38 @@ public class Component
         this.matrix().scale(s);
         return this;
     }
+    public final fv3.Component scale(double x, double y, double z){
+        this.matrix().scale(x,y,z);
+        return this;
+    }
     public final fv3.Component rotate(AxisAngle a){
         this.matrix().rotate(a);
         return this;
     }
+    /**
+     * @param a Angle in radians
+     */
     public final fv3.Component rotateX(double a){
         this.matrix().rotateX(a);
         return this;
     }
+    /**
+     * @param a Angle in radians
+     */
     public final fv3.Component rotateY(double a){
         this.matrix().rotateY(a);
         return this;
     }
+    /**
+     * @param a Angle in radians
+     */
     public final fv3.Component rotateZ(double a){
         this.matrix().rotateZ(a);
         return this;
     }
+    /**
+     * Angles in radians
+     */
     public final fv3.Component rotate(double ax, double ay, double az){
         this.matrix().rotate(ax,ay,az);
         return this;

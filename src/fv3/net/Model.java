@@ -128,6 +128,10 @@ public abstract class Model
         this.matrix().scale(s);
         return this;
     }
+    public Component scale(double x, double y, double z){
+        this.matrix().scale(x,y,z);
+        return this;
+    }
     public Component rotate(AxisAngle a){
         this.matrix().rotate(a);
         return this;
