@@ -5,7 +5,6 @@
 ** apply component matrix when present
 
 * fv3.model
-** use display lists and vertex array memory
 ** i/o mesh formats 
 *** OBJ, 3DS, STL
 
