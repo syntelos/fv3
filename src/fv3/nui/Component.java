@@ -62,8 +62,6 @@ public class Component
 
     private volatile Matrix matrix;
 
-    private volatile DoubleBuffer matrixBuffer;
-
     protected volatile boolean visible = true;
 
     protected volatile Bounds bounds;
@@ -102,19 +100,15 @@ public class Component
         return this.matrix;
     }
     public final DoubleBuffer getFv3MatrixBuffer(){
-        DoubleBuffer fb = this.matrixBuffer;
-        if (null == fb){
-            Matrix m = this.matrix;
-            if (null != m){
-                fb = DoubleBuffer.wrap(m.array());
-                this.matrixBuffer = fb;
-            }
-        }
-        return fb;
+
+        Matrix m = this.matrix;
+        if (null != m)
+            return m.buffer();
+        else
+            return null;
     }
     protected final Matrix setFv3Matrix(Matrix m){
         this.matrix = m;
-        this.matrixBuffer = null;
         return m;
     }
     protected final Matrix setFv3Matrix(){
@@ -204,6 +198,5 @@ public class Component
                 System.out.printf("%s\n%s\n",this.getClass().getName(),m.toString("\t"));
             }
         }
-        super.init(gl);
     }
 }

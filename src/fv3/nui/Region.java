@@ -111,6 +111,7 @@ public class Region
         return false;
     }
     public void init(GL2 gl){
+        super.init(gl);
 
         List<fv3.Component> children = this.children;
         if (null != children && children.isNotEmpty()){
