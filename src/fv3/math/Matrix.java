@@ -541,6 +541,9 @@ public class Matrix
     public String toString(){
         return this.toString("","\n");
     }
+    public String toString(String pr){
+        return this.toString(pr,"\n");
+    }
     public String toString(String pr, String in){
         if (null == pr)
             pr = "";

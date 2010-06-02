@@ -199,7 +199,10 @@ public class Component
     }
     public void init(GL2 gl){
         if (Debug){
-
+            Matrix m = this.matrix;
+            if (null != m){
+                System.out.printf("%s\n%s\n",this.getClass().getName(),m.toString("\t"));
+            }
         }
         super.init(gl);
     }
