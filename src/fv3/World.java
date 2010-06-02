@@ -28,17 +28,11 @@ import javax.media.opengl.GL2;
 import com.sun.javafx.newt.KeyEvent;
 
 /**
- * The world of the screen may contain many regions and components
- * having many coordinate spaces -- all visible simultaneously without
- * pages or tabs -- as a single application, or a practical workspace.
- * 
- * A component is added to the world of the screen with the "load"
- * function.  Or, a new view is created from a component with the
- * "clear and load" function.
- * 
- * The methods defined here will not interfere with the normal
- * operation of an instance of this class as a normal {@link Region}.
- * 
+ * World is the root of Fv3 applications.  It handles the OGL clear
+ * color and Fv3 cameras.  A {@link Camera} defines the projection and
+ * view matrices.
+ *
+ * @see fv3.nui.Region
  * @author jdp
  */
 public class World

@@ -1,11 +1,8 @@
                                               -*- outline -*-
 
 
-* fv3.Component
-** review internal and external component bounds
-** with and without matrix
-*** fv3.Bounds.CircumSphere
-**** apply component matrix when present
+* fv3.model.Model
+** apply component matrix when present
 
 * fv3.model
 ** use display lists and vertex array memory
