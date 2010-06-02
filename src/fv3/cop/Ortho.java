@@ -98,32 +98,24 @@ public class Ortho
 
         if (1.0 == this.aspect){
 
+            double Sxy;
+
             double Dx = (right - left);
             double Dy = (top - bottom);
             if (Dx != Dy){
-                double Sxy;
-                if (Dx > Dy){
+                if (Dx > Dy)
                     Sxy = ( 2.0 / Dx);
-                }
-                else {
+                else 
                     Sxy = ( 2.0 / Dy);
-                }
-
-                double Sz = (-2.0 / (far - near));
-
-                m.m00(Sxy);
-                m.m11(Sxy);
-                m.m22(Sz);
             }
-            else {
+            else 
+                Sxy = ( 2.0 / Dx);
 
-                double Sxy = ( 2.0 / Dx);
-                double Sz = (-2.0 / (far - near));
+            double Sz = (-2.0 / (far - near));
 
-                m.m00(Sxy);
-                m.m11(Sxy);
-                m.m22(Sz);
-            }
+            m.m00(Sxy);
+            m.m11(Sxy);
+            m.m22(Sz);
         }
         else {
             double Sx = ( 2.0 / (right - left));
