@@ -95,7 +95,7 @@ public class Region
 
     private volatile List<fv3.Component> children;
 
-    private volatile boolean pushSpace;
+    private volatile boolean pushMatrix;
 
     private volatile Map<ClassComponent,lxl.Component> graphParent;
 
@@ -115,18 +115,21 @@ public class Region
         List<fv3.Component> children = this.children;
         if (null != children && children.isNotEmpty()){
 
-            this.pushSpace = this.hasFv3Matrix();
+            this.pushMatrix = this.hasFv3Matrix();
 
             boolean visibility = false;
 
-            Object[] list = children.array();
-            for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                fv3.Component co = (fv3.Component)list[cc];
+            Object[] childrenAry = children.array();
+            int count = ((null == childrenAry)?(0):(childrenAry.length));
 
-                if (co.isVisible()){
+            for (int cc = 0; cc < count; cc++){
+
+                fv3.Component child = (fv3.Component)childrenAry[cc];
+
+                if (child.isVisible()){
                     visibility = true;
                 }
-                co.init(gl);
+                child.init(gl);
             }
             this.visible = visibility;
         }
@@ -135,33 +138,26 @@ public class Region
 
         gl.glMatrixMode(GL2.GL_MODELVIEW);
 
-        boolean ps = this.pushSpace;
+        boolean ps = this.pushMatrix;
 
         if (ps){
             gl.glPushMatrix();
-            gl.glLoadMatrixd(this.getFv3MatrixBuffer());
+            gl.glMultMatrixd(this.getFv3MatrixBuffer());
         }
 
         try {
             List<fv3.Component> children = this.children;
             if (null != children){
-                Object[] list = children.array();
-                for (int cc = 0, count = ((null == list)?(0):(list.length)); cc < count; cc++){
-                    fv3.Component co = (fv3.Component)list[cc];
-                    if (co.isVisible()){
-                        boolean cp = co.pushFv3Matrix();
-                        if (cp){
-                            gl.glPushMatrix();
-                            gl.glMultMatrixd(co.getFv3MatrixBuffer());
-                        }
-                        try {
-                            co.display(gl);
-                        }
-                        finally {
-                            if (cp){
-                                gl.glPopMatrix();
-                            }
-                        }
+                Object[] childrenAry = children.array();
+                int count = ((null == childrenAry)?(0):(childrenAry.length));
+
+                for (int cc = 0; cc < count; cc++){
+
+                    fv3.Component child = (fv3.Component)childrenAry[cc];
+
+                    if (child.isVisible()){
+
+                        child.display(gl);
                     }
                 }
             }
@@ -293,7 +289,7 @@ public class Region
     }
     public final Region dropChildren(){
         this.children = null;
-        this.pushSpace = false;
+        this.pushMatrix = false;
         return this;
     }
     /*
@@ -370,7 +366,7 @@ public class Region
     public final void dropHierChildren(Class<lxl.Component> in){
         if (Component.Type == in){
             this.children = null;
-            this.pushSpace = false;
+            this.pushMatrix = false;
         }
         else {
             Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
@@ -380,7 +376,7 @@ public class Region
     }
     public final void dropHierChildren(){
         this.children = null;
-        this.pushSpace = false;
+        this.pushMatrix = false;
         Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
         if (null != graphChildren)
             graphChildren.clear();

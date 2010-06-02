@@ -17,6 +17,7 @@
  */
 package fv3;
 
+import fv3.math.Color;
 import fv3.tk.Animator;
 
 import java.io.IOException;
@@ -99,6 +100,8 @@ public class World
 
     private volatile int cameraCurrent;
     private volatile boolean cameraChange;
+
+    private volatile Color bg;
 
 
     protected World(){
@@ -219,17 +222,42 @@ public class World
         this.cameras[camera.index] = camera;
         return camera;
     }
+    public boolean hasBgColor(){
+        return (null != this.bg);
+    }
+    public boolean hasNotBgColor(){
+        return (null == this.bg);
+    }
+    public Color getBgColor(){
+        return this.bg;
+    }
+    public World setBgColor(Color c){
+        this.bg = c;
+        return this;
+    }
 
     public void init(GL2 gl) {
-
+        /*
+         * Define projection matrix
+         */
         this.cameras[this.cameraCurrent].init(gl,this.glu);
 
+        /*
+         * Propagate event to children via 'fv3.nui.Region'
+         */
         super.init(gl);
     }
     public void display(GL2 gl){
 
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
+        Color bg = this.bg;
+        if (null != bg)
+            gl.glClearColor(bg.rf(),bg.gf(),bg.bf(),bg.af());
+
+        /*
+         * Define view matrix
+         */
         if (this.cameraChange){
             this.cameraChange = false;
 
@@ -240,6 +268,9 @@ public class World
         else
             this.cameras[this.cameraCurrent].display(gl,this.glu);
 
+        /*
+         * Propagate event to children via 'fv3.nui.Region'
+         */
         super.display(gl);
     }
     /**

@@ -65,7 +65,7 @@ public class Gears
         this.defineCamera('E').orthoLeft(this);
         this.defineCamera('F').orthoRight(this);
 
-        //this.scale(1.0);
+        this.scale(0.7);
     }
 
 

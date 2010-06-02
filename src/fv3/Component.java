@@ -34,6 +34,22 @@ import fv3.math.Vector;
  * implementors, before the Fv3 Component "init" event occurs, before
  * the Fv3 tk Animator thread has started.
  * 
+ * <h3>Matrix</h3>
+ * 
+ * Matrices are implemented in {@link fv3.nui.Region} via GL Load
+ * Matrix rather than GL Multiply Matrix for the completeness of the
+ * feature set.  
+ * 
+ * If we used GL Multiply Matrix, we would loose two degrees of
+ * freedom.  One is the independence of a matrix as a data set; and
+ * the other is the ability to perform both pre-multiplication (M*C)
+ * and post-multiplication (C*M as via GL Multiply Matrix).
+ * 
+ * The exception is in {@link World} where that component's matrix is
+ * handled in that component's display method to post multiply the
+ * model matrix from {@link World} into the view matrix from {@link
+ * Camera}.
+ * 
  * @see Region
  * @see fv3.nui.Component
  */

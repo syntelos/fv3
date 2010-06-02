@@ -63,11 +63,17 @@ public class Fv3Canvas
     }
 
 
+    /**
+     * This method definition is empty.
+     */
     public void init(GL2 gl){
     }
     public final void setGLU(GLU glu){
         this.glu = glu;
     }
+    /**
+     * This method definition is empty.
+     */
     public void display(GL2 gl){
     }
     protected final String[] errorStrings(GL2 gl){

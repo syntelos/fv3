@@ -24,6 +24,8 @@ import fv3.math.AxisAngle;
 import fv3.math.Matrix;
 import fv3.math.Vector;
 
+import javax.media.opengl.GL2;
+
 /**
  * The transformation matrix of a component is applied by a containing
  * {@link fv3.Region} (see also {@link fv3.World}).
@@ -41,6 +43,19 @@ public class Component
     implements fv3.Component
 {
     protected final static Class Type = fv3.Component.class;
+
+
+    public final static boolean Debug;
+    static {
+        boolean value = false;
+        try {
+            String config = System.getProperty("fv3.Component.Debug");
+            value = (null != config && "true".equals(config));
+        }
+        catch (Exception ignore){
+        }
+        Debug = value;
+    }
 
 
     private volatile boolean alive;
@@ -181,5 +196,11 @@ public class Component
     public final fv3.Component rotate(double ax, double ay, double az){
         this.matrix().rotate(ax,ay,az);
         return this;
+    }
+    public void init(GL2 gl){
+        if (Debug){
+
+        }
+        super.init(gl);
     }
 }

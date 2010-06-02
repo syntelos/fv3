@@ -46,6 +46,17 @@ public abstract class Abstract
         else
             return value;
     }
+    public final static float Zf(double value){
+        float vf = (float)value;
+        if (vf == vf){
+            if (EPSILON > Math.abs(vf))
+                return 0.0f;
+            else
+                return vf;
+        }
+        else
+            throw new IllegalArgumentException(String.valueOf(value));
+    }
 
 
     private volatile DoubleBuffer b;

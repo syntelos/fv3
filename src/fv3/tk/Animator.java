@@ -515,36 +515,48 @@ public final class Animator
     private void animatorDisplay(){
         GLWindow glWindow = this.glWindow;
         GLContext glx = glWindow.getContext();
-        if (GLContext.CONTEXT_NOT_CURRENT == glx.makeCurrent())
+        boolean glxnew;
+        switch (glx.makeCurrent()){
+        case GLContext.CONTEXT_CURRENT_NEW:
+            glxnew = true;
+            break;
+        case GLContext.CONTEXT_CURRENT:
+            glxnew = false;
+            break;
+        default:
             throw new IllegalStateException("Context error.");
-        else {
+        }
 
+        try {
             Fv3Component fv3c = this.fv3c;
+
+            GL2 gl = glx.getGL().getGL2();
+
+            if (Animator.GLTrace){
+                gl = new TraceGL2(gl,System.out);
+            }
+            if (Animator.GLDebug){
+                gl = new DebugGL2(gl);
+            }
+
+            if (glxnew)
+                fv3c.setGLU(GLU.createGLU(gl));
+
+            Fv3Screen fv3s = this.fv3s;
+
+            glWindow.lockSurface();
             try {
-                GL2 gl = glx.getGL().getGL2();
-                if (Animator.GLTrace){
-                    gl = new TraceGL2(gl,System.out);
-                }
-                if (Animator.GLDebug){
-                    gl = new DebugGL2(gl);
-                }
+                fv3s.input();
 
-                Fv3Screen fv3s = this.fv3s;
-
-                glWindow.lockSurface();
-                try {
-                    fv3s.input();
-
-                    fv3c.display(gl);
-                }
-                finally {
-                    glWindow.unlockSurface();
-                }
+                fv3c.display(gl);
             }
             finally {
-                glWindow.swapBuffers();
-                glx.release();
+                glWindow.unlockSurface();
             }
+        }
+        finally {
+            glWindow.swapBuffers();
+            glx.release();
         }
     }
     public void requestFocus(){

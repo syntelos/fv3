@@ -60,6 +60,9 @@ public final class Color
     public final double r(){
         return this.c[R];
     }
+    public final float rf(){
+        return Zf(this.c[R]);
+    }
     public final double getR(){
         return this.c[R];
     }
@@ -74,6 +77,9 @@ public final class Color
 
     public final double g(){
         return this.c[G];
+    }
+    public final float gf(){
+        return Zf(this.c[G]);
     }
     public final double getG(){
         return this.c[G];
@@ -90,6 +96,9 @@ public final class Color
     public final double b(){
         return this.c[B];
     }
+    public final float bf(){
+        return Zf(this.c[B]);
+    }
     public final double getB(){
         return this.c[B];
     }
@@ -104,6 +113,9 @@ public final class Color
 
     public final double a(){
         return this.c[A];
+    }
+    public final float af(){
+        return Zf(this.c[A]);
     }
     public final double getA(){
         return this.c[A];

@@ -29,6 +29,9 @@ import javax.media.opengl.GL2;
  * Interface implemented by components having bounds.  All methods
  * must return correct information. 
  * 
+ * Bounds change when components have matrices.  The returned values
+ * are "external" dimensions, including matrix transformations.
+ * 
  * @see Component
  */
 public interface Bounds

@@ -1,13 +1,22 @@
                                               -*- outline -*-
 
+
+* fv3.Component
+** review internal and external component bounds
+** with and without matrix
+*** fv3.Bounds.CircumSphere
+**** apply component matrix when present
+
 * fv3.model
 ** use display lists and vertex array memory
 ** i/o mesh formats 
-*** STL, 3DS, OBJ
+*** OBJ, 3DS, STL
+
 * fv3.font
 ** 2d font inspector layout
 ** scale font work to be done
 ** 3d font inspector
+
 * fv3.ds
 ** Resolve math dupes
 ** 3ds file write
