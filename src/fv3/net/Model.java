@@ -51,6 +51,8 @@ public abstract class Model
     public final static double PI2 = (Math.PI * 2.0);
 
 
+    protected volatile fv3.Component parent;
+
     protected volatile boolean alive = true, visible = true;
 
     protected volatile Matrix matrix;
@@ -69,11 +71,13 @@ public abstract class Model
     }
 
 
-    public boolean alive(){
+    public final boolean alive(){
         return this.alive;
     }
     public void destroy(){
         this.alive = false;
+        this.parent = null;
+        this.matrix = null;
     }
     public void init(GL2 gl){
     }
@@ -82,6 +86,13 @@ public abstract class Model
     }
     public void display(GL2 gl){
     }
+    public final fv3.Component getParent(){
+        return this.parent;
+    }
+    public final fv3.Component setParent(fv3.Component p){
+        this.parent = p;
+        return this;
+    }
     public boolean isVisible(){
         return this.visible;
     }
@@ -89,24 +100,43 @@ public abstract class Model
         this.visible = b;
         return this;
     }
-    public boolean hasFv3Matrix(){
+    public final boolean hasFv3Matrix(){
         return (null != this.matrix);
     }
-    public boolean hasNotFv3Matrix(){
+    public final boolean hasNotFv3Matrix(){
         return (null == this.matrix);
     }
     public boolean pushFv3Matrix(){
         return (null != this.matrix);
     }
-    public Matrix getFv3Matrix(){
+    public final Matrix getFv3Matrix(){
         return this.matrix;
     }
-    public DoubleBuffer getFv3MatrixBuffer(){
+    public final DoubleBuffer getFv3MatrixBuffer(){
         Matrix matrix = this.matrix;
         if (null != matrix)
             return matrix.buffer();
         else
             return null;
+    }
+    public final Matrix composeFv3Matrix(){
+        Matrix m = this.matrix;
+        fv3.Component parent = this.parent;
+        if (null == parent){
+            if (null == m)
+                return null;
+            else 
+                return new Matrix(m);
+        }
+        else {
+            Matrix p = parent.composeFv3Matrix();
+            if (null == m)
+                return p;
+            else if (null == p)
+                return new Matrix(m);
+            else 
+                return p.mul(m);
+        }
     }
     protected Matrix matrix(){
         Matrix matrix = this.matrix;

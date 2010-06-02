@@ -34,27 +34,42 @@ import fv3.math.Vector;
  * implementors, before the Fv3 Component "init" event occurs, before
  * the Fv3 tk Animator thread has started.
  * 
- * <h3>Matrix</h3>
+ * <h3>Matrices</h3>
  * 
  * The {@link World} handles perspective and view matrices via {@link
  * Camera}, while components optionally define model matrices.
  * 
+ * Implementors of {@link Region} push and multiply the matrices of
+ * all components according to their value returned from {@link
+ * #pushFv3Matrix}.
+ * 
  * @see Region
  * @see fv3.nui.Component
+ * @see fv3.nui.Region
  */
 public interface Component 
-    extends fv3.tk.Fv3Component,
+    extends fv3.math.Notation,
+            fv3.tk.Fv3Component,
             lxl.Component
 {
+    /**
+     * @return Parent
+     */
+    public Component getParent();
+    /**
+     * @param p Parent
+     * @return This (not the argument, parent)
+     */
+    public Component setParent(Component p);
 
     public boolean hasFv3Matrix();
     public boolean hasNotFv3Matrix();
     /**
-     * @return If not a region, return "has matrix".  If a region,
-     * return whether a containing region should push and load this
-     * matrix before calling display.  Should be true when the
-     * component has a matrix and the component will not push the
-     * matrix itself.
+     * @return If not a region, return "has matrix" for the containing
+     * region to push and multiply this matrix into the modelview.
+     * Should be true when the component has a matrix and the
+     * component will not push the matrix itself.  Should be false for
+     * implementors of Region.
      */
     public boolean pushFv3Matrix();
     /**
@@ -66,13 +81,20 @@ public interface Component
      * @return Null to inherit the coordinate space.
      */
     public Matrix getFv3Matrix();
+    /**
+     * @return The matrix composed by the ordered list of matrices in
+     * this instance and its ancestors.  Null when this component and
+     * its ancestors have no matrices.
+     */
+    public Matrix composeFv3Matrix();
 
     public DoubleBuffer getFv3MatrixBuffer();
 
     public boolean hasFv3Bounds();
     public boolean hasNotFv3Bounds();
     /**
-     * Bounds in the coordinate space within this component. 
+     * Bounds in the containing coordinate space defined by the
+     * composed matrix.
      */
     public Bounds getFv3Bounds();
     /**

@@ -28,25 +28,12 @@ import lxl.List;
  * implementors, before the Fv3 Component "init" event occurs, before
  * the Fv3 tk Animator thread has started.
  * 
- * <h3>Hierarchical Object Model</h3>
- * 
- * Fv3 employs the {@link lxl.Hier lxl component hierarchy} for an
- * object model as a dynamic work space.
- * 
- * Like a Document Object Model, the Fv3 component graph permits an
- * application or tool to spider the Fv3 World -- possibly to
- * elaborate on the lxl graph with new classes of branches.
- * 
- * The Fv3 Component graph exists in the lxl graph at the identifying
- * class {@link fv3.Component}.
- * 
  * 
  * @see Component
  * @see fv3.nui.Region
  */
 public interface Region
-    extends Component,
-            lxl.Hier
+    extends Component
 {
 
     /**
@@ -59,10 +46,6 @@ public interface Region
      * events, or null for none.
      */
     public Region setCurrent(Component c);
-
-    public Component getParent();
-
-    public Region setParent(Component p);
 
     public List<Component> getChildren();
 

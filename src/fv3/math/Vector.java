@@ -26,9 +26,6 @@ package fv3.math;
 public class Vector
     extends Abstract
 {
-    public final static int X = 0;
-    public final static int Y = 1;
-    public final static int Z = 2;
 
 
     private final double[] v;
@@ -185,9 +182,9 @@ public class Vector
         double[] mm = m.array();
         double[] a = c.clone();
 
-        c[X] = mm[Matrix.M00] * a[X] + mm[Matrix.M01] * a[Y] + mm[Matrix.M02] * a[Z] + mm[Matrix.M03];
-        c[Y] = mm[Matrix.M10] * a[X] + mm[Matrix.M11] * a[Y] + mm[Matrix.M12] * a[Z] + mm[Matrix.M13];
-        c[Z] = mm[Matrix.M20] * a[X] + mm[Matrix.M21] * a[Y] + mm[Matrix.M22] * a[Z] + mm[Matrix.M23];
+        c[X] = mm[M00] * a[X] + mm[M01] * a[Y] + mm[M02] * a[Z] + mm[M03];
+        c[Y] = mm[M10] * a[X] + mm[M11] * a[Y] + mm[M12] * a[Z] + mm[M13];
+        c[Z] = mm[M20] * a[X] + mm[M21] * a[Y] + mm[M22] * a[Z] + mm[M23];
 
         return this;
     }

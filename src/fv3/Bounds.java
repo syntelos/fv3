@@ -30,9 +30,11 @@ import javax.media.opengl.GL2;
  * must return correct information. 
  * 
  * Bounds change when components have matrices.  The returned values
- * are "external" dimensions, including matrix transformations.
+ * are "global" dimensions, including the composition of all matrix
+ * transformations in the hierarchy of the component.
  * 
  * @see Component
+ * @see Component#composeFv3Matrix
  */
 public interface Bounds
 {
@@ -155,25 +157,22 @@ public interface Bounds
                     }
                 }
                 if (!once){
-                    double midX = ((maxX - minX)/2)+minX;
-                    double midY = ((maxY - minY)/2)+minY;
-                    double midZ = ((maxZ - minZ)/2)+minZ;
-
-                    double d = Vector.Diameter(minX, maxX,
-                                               minY, maxY,
-                                               minZ, maxZ);
 
                     this.minX = minX;
                     this.minY = minY;
                     this.minZ = minZ;
 
-                    this.midX = midX;
-                    this.midY = midY;
-                    this.midZ = midZ;
-
                     this.maxX = maxX;
                     this.maxY = maxY;
                     this.maxZ = maxZ;
+
+                    this.midX = (minX + maxX)/2.0;
+                    this.midY = (minY + maxY)/2.0;
+                    this.midZ = (minZ + maxZ)/2.0;
+
+                    double d = Vector.Diameter(minX, maxX,
+                                               minY, maxY,
+                                               minZ, maxZ);
 
                     this.diameter = d;
                     this.radius = (d / 2.0);
@@ -281,6 +280,24 @@ public interface Bounds
             model.add(new Vertex( midX, midY, maxZ));
 
             model.add(new End());
+        }
+        public String toString(){
+            return this.toString("","\n");
+        }
+        public String toString(String pr){
+            return this.toString(pr,"\n");
+        }
+        public String toString(String pr, String in){
+            if (null == pr)
+                pr = "";
+            if (null == in)
+                in = "";
+
+            return String.format("%s%30.26f %30.26f%s%s%30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f", 
+                                 pr, diameter, radius,
+                                 in, pr, minX, minY, minZ, 
+                                 in, pr, midX, midY, midZ, 
+                                 in, pr, maxX, maxY, maxZ);
         }
     }
 

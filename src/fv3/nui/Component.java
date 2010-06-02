@@ -58,6 +58,8 @@ public class Component
     }
 
 
+    private volatile fv3.Component parent;
+
     private volatile boolean alive;
 
     private volatile Matrix matrix;
@@ -78,6 +80,15 @@ public class Component
     }
     public void destroy(){
         this.alive = false;
+        this.parent = null;
+        this.matrix = null;
+    }
+    public final fv3.Component getParent(){
+        return this.parent;
+    }
+    public final fv3.Component setParent(fv3.Component p){
+        this.parent = p;
+        return this;
     }
     public final boolean hasFv3Matrix(){
         return (null != this.matrix);
@@ -105,7 +116,7 @@ public class Component
         if (null != m)
             return m.buffer();
         else
-            return null;
+            throw new IllegalStateException("Fv3 Matrix not found");
     }
     protected final Matrix setFv3Matrix(Matrix m){
         this.matrix = m;
@@ -119,6 +130,25 @@ public class Component
 
         return this.setFv3Matrix(new Matrix(m));
     }
+    public final Matrix composeFv3Matrix(){
+        Matrix m = this.matrix;
+        fv3.Component parent = this.parent;
+        if (null == parent){
+            if (null == m)
+                return null;
+            else 
+                return new Matrix(m);
+        }
+        else {
+            Matrix p = parent.composeFv3Matrix();
+            if (null == m)
+                return p;
+            else if (null == p)
+                return new Matrix(m);
+            else 
+                return p.mul(m);
+        }
+    }
     public boolean hasFv3Bounds(){
         return (null != this.bounds);
     }
@@ -128,11 +158,11 @@ public class Component
     public Bounds getFv3Bounds(){
         return this.bounds;
     }
-    public Component setFv3Bounds(Bounds b){
+    public fv3.Component setFv3Bounds(Bounds b){
         this.bounds = b;
         return this;
     }
-    public Component setFv3Bounds(){
+    public fv3.Component setFv3Bounds(){
         this.bounds = new Bounds.CircumSphere(this);
         return this;
     }
@@ -192,6 +222,7 @@ public class Component
         return this;
     }
     public void init(GL2 gl){
+
         if (Debug){
             Matrix m = this.matrix;
             if (null != m){

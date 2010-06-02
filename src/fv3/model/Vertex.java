@@ -34,6 +34,9 @@ public final class Vertex
     }
 
 
+    public double[] copy(){
+        return new double[]{x,y,z};
+    }
     public void apply(GL2 gl){
         gl.glVertex3d(this.x,this.y,this.z);
     }

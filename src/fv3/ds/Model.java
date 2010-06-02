@@ -134,15 +134,16 @@ public class Model
             }
         }
         this.minX = minX;
-        this.maxX = maxX;
         this.minY = minY;
-        this.maxY = maxY;
         this.minZ = minZ;
+
+        this.maxX = maxX;
+        this.maxY = maxY;
         this.maxZ = maxZ;
 
-        this.midX = (this.maxX - this.minX)/2+this.minX;
-        this.midY = (this.maxY - this.minY)/2+this.minY;
-        this.midZ = (this.maxZ - this.minZ)/2+this.minZ;
+        this.midX = (minX + maxX)/2.0;
+        this.midY = (minY + maxY)/2.0;
+        this.midZ = (minZ + maxZ)/2.0;
     }
     public int getGlListCount(){
         if (this.inited)

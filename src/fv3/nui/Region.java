@@ -43,63 +43,16 @@ public class Region
     extends Component
     implements fv3.Region
 {
-    /**
-     * This is as close as we can get to a Comparable Class of
-     * lxl.Component for lxl.Map.
-     */
-    public final static class ClassComponent
-        extends java.lang.Object
-        implements java.lang.Comparable<ClassComponent>
-    {
 
-        public final Class<lxl.Component> jclass;
-
-
-        public ClassComponent(Class<lxl.Component> jclass){
-            super();
-            if (null != jclass)
-                this.jclass = jclass;
-            else
-                throw new IllegalArgumentException();
-        }
-
-
-        public String getName(){
-            return this.jclass.getName();
-        }
-        public String toString(){
-            return this.jclass.toString();
-        }
-        public int hashCode(){
-            return this.jclass.hashCode();
-        }
-        public boolean equals(Object that){
-            if (this == that)
-                return true;
-            else if (null == that)
-                return false;
-            else 
-                return this.toString().equals(that.toString());
-        }
-        public int compareTo(ClassComponent that){
-            return this.toString().compareTo(that.toString());
-        }
-    }
 
     /**
      * Target of input events
      */
     protected volatile fv3.Component current;
 
-    private volatile fv3.Component parent;
-
     private volatile List<fv3.Component> children;
 
-    private volatile boolean pushMatrix;
-
-    private volatile Map<ClassComponent,lxl.Component> graphParent;
-
-    private volatile Map<ClassComponent,List<lxl.Component>> graphChildren;
+    protected volatile boolean pushMatrix;
 
 
     public Region(){
@@ -107,6 +60,20 @@ public class Region
     }
 
 
+    public void destroy(){
+        super.destroy();
+        this.current = null;
+
+        List<fv3.Component> children = this.children;
+        if (null != children){
+            this.children = null;
+
+            for (fv3.Component child: children){
+                
+                child.destroy();
+            }
+        }
+    }
     public boolean pushFv3Matrix(){
         return false;
     }
@@ -115,8 +82,6 @@ public class Region
 
         List<fv3.Component> children = this.children;
         if (null != children && children.isNotEmpty()){
-
-            this.pushMatrix = this.hasFv3Matrix();
 
             boolean visibility = false;
 
@@ -137,8 +102,6 @@ public class Region
     }
     public void display(GL2 gl){
 
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-
         boolean ps = this.pushMatrix;
 
         if (ps){
@@ -151,6 +114,7 @@ public class Region
             if (null != children){
                 Object[] childrenAry = children.array();
                 int count = ((null == childrenAry)?(0):(childrenAry.length));
+                boolean cps;
 
                 for (int cc = 0; cc < count; cc++){
 
@@ -158,7 +122,19 @@ public class Region
 
                     if (child.isVisible()){
 
-                        child.display(gl);
+                        cps = (child.pushFv3Matrix());
+
+                        if (cps){
+                            gl.glPushMatrix();
+                            gl.glMultMatrixd(child.getFv3MatrixBuffer());
+                        }
+                        try {
+                            child.display(gl);
+                        }
+                        finally {
+                            if (cps)
+                                gl.glPopMatrix();
+                        }
                     }
                 }
             }
@@ -253,13 +229,6 @@ public class Region
         this.current = c;
         return this;
     }
-    public final fv3.Component getParent(){
-        return this.parent;
-    }
-    public final Region setParent(fv3.Component p){
-        this.parent = p;
-        return this;
-    }
     public final List<fv3.Component> getChildren(){
         return this.children;
     }
@@ -270,9 +239,6 @@ public class Region
             this.children = c;
         }
         return c;
-    }
-    protected final List<fv3.Component> addBegin(){
-        return this.children();
     }
     public final Region setChildren(List<fv3.Component> c){
         this.children = c;
@@ -285,6 +251,8 @@ public class Region
                 children.add(c);
             else
                 this.children().add(c);
+
+            c.setParent(this);
         }
         return this;
     }
@@ -292,94 +260,5 @@ public class Region
         this.children = null;
         this.pushMatrix = false;
         return this;
-    }
-    /*
-     * lxl graph
-     */
-    protected final Map<ClassComponent,lxl.Component> graphParent(){
-        Map<ClassComponent,lxl.Component> graphParent = this.graphParent;
-        if (null == graphParent){
-            graphParent = new Map<ClassComponent,lxl.Component>();
-            this.graphParent = graphParent;
-        }
-        return graphParent;
-    }
-    protected final Map<ClassComponent,List<lxl.Component>> graphChildren(){
-        Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
-        if (null == graphChildren){
-            graphChildren = new Map<ClassComponent,List<lxl.Component>>();
-            this.graphChildren = graphChildren;
-        }
-        return graphChildren;
-    }
-    public final lxl.Component getHierParent(Class<lxl.Component> in){
-        if (Component.Type == in)
-            return this.parent;
-        else {
-            Map<ClassComponent,lxl.Component> graphParent = this.graphParent;
-            if (null != graphParent)
-                return (lxl.Component)graphParent.get(new ClassComponent(in));
-            else
-                return null;
-        }
-    }
-    public final void setHierParent(Class<lxl.Component> in, lxl.Component next){
-        if (Component.Type == in)
-            this.parent = (fv3.Component)next;
-        else
-            this.graphParent().put(new ClassComponent(in),next);
-    }
-    public final void dropHierParent(Class<lxl.Component> in){
-        if (Component.Type == in)
-            this.parent = null;
-        else {
-            Map<ClassComponent,lxl.Component> graphParent = this.graphParent;
-            if (null != graphParent)
-                graphParent.remove(new ClassComponent(in));
-        }
-    }
-    public final void dropHierParent(){
-        Map<ClassComponent,lxl.Component> graphParent = this.graphParent;
-        if (null != graphParent)
-            graphParent.clear();
-    }
-    public final List<lxl.Component> getHierChildren(Class<lxl.Component> in){
-        if (Component.Type == in){
-            List children = this.children;
-            return (List<lxl.Component>)children;
-        }
-        else {
-            Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
-            if (null != graphChildren)
-                return (List<lxl.Component>)graphChildren.get(new ClassComponent(in));
-            else
-                return null;
-        }
-    }
-    public final void setHierChildren(Class<lxl.Component> in, List<lxl.Component> next){
-        if (Component.Type == in){
-            List children = next;
-            this.children = (List<fv3.Component>)children;
-        }
-        else
-            this.graphChildren().put(new ClassComponent(in),next);
-    }
-    public final void dropHierChildren(Class<lxl.Component> in){
-        if (Component.Type == in){
-            this.children = null;
-            this.pushMatrix = false;
-        }
-        else {
-            Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
-            if (null != graphChildren)
-                graphChildren.remove(new ClassComponent(in));
-        }
-    }
-    public final void dropHierChildren(){
-        this.children = null;
-        this.pushMatrix = false;
-        Map<ClassComponent,List<lxl.Component>> graphChildren = this.graphChildren;
-        if (null != graphChildren)
-            graphChildren.clear();
     }
 }

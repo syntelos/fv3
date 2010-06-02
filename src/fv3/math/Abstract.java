@@ -32,10 +32,8 @@ import java.nio.DoubleBuffer;
  */
 public abstract class Abstract
     extends Object
+    implements fv3.math.Notation
 {
-    public final static double EPSILON = (1e-8);
-    public final static double PI = Math.PI;
-    public final static double PI2 = (Math.PI/2.0);
 
     public final static boolean IsZero(double value){
         return (EPSILON > Math.abs(value));

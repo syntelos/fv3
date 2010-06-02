@@ -14,7 +14,7 @@ import javax.media.opengl.GL2;
 /**
  * Red gear
  */
-public class Gear1
+public class GearRed
     extends fv3.model.Model
 {
 
@@ -672,16 +672,16 @@ public class Gear1
 
 
 
-    Gear1(){
+    GearRed(){
         super(MODEL1);
 
         this.translate(-3.0, -2.0, 0.0);
     }
 
 
-//     public void display(GL2 gl){
+    public void display(GL2 gl){
 
-//         gl.glRotatef(Gears.Angle, 0.0f, 0.0f, 1.0f);
-//         super.display(gl);
-//     }
+        gl.glRotatef(Gears.Angle, 0.0f, 0.0f, 1.0f);
+        super.display(gl);
+    }
 }

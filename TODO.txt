@@ -2,7 +2,7 @@
 
 
 * fv3.model.Model
-** apply component matrix when present
+** apply component matrix (when present) to dimensions
 
 * fv3.model
 ** i/o mesh formats 

@@ -79,25 +79,6 @@ package fv3.math;
 public class Matrix
     extends Abstract
 {
-    /*
-     * Row Major Array Indeces Notation
-     */
-    public final static int M00 =  0;
-    public final static int M01 =  4;
-    public final static int M02 =  8;
-    public final static int M03 =  12;
-    public final static int M10 =  1;
-    public final static int M11 =  5;
-    public final static int M12 =  9;
-    public final static int M13 =  13;
-    public final static int M20 =  2;
-    public final static int M21 =  6;
-    public final static int M22 =  10;
-    public final static int M23 =  14;
-    public final static int M30 =  3;
-    public final static int M31 =  7;
-    public final static int M32 =  11;
-    public final static int M33 =  15;
 
 
     private final double[] m;
@@ -179,7 +160,7 @@ public class Matrix
     }
     public final Matrix translate(Vector v){
         double[] vv = v.array();
-        return this.translate(vv[Vector.X],vv[Vector.Y],vv[Vector.Z]);
+        return this.translate(vv[X],vv[Y],vv[Z]);
     }
     public final Vector getTranslation(){
         return new Vector(this.m[M03],this.m[M13],this.m[M23]);
@@ -312,6 +293,28 @@ public class Matrix
         R[M22] =  cx * cy;
 
         return this.mul(R);
+    }
+    public final Vector transform(Vector v){
+        double[] c = v.array();
+        double[] mm = this.m;
+        double[] a = c.clone();
+
+        c[X] = mm[M00] * a[X] + mm[M01] * a[Y] + mm[M02] * a[Z] + mm[M03];
+        c[Y] = mm[M10] * a[X] + mm[M11] * a[Y] + mm[M12] * a[Z] + mm[M13];
+        c[Z] = mm[M20] * a[X] + mm[M21] * a[Y] + mm[M22] * a[Z] + mm[M23];
+
+        return v;
+    }
+    public final double[] transform(double[] v){
+
+        double[] mm = this.m;
+        double[] a = v.clone();
+
+        v[X] = mm[M00] * a[X] + mm[M01] * a[Y] + mm[M02] * a[Z] + mm[M03];
+        v[Y] = mm[M10] * a[X] + mm[M11] * a[Y] + mm[M12] * a[Z] + mm[M13];
+        v[Z] = mm[M20] * a[X] + mm[M21] * a[Y] + mm[M22] * a[Z] + mm[M23];
+
+        return v;
     }
     public final double m00(){
         return this.m[M00];
