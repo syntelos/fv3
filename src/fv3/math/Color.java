@@ -30,20 +30,6 @@ public final class Color
     implements fv3.math.Notation
 {
 
-    public final static Color White     = new Color( 1.0f, 1.0f, 1.0f, 1.0f);
-    public final static Color LightGray = new Color( .75294117647058823529f, .75294117647058823529f, .75294117647058823529f, 1.0f);
-    public final static Color Gray      = new Color( .50196078431372549019f, .50196078431372549019f, .50196078431372549019f, 1.0f);
-    public final static Color DarkGray  = new Color( .25098039215686274509f, .25098039215686274509f, .25098039215686274509f, 1.0f);
-    public final static Color Black     = new Color( 0.0f, 0.0f, 0.0f, 1.0f);
-    public final static Color Red       = new Color( 1.0f, 0.0f, 0.0f, 1.0f);
-    public final static Color Pink      = new Color( 1.0f, .68627450980392156862f, .68627450980392156862f, 1.0f);
-    public final static Color Orange    = new Color( 1.0f, .78431372549019607843f, 0.0f, 1.0f);
-    public final static Color Yellow    = new Color( 1.0f, 1.0f, 0.0f, 1.0f);
-    public final static Color Green     = new Color( 0.0f, 1.0f, 0.0f, 1.0f);
-    public final static Color Magenta   = new Color( 1.0f, 0.0f, 1.0f, 1.0f);
-    public final static Color Cyan      = new Color( 0.0f, 1.0f, 1.0f, 1.0f);
-    public final static Color Blue      = new Color( 0.0f, 0.0f, 1.0f, 1.0f);
-
     public final static float Zf(float vf){
 
         if (vf == vf){
@@ -63,8 +49,23 @@ public final class Color
         return Init.clone();
     }
     public final static float[] New(float v){
-        return new float[]{v,v,v};
+        return new float[]{v,v,v,1.0f};
     }
+
+    public final static Color White     = new Color( 1.0f, 1.0f, 1.0f, 1.0f);
+    public final static Color LightGray = new Color( .75294117647058823529f, .75294117647058823529f, .75294117647058823529f, 1.0f);
+    public final static Color Gray      = new Color( .50196078431372549019f, .50196078431372549019f, .50196078431372549019f, 1.0f);
+    public final static Color DarkGray  = new Color( .25098039215686274509f, .25098039215686274509f, .25098039215686274509f, 1.0f);
+    public final static Color Black     = new Color( 0.0f, 0.0f, 0.0f, 1.0f);
+    public final static Color Red       = new Color( 1.0f, 0.0f, 0.0f, 1.0f);
+    public final static Color Pink      = new Color( 1.0f, .68627450980392156862f, .68627450980392156862f, 1.0f);
+    public final static Color Orange    = new Color( 1.0f, .78431372549019607843f, 0.0f, 1.0f);
+    public final static Color Yellow    = new Color( 1.0f, 1.0f, 0.0f, 1.0f);
+    public final static Color Green     = new Color( 0.0f, 1.0f, 0.0f, 1.0f);
+    public final static Color Magenta   = new Color( 1.0f, 0.0f, 1.0f, 1.0f);
+    public final static Color Cyan      = new Color( 0.0f, 1.0f, 1.0f, 1.0f);
+    public final static Color Blue      = new Color( 0.0f, 0.0f, 1.0f, 1.0f);
+
 
 
     private final float[] c = Color.New();
