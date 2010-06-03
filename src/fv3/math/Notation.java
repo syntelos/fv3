@@ -56,4 +56,15 @@ public interface Notation
     public final static int M31 =  7;
     public final static int M32 =  11;
     public final static int M33 =  15;
+
+    /**
+     * Color array notation
+     */
+
+    public final static int R = 0;
+    public final static int G = 1;
+    public final static int B = 2;
+    public final static int A = 3;
+
+
 }
