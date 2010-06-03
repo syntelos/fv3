@@ -57,17 +57,17 @@ public final class Color
     }
 
 
-    private final static float[] New = {0f,0f,0f,1f};
+    private final static float[] Init = {0f,0f,0f,1f};
 
     public final static float[] New(){
-        return New.clone();
+        return Init.clone();
     }
     public final static float[] New(float v){
         return new float[]{v,v,v};
     }
 
 
-    private final float[] c = New.clone();
+    private final float[] c = Init.clone();
 
     private volatile FloatBuffer b;
 
