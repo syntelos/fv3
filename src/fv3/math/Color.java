@@ -67,7 +67,7 @@ public final class Color
     }
 
 
-    private final float[] c = Init.clone();
+    private final float[] c = Color.New();
 
     private volatile FloatBuffer b;
 
