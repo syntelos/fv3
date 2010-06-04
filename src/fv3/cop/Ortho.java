@@ -48,26 +48,28 @@ public abstract class Ortho
 
         Matrix m = c.getProjection();
 
-        double ss = (2.0 / this.s.diameter);
+        if (EPSILON < this.s.diameter){
 
-        double Sx =  (ss);
-        double Sy =  (ss);
-        double Sz = -(ss);
+            double ss = (2.0 / this.s.diameter);
 
-        if (1.0 != this.aspect){
+            double Sx =  (ss);
+            double Sy =  (ss);
+            double Sz = -(ss);
 
-            double a = (this.aspect / 2.0);
+            if (1.0 != this.aspect){
 
-            if ( this.aspect < 1.0 )
-                Sy /= a;
-            else 
-                Sx *= a;
+                double a = (this.aspect / 2.0);
+
+                if ( this.aspect < 1.0 )
+                    Sy /= a;
+                else 
+                    Sx *= a;
+            }
+
+            m.m00(Sx);
+            m.m11(Sy);
+            m.m22(Sz);
         }
-
-        m.m00(Sx);
-        m.m11(Sy);
-        m.m22(Sz);
-
         m.m03(s.tX());
         m.m13(s.tY());
         m.m23(s.tZ());

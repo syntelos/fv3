@@ -77,7 +77,9 @@ public class Camera
      * @see fv3.cop.Ortho
      * @see fv3.cop.Perspective
      */
-    public interface Operator {
+    public interface Operator
+        extends fv3.math.Notation
+    {
 
         public boolean hasCircumSphere();
 
