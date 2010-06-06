@@ -187,10 +187,9 @@ public interface Bounds
 
         public double tX(){
             double tx = ( (maxX + minX) / (maxX - minX));
-            if (tx != tx){
-                System.err.printf("Bounds NaN = tX (%g, %g)\n",minX,maxX);
-                return 0.0;
-            }
+            if (tx != tx)
+                return 0.0; //(minX=0; maxX = 0)
+
             else if (0.0 == tx)
                 return 0.0;
             else
@@ -198,10 +197,9 @@ public interface Bounds
         }
         public double tY(){
             double ty = ( (maxY + minY) / (maxY - minY));
-            if (ty != ty){
-                System.err.printf("Bounds NaN = tY (%g, %g)\n",minY,maxY);
+            if (ty != ty)
                 return 0.0;
-            }
+
             else if (0.0 == ty)
                 return 0.0;
             else
@@ -209,10 +207,9 @@ public interface Bounds
         }
         public double tZ(){
             double tz = ( (maxZ + minZ) / (maxZ - minZ));
-            if (tz != tz){
-                System.err.printf("Bounds NaN = tZ (%g, %g)\n",minZ,maxZ);
+            if (tz != tz)
                 return 0.0;
-            }
+
             else if (0.0 == tz)
                 return 0.0;
             else
