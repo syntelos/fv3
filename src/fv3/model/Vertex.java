@@ -57,4 +57,17 @@ public final class Vertex
             return copier;
         }
     }
+    public final static Vertex[][] Add(Vertex[][] list, Vertex[] item){
+        if (null == item)
+            return list;
+        else if (null == list)
+            return new Vertex[][]{item};
+        else {
+            int len = list.length;
+            Vertex[][] copier = new Vertex[len+1][];
+            System.arraycopy(list,0,copier,0,len);
+            copier[len] = item;
+            return copier;
+        }
+    }
 }
