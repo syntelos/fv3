@@ -25,6 +25,10 @@ public final class Vertex
 
     public final double x, y, z;
 
+    private String string;
+
+    private int hashCode;
+
 
     public Vertex(double x, double y, double z){
         super();
@@ -43,6 +47,43 @@ public final class Vertex
     public Object.Type getObjectType(){
         return Object.Type.Vertex;
     }
+    public int hashCode(){
+        int hashCode = this.hashCode;
+        if (0 == hashCode &&(0.0 != this.x || 0.0 != this.y || 0.0 != this.z)){
+
+            long hashX = Double.doubleToLongBits(x);
+            hashX ^= (hashX>>>32);
+            long hashY = Double.doubleToLongBits(y);
+            hashY ^= (hashY>>>32);
+            long hashZ = Double.doubleToLongBits(z);
+            hashZ ^= (hashZ>>>32);
+
+            long LhashCode = (hashX^hashY^hashZ);
+            hashCode = (int)(LhashCode & Integer.MAX_VALUE);
+            this.hashCode = hashCode;
+        }
+        return hashCode;
+    }
+    public String toString(){
+        String string = this.string;
+        if (null == string){
+            string = String.format("(%g, %g, %g)",x,y,z);
+            this.string = string;
+        }
+        return string;
+    }
+    public boolean equals(Object that){
+        if (this == that)
+            return true;
+
+        else if (that instanceof Vertex){
+            Vertex thatV = (Vertex)that;
+            return (this.x == thatV.x && this.y == thatV.y && this.z == thatV.z);
+        }
+        else
+            return false;
+    }
+
 
     public final static Vertex[] Add(Vertex[] list, Vertex item){
         if (null == item)
