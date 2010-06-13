@@ -52,9 +52,22 @@ public abstract class Ortho
 
             double ss = (2.0 / this.s.diameter);
 
-            double Sx =  (ss);
-            double Sy =  (ss);
-            double Sz = -(ss);
+            double Sx, Sy, Sz;
+
+            if (this.s.hasDx())
+                Sx = (ss);
+            else
+                Sx = 1.0;
+
+            if (this.s.hasDy())
+                Sy = (ss);
+            else
+                Sy = 1.0;
+
+            if (this.s.hasDz())
+                Sz = -(ss);
+            else
+                Sz = 1.0;
 
             if (1.0 != this.aspect){
 

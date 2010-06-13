@@ -215,6 +215,24 @@ public interface Bounds
             else
                 return -(tz);
         }
+        public double dX(){
+            return Math.abs(maxX - minX);
+        }
+        public double dY(){
+            return Math.abs(maxY - minY);
+        }
+        public double dZ(){
+            return Math.abs(maxZ - minZ);
+        }
+        public boolean hasDx(){
+            return (0.0 < this.dX());
+        }
+        public boolean hasDy(){
+            return (0.0 < this.dY());
+        }
+        public boolean hasDz(){
+            return (0.0 < this.dZ());
+        }
         public double getBoundsMinX(){
             return this.minX;
         }
