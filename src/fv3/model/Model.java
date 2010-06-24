@@ -48,12 +48,28 @@ public class Model
 
                         double[] v = mm.transform(((Vertex)object).copy());
 
-                        minX = Math.min(minX, v[X]);
-                        maxX = Math.max(maxX, v[X]);
-                        minY = Math.min(minY, v[Y]);
-                        maxY = Math.max(maxY, v[Y]);
-                        minZ = Math.min(minZ, v[Z]);
-                        maxZ = Math.max(maxZ, v[Z]);
+                        double x = v[X];
+                        double y = v[Y];
+                        double z = v[Z];
+
+                        if (x != x)
+                            throw new IllegalStateException();
+                        else {
+                            minX = Math.min(minX, x);
+                            maxX = Math.max(maxX, x);
+                        }
+                        if (y != y)
+                            throw new IllegalStateException();
+                        else {
+                            minY = Math.min(minY, y);
+                            maxY = Math.max(maxY, y);
+                        }
+                        if (z != z)
+                            throw new IllegalStateException();
+                        else {
+                            minZ = Math.min(minZ, z);
+                            maxZ = Math.max(maxZ, z);
+                        }
                     }
                 }
             }
@@ -67,12 +83,28 @@ public class Model
 
                         Vertex v = (Vertex)object;
 
-                        minX = Math.min(minX, v.x);
-                        maxX = Math.max(maxX, v.x);
-                        minY = Math.min(minY, v.y);
-                        maxY = Math.max(maxY, v.y);
-                        minZ = Math.min(minZ, v.z);
-                        maxZ = Math.max(maxZ, v.z);
+                        double x = v.x;
+                        double y = v.y;
+                        double z = v.z;
+
+                        if (x != x)
+                            throw new IllegalStateException();
+                        else {
+                            minX = Math.min(minX, x);
+                            maxX = Math.max(maxX, x);
+                        }
+                        if (y != y)
+                            throw new IllegalStateException();
+                        else {
+                            minY = Math.min(minY, y);
+                            maxY = Math.max(maxY, y);
+                        }
+                        if (z != z)
+                            throw new IllegalStateException();
+                        else {
+                            minZ = Math.min(minZ, z);
+                            maxZ = Math.max(maxZ, z);
+                        }
                     }
                 }
             }

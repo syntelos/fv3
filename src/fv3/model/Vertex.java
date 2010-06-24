@@ -32,9 +32,21 @@ public final class Vertex
 
     public Vertex(double x, double y, double z){
         super();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+
+        if (x != x)
+            throw new IllegalStateException();
+        else
+            this.x = x;
+
+        if (y != y)
+            throw new IllegalStateException();
+        else
+            this.y = y;
+
+        if (z != z)
+            throw new IllegalStateException();
+        else
+            this.z = z;
     }
 
 
