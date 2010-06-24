@@ -25,10 +25,15 @@ package fv3.math;
  */
 public class Vector
     extends Abstract
+    implements java.lang.Cloneable
 {
 
-
-    private final double[] v;
+    /**
+     * Unique array for buffer changes only under construction and
+     * cloning.
+     * @see Abstract
+     */
+    private double[] v;
 
 
     public Vector(){
@@ -51,6 +56,17 @@ public class Vector
     }
 
 
+    public Vector clone(){
+        try {
+            Vector clone = (Vector)super.clone();
+            clone.v = clone.v.clone();
+            clone.b = null;
+            return clone;
+        }
+        catch (java.lang.CloneNotSupportedException exc){
+            throw new InternalError();
+        }
+    }
     public final Vector set(double x, double y, double z) {
         double[] v = this.v;
         v[X] = x;
@@ -175,7 +191,7 @@ public class Vector
 
         Vector q = new Vector(a).sub(this);
 
-        return p.cross(q).normalize();
+        return q.cross(p).normalize();
     }
     public final Vector transform(Matrix m){
         double[] c = this.v;

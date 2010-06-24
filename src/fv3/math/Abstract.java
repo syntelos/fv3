@@ -55,9 +55,27 @@ public abstract class Abstract
         else
             throw new IllegalArgumentException(String.valueOf(value));
     }
+    public final static boolean EEQ(double a, double b){
+
+        double d = (a - b);
+
+        if (Double.isNaN(d))
+
+            return false;
+
+        else if (Math.abs(d) > EPSILON)
+
+            return false;
+        else
+            return true;
+    }
 
 
-    private volatile DoubleBuffer b;
+    /**
+     * Unique buffer for array assigned to null when subclass array
+     * (ref) changes under cloning.
+     */
+    protected volatile DoubleBuffer b;
 
 
     protected Abstract(){

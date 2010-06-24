@@ -52,7 +52,7 @@
     <delete file="${target.jar}"/>
     <jar jarfile="${target.jar}" basedir="${bin}" >
 
-      <zipgroupfileset dir="lib" includes="**/lxl-*.jar"/>
+      <zipgroupfileset dir="lib" includes="**/*.jar"/>
     </jar>
     <delete dir="${bin}"/>
     <copy tofile="${target.jnlp}" file="ver/pkg/lib.jnlp" filtering="true" overwrite="true">
