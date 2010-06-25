@@ -20,10 +20,10 @@ package fv3;
 import javax.media.opengl.GL2;
 
 /**
- * This interface exposes a GL list as a foundation for other classes
- * of geometric objects.
+ * This interface exposes a GL display list as a foundation for
+ * animating classes of geometric objects.
  * 
- * @see fv3.nui.Model
+ * @see fv3.nui.List
  * @see fv3.model.Model
  */
 public interface Model 
@@ -43,13 +43,13 @@ public interface Model
     }
 
     /**
-     * @return Zero- positive number of GL lists employed by this
-     * model.
+     * @return Zero- positive number of GL display lists employed by
+     * this model.
      */
     public int getGlListCount();
     /**
-     * @param idx A Zero- positive index into the GL lists defined by this
-     * model.
+     * @param idx A Zero- positive index into the GL display lists
+     * defined by this model.
      * @return GL list identifier
      * @exception java.lang.ArrayIndexOutOfBoundsException For
      * argument 'idx' not greater than negative one and less than list

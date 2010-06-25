@@ -230,4 +230,20 @@ public class Component
             }
         }
     }
+    public String toString(){
+        return this.toString("","\n");
+    }
+    public String toString(String pr){
+        return this.toString(pr,"\n");
+    }
+    public String toString(String pr, String in){
+
+        fv3.Bounds bounds = this.bounds;
+
+        if (bounds instanceof fv3.Bounds.CircumSphere)
+
+            return ((fv3.Bounds.CircumSphere)bounds).toString(pr,in);
+        else
+            return this.getClass().getName();
+    }
 }

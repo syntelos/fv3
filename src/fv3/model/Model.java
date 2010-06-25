@@ -21,152 +21,14 @@ import fv3.math.Matrix;
 
 import javax.media.opengl.GL2;
 
+/**
+ * A single display list (see {@link fv3.nui.List}) described by a
+ * list of individual GL procedure calls from this package.
+ */
 public class Model
     extends fv3.nui.List
     implements fv3.Model.Element
 {
-    public static class Bounds
-        extends java.lang.Object
-        implements fv3.Bounds
-    {
-        public final double minX, maxX, minY, maxY, minZ, maxZ, midX, midY, midZ;
-
-        public Bounds(Model m){
-            super();
-            double minX = 0, maxX = 0;
-            double minY = 0, maxY = 0;
-            double minZ = 0, maxZ = 0;
-
-            Matrix mm = m.composeFv3Matrix();
-            if (null != mm){
-
-                for (int idx = 0, cnt = m.size(); idx < cnt; idx++){
-
-                    fv3.model.Object object = m.get(idx);
-
-                    if (fv3.model.Object.Type.Vertex == object.getObjectType()){
-
-                        double[] v = mm.transform(((Vertex)object).copy());
-
-                        double x = v[X];
-                        double y = v[Y];
-                        double z = v[Z];
-
-                        if (x != x)
-                            throw new IllegalStateException();
-                        else {
-                            minX = Math.min(minX, x);
-                            maxX = Math.max(maxX, x);
-                        }
-                        if (y != y)
-                            throw new IllegalStateException();
-                        else {
-                            minY = Math.min(minY, y);
-                            maxY = Math.max(maxY, y);
-                        }
-                        if (z != z)
-                            throw new IllegalStateException();
-                        else {
-                            minZ = Math.min(minZ, z);
-                            maxZ = Math.max(maxZ, z);
-                        }
-                    }
-                }
-            }
-            else {
-
-                for (int idx = 0, cnt = m.size(); idx < cnt; idx++){
-
-                    fv3.model.Object object = m.get(idx);
-
-                    if (fv3.model.Object.Type.Vertex == object.getObjectType()){
-
-                        Vertex v = (Vertex)object;
-
-                        double x = v.x;
-                        double y = v.y;
-                        double z = v.z;
-
-                        if (x != x)
-                            throw new IllegalStateException();
-                        else {
-                            minX = Math.min(minX, x);
-                            maxX = Math.max(maxX, x);
-                        }
-                        if (y != y)
-                            throw new IllegalStateException();
-                        else {
-                            minY = Math.min(minY, y);
-                            maxY = Math.max(maxY, y);
-                        }
-                        if (z != z)
-                            throw new IllegalStateException();
-                        else {
-                            minZ = Math.min(minZ, z);
-                            maxZ = Math.max(maxZ, z);
-                        }
-                    }
-                }
-            }
-
-            this.minX = minX;
-            this.minY = minY;
-            this.minZ = minZ;
-
-            this.maxX = maxX;
-            this.maxY = maxY;
-            this.maxZ = maxZ;
-
-            this.midX = (minX + maxX)/2.0;
-            this.midY = (minY + maxY)/2.0;
-            this.midZ = (minZ + maxZ)/2.0;
-        }
-
-        public double getBoundsMinX(){
-            return this.minX;
-        }
-        public double getBoundsMidX(){
-            return this.midX;
-        }
-        public double getBoundsMaxX(){
-            return this.maxX;
-        }
-        public double getBoundsMinY(){
-            return this.minY;
-        }
-        public double getBoundsMidY(){
-            return this.midY;
-        }
-        public double getBoundsMaxY(){
-            return this.maxY;
-        }
-        public double getBoundsMinZ(){
-            return this.minZ;
-        }
-        public double getBoundsMidZ(){
-            return this.midZ;
-        }
-        public double getBoundsMaxZ(){
-            return this.maxZ;
-        }
-        public String toString(){
-            return this.toString("","\n");
-        }
-        public String toString(String pr){
-            return this.toString(pr,"\n");
-        }
-        public String toString(String pr, String in){
-            if (null == pr)
-                pr = "";
-            if (null == in)
-                in = "";
-
-            return String.format("%s%30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f%s%s%30.26f %30.26f %30.26f", 
-                                 pr, minX, minY, minZ, 
-                                 in, pr, midX, midY, midZ, 
-                                 in, pr, maxX, maxY, maxZ);
-        }
-    }
 
 
     protected volatile Object[] model;
@@ -190,13 +52,13 @@ public class Model
     public final fv3.Bounds getFv3Bounds(){
         fv3.Bounds bounds = this.bounds;
         if (null == bounds){
-            bounds = new Model.Bounds(this);
+            bounds = new Bounds(this);
             this.bounds = bounds;
         }
         return bounds;
     }
     public final fv3.Component setFv3Bounds(){
-        this.bounds = new Model.Bounds(this);
+        this.bounds = new Bounds(this);
         return this;
     }
     public final int size(){
@@ -233,18 +95,13 @@ public class Model
             model[cc].apply(gl);
         }
     }
-    public String toString(){
-        return this.toString("","\n");
-    }
-    public String toString(String pr){
-        return this.toString(pr,"\n");
-    }
+
     public String toString(String pr, String in){
 
         fv3.Bounds bounds = this.bounds;
-        if (bounds instanceof Model.Bounds)
+        if (bounds instanceof Bounds)
 
-            return ((Model.Bounds)bounds).toString(pr,in);
+            return ((Bounds)bounds).toString(pr,in);
 
         else if (bounds instanceof fv3.Bounds.CircumSphere)
 
