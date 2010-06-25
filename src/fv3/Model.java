@@ -17,6 +17,8 @@
  */
 package fv3;
 
+import javax.media.opengl.GL2;
+
 /**
  * This interface exposes a GL list as a foundation for other classes
  * of geometric objects.
@@ -27,6 +29,19 @@ package fv3;
 public interface Model 
     extends Component
 {
+    /**
+     * A model list element procedure defines a display list.
+     * 
+     * This init method call occurs immediately following glNewList
+     * and before glEndList.  
+
+     * This method calls glBegin and glEnd.
+     */
+    public interface Element {
+
+        public void define(GL2 gl);
+    }
+
     /**
      * @return Zero- positive number of GL lists employed by this
      * model.

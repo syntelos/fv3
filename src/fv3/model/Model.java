@@ -22,8 +22,8 @@ import fv3.math.Matrix;
 import javax.media.opengl.GL2;
 
 public class Model
-    extends fv3.nui.Component
-    implements fv3.Model
+    extends fv3.nui.List
+    implements fv3.Model.Element
 {
     public static class Bounds
         extends java.lang.Object
@@ -168,16 +168,15 @@ public class Model
         }
     }
 
-    protected volatile Object[] model;
 
-    protected volatile int lid = -1;
+    protected volatile Object[] model;
 
 
     public Model(){
-        super();
+        super(1);
     }
     public Model(Object[] model){
-        super();
+        super(1);
         this.add(model);
     }
 
@@ -222,52 +221,17 @@ public class Model
 
         return this;
     }
-    public final int getGlListCount(){
-        if (-1 != this.lid)
-            return 1;
-        else
-            return 0;
+    public Element list(int idx){
+        return this;
     }
-    public final int getGlListId(int idx)
-        throws java.lang.ArrayIndexOutOfBoundsException
-    {
-        if (0 == idx)
-            return this.lid;
-        else
-            throw new ArrayIndexOutOfBoundsException(String.valueOf(idx));
-    }
-    public void init(GL2 gl){
+    public void define(GL2 gl){
 
-        super.init(gl);
+        Object[] model = this.model;
 
-        if (-1 == this.lid){
-            this.lid = gl.glGenLists(1);
-            gl.glNewList(this.lid, GL2.GL_COMPILE);
+        for (int cc = 0, count = model.length; cc < count; cc++){
 
-            Object[] model = this.model;
-            for (int cc = 0, count = model.length; cc < count; cc++){
-                model[cc].apply(gl);
-            }
-            gl.glEndList();
-
-            gl.glEnable(GL2.GL_NORMALIZE);
+            model[cc].apply(gl);
         }
-    }
-    public void display(GL2 gl){
-
-        super.display(gl);
-
-        int lid = this.lid;
-        if (-1 != lid)
-            gl.glCallList(lid);
-    }
-    public void destroy(){
-        int lid = this.lid;
-        if (-1 != lid){
-            this.lid = -1;
-            GL().glDeleteLists(lid,1);
-        }
-        super.destroy();
     }
     public String toString(){
         return this.toString("","\n");
