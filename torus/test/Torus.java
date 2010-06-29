@@ -31,13 +31,22 @@ public class Torus
                     if ("-dim".equals(arg)){
                         System.out.println(torus.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
-                        List<fv3.Component> children = torus.getChildren();
-                        for (fv3.Component child: children){
+
+                        for (fv3.Component child: torus.getChildren()){
                             if (child instanceof Model){
                                 System.out.println(child.getClass().getName());
                                 System.out.println(((Model)child).toString("\t"));
                             }
                         }
+                    }
+                    else if ("-geom".equals(arg)){
+                        System.out.println(torus.getClass().getName());
+                        System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
+
+                        Model model = (Model)torus.get(0);
+                        Solid s = (Solid)model.get(2);
+                        System.out.println(s.getClass().getName());
+                        System.out.println(s.toString("\t"));
                     }
                 }
                 System.exit(0);
@@ -500,7 +509,7 @@ public class Torus
                 .union(new Solid(E))
                 .union(new Solid(F))
                 .union(new Solid(G))
-                .union(new Solid(H));
+                .union(new Solid(H)).compile();
             torus.add(s);
         }
         this.add(torus);

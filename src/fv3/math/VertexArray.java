@@ -474,7 +474,7 @@ public class VertexArray
     public final double[] normals(){
         return this.normals;
     }
-    public DoubleBuffer normalsBuffer(){
+    public final DoubleBuffer normalsBuffer(){
         DoubleBuffer n = this.n;
         if (null == n){
             double[] a = this.normals();
@@ -496,7 +496,7 @@ public class VertexArray
     public final int[] faceIndeces(int face){
         return FaceIndeces(this.type,face);
     }
-    public double[] vertices(Type thatType){
+    public final double[] vertices(Type thatType){
         if (null == thatType)
             throw new IllegalArgumentException();
 
@@ -727,6 +727,42 @@ public class VertexArray
         }
         else
             throw new IllegalStateException("[TODO] additional conversions");
+    }
+
+    public String toString(){
+        return this.toString("","\n");
+    }
+    public String toString(String pr){
+        return this.toString(pr,"\n");
+    }
+    public String toString(String pr, String in){
+        if (null == pr)
+            pr = "";
+        if (null == in)
+            in = "";
+
+        StringBuilder string = new StringBuilder();
+        for (int face = 0, count = this.countFaces, c, z; face < count; face++){
+            if (0 != face)
+                string.append(in);
+            string.append(pr);
+
+            double[] fary = this.getFace(face);
+            for (c = 0, z = fary.length; c < z; c++){
+                if (0 != c){
+                    string.append(in);
+                    string.append(pr);
+                }
+                string.append(String.format("%5d",face));
+                string.append(' ');
+                string.append(String.format("%30.26f",fary[c++]));
+                string.append(' ');
+                string.append(String.format("%30.26f",fary[c++]));
+                string.append(' ');
+                string.append(String.format("%30.26f",fary[c]));
+            }
+        }
+        return string.toString();
     }
 
     public final static int CountVertices(Type to, Type from, int fromCountVertices){

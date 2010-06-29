@@ -244,7 +244,7 @@ public class Region
         this.children = c;
         return this;
     }
-    protected final Region add(fv3.Component c){
+    public final Region add(fv3.Component c){
         if (null != c){
             List<fv3.Component> children = this.children;
             if (null != children)
@@ -255,6 +255,13 @@ public class Region
             c.setParent(this);
         }
         return this;
+    }
+    public final fv3.Component get(int idx){
+        List<fv3.Component> children = this.children;
+        if (null != children)
+            return children.get(idx);
+        else
+            return null;
     }
     public final Region dropChildren(){
         this.children = null;
