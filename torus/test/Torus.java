@@ -32,18 +32,15 @@ public class Torus
                         System.out.println(torus.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
 
-                        for (fv3.Component child: torus.getChildren()){
-                            if (child instanceof Model){
-                                System.out.println(child.getClass().getName());
-                                System.out.println(((Model)child).toString("\t"));
-                            }
-                        }
+                        Model model = (Model)torus.get(1);
+                        System.out.println(model.getClass().getName());
+                        System.out.println(model.toString("\t"));
                     }
                     else if ("-geom".equals(arg)){
                         System.out.println(torus.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
 
-                        Model model = (Model)torus.get(0);
+                        Model model = (Model)torus.get(1);
                         Solid s = (Solid)model.get(2);
                         System.out.println(s.getClass().getName());
                         System.out.println(s.toString("\t"));
@@ -496,11 +493,14 @@ public class Torus
               .setVertex(50,1.09239,0.00000,0.0382683)
               .setVertex(51,1.09239,0.00000,-0.0382683));
     }
+    private final static float LightPos[] = { 5.0f, 5.0f, 10.0f, 0.0f };
 
 
     public Torus(){
         super();
         this.setBgColor(Color.White);
+
+        this.add(new Light(0,LightPos));
 
         Model torus = new Model();
         {
