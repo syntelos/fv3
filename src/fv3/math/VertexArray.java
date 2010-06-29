@@ -370,10 +370,14 @@ public class VertexArray
         double[] a = this.vertices;
 
         DoubleBuffer b = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();
-        for (int cc = 0, zz = a.length; cc < zz; cc++)
-            b.put(cc,a[cc]);
+        if (null != b){
+            for (int cc = 0, zz = a.length; cc < zz; cc++)
+                b.put(cc,a[cc]);
 
-        return b;
+            return b;
+        }
+        else
+            throw new IllegalStateException();
     }
     public final int countFaces(){
         return this.countFaces;
@@ -491,13 +495,17 @@ public class VertexArray
     public final DoubleBuffer normalsBuffer(){
 
         double[] a = this.normals();
-        if (null != a){
+        if (null != a && 0 != a.length){
 
             DoubleBuffer n = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();
-            for (int cc = 0, zz = a.length; cc < zz; cc++)
-                n.put(cc,a[cc]);
+            if (null != n){
+                for (int cc = 0, zz = a.length; cc < zz; cc++)
+                    n.put(cc,a[cc]);
 
-            return n;
+                return n;
+            }
+            else
+                throw new IllegalStateException();
         }
         else
             return null;
