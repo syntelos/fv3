@@ -109,6 +109,12 @@ public class VertexArray
     }
     /**
      * @param type Use of verteces as for calculating normals
+     */
+    public VertexArray(Type type){
+        this(type,0);
+    }
+    /**
+     * @param type Use of verteces as for calculating normals
      * @param count Number of verteces in this list.
      */
     public VertexArray(Type type, int count){
@@ -122,7 +128,7 @@ public class VertexArray
         this.vertices = new double[3 * count];
 
         this.countFaces = CountFaces(this.type,count);
-        if (0 != this.countFaces)
+        if (0 < this.countFaces)
             this.normals = new double[3 * this.countFaces];
     }
     public VertexArray(Type type, VertexArray src){
@@ -230,6 +236,35 @@ public class VertexArray
             }
         }
     }
+    /**
+     * Concatencate vertex lists over points, lines, triangles and
+     * quads.
+     */
+    public VertexArray add(VertexArray that){
+
+        switch(this.type){
+        case Points:
+        case Lines:
+        case Triangles:
+        case Quads:
+
+            double[] thatV = that.vertices(this.type);
+            {
+                final int thisL = (this.vertices.length);
+                final int thisC = (thisL/3);
+                final int thatL = (thatV.length);
+                final int thatC = (thatL/3);
+
+                this.countVertices(thisC+thatC);
+
+                System.arraycopy(thatV,0,this.vertices,thisL,thatL);
+            }
+            return this;
+
+        default:
+            throw new IllegalStateException(this.type.toString());
+        }
+    }
     public final int countVertex(){
         return this.countVertices;
     }
@@ -252,41 +287,18 @@ public class VertexArray
                 }
                 this.countVertices = count;
 
-                switch(this.type){
-                case Points:
-                case Lines:
-                case LineStrip:
-                case LineLoop:
-                    this.countFaces = 0;
-                    this.normals = null;
-                    break;
-                case Triangles:
-                    this.countFaces = (count/3);
-                    break;
-                case TriangleStrip:
-                    this.countFaces = (count-2);
-                    break;
-                case TriangleFan:
-                    this.countFaces = (count-2);
-                    break;
-                case Quads:
-                    this.countFaces = (count/4);
-                    break;
-                case QuadStrip:
-                    this.countFaces = (count/2)-1;
-                    break;
-                case Polygon:
-                    this.countFaces = 1;
-                    break;
-                default:
-                    throw new IllegalStateException();
-                }
-                if (null != this.normals){
-                    int many = Math.min(this.normals.length,this.countFaces);
+                this.countFaces = CountFaces(this.type,count);
+                if (0 < this.countFaces){
+                    int tnl = (null != this.normals)?(this.normals.length):(0);
                     double[] normals = new double[3 * this.countFaces];
-                    System.arraycopy(this.normals,0,normals,0,many);
+                    if (0 < tnl){
+                        int many = Math.min(tnl,this.countFaces);
+                        System.arraycopy(this.normals,0,normals,0,many);
+                    }
                     this.normals = normals;
                 }
+                else
+                    this.normals = null;
             }
             return this;
         }
@@ -494,7 +506,7 @@ public class VertexArray
      */
     public final DoubleBuffer normalsBuffer(){
 
-        double[] a = this.normals();
+        double[] a = this.normals;
         if (null != a && 0 != a.length){
 
             DoubleBuffer n = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();

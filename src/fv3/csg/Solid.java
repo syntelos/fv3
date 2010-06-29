@@ -27,9 +27,10 @@ import lxl.Map;
 import javax.media.opengl.GL2;
 
 /**
- * A triangles solid (finite volume) with geometric construction
- * operators.  No two faces intersect (overlap).  Based on the work of
- * Danilo Balby Silva Castanheira in <a
+ * A solid encloses a finite volume.  No two faces may intersect
+ * (overlap).
+ * 
+ * Based on the work of Danilo Balby Silva Castanheira in <a
  * href="http://unbboolean.sf.net/">J3DBool</a> following <a
  * href="http://www.cs.brown.edu/~jfh/papers/Laidlaw-CSG-1986/main.htm">"Constructive
  * Solid Geometry for Polyhedral Objects"</a>.
@@ -145,8 +146,13 @@ public class Solid
         }
     }
     /**
-     * Compile the state of this solid into the superclass vertex
-     * array for rendering.
+     * Update the superclass vertex array with the state of the faces
+     * in this instance, as for rendering.  
+     * 
+     * This is not necessary when the solid was constructed from a
+     * vertex array and has not changed since construction.
+     * 
+     * Otherwise this step is necessary to rendering this shape.
      */
     public Solid compile(){
         {
