@@ -20,7 +20,7 @@ package fv3.csg;
 import fv3.math.Vector;
 
 /**
- * Triangular face
+ * Triangular face used by {@link Solid}.
  */
 public final class Face
     extends java.lang.Object
@@ -162,7 +162,7 @@ public final class Face
     private boolean inverted;
 
 
-    public Face(Solid s, Vertex a, Vertex b, Vertex c){
+    protected Face(Solid s, Vertex a, Vertex b, Vertex c){
         super();
         if (null != s && null != a && null != b && null != c){
             this.a = s.u(a).memberOf(this);
@@ -189,6 +189,17 @@ public final class Face
             this.bound = bound;
         }
         return bound;
+    }
+    public double[] vertices(){
+
+        double[] re = new double[9];
+        this.a.copy(re,0);
+        this.b.copy(re,3);
+        this.c.copy(re,6);
+        return re;
+    }
+    public double[] normal(){
+        return this.getNormal().array();
     }
     public boolean is(State.Face s){
         return (s == this.status);

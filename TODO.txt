@@ -14,3 +14,7 @@
 ** 3ds file write
 ** (numerous bugs)
 ** (model view)
+
+* fv3.font
+** Glyph define
+

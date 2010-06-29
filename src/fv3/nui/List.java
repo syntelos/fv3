@@ -22,15 +22,13 @@ import fv3.math.Matrix;
 import javax.media.opengl.GL2;
 
 /**
- * List model.
+ * Basic implementation of display list from {@link fv3.Model}.
  * 
- * A GL display list defines a glBegin, glEnd sequence once at
- * initialization time.
+ * A GL display list is defined once at initialization time.
  * 
  * This class complements the display list procedure with display list
  * element objects for integrating a variety of application
  * programming techniques.
- * 
  */
 public abstract class List
     extends Component
@@ -59,6 +57,15 @@ public abstract class List
 
 
     /**
+     * This abstraction permits the subclass to implement one or more
+     * display lists itself or via any other instance object.  
+     * 
+     * This degree of freedom unites subclasses and list elements
+     * under this implementation of the model interface.  Considering
+     * users as languages (not excluding interpreters and compilers),
+     * subclasses and list elements are first class display list
+     * components.
+     * 
      * @param idx Display list index
      * @return Display list procedure 
      */
@@ -95,8 +102,24 @@ public abstract class List
 
             int lid = this.lid[cc];
 
-            if (-1 != lid)
+            if (-1 != lid){
+                final int[] ables = this.list(cc).ables();
+                {
+                    if (null != ables){
+                        for (int ac = 0, az = ables.length; ac < az; ac++)
+                            gl.glEnableClientState(ables[ac]);
+                    }
+                }
+
                 gl.glCallList(lid);
+
+                {
+                    if (null != ables){
+                        for (int ac = 0, az = ables.length; ac < az; ac++)
+                            gl.glDisableClientState(ables[ac]);
+                    }
+                }
+            }
         }
     }
     public void destroy(){

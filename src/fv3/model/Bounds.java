@@ -40,9 +40,9 @@ public class Bounds
 
             for (int idx = 0, cnt = m.size(); idx < cnt; idx++){
 
-                fv3.model.Object object = m.get(idx);
+                fv3.Model.Element object = m.get(idx);
 
-                if (fv3.model.Object.Type.Vertex == object.getObjectType()){
+                if (object instanceof Vertex){
 
                     double[] v = mm.transform(((Vertex)object).copy());
 
@@ -69,15 +69,26 @@ public class Bounds
                         maxZ = Math.max(maxZ, z);
                     }
                 }
+                else if (object instanceof fv3.Bounds){
+
+                    fv3.Bounds bounds = (fv3.Bounds)object;
+
+                    minX = Math.min(minX,bounds.getBoundsMinX());
+                    maxX = Math.max(maxX,bounds.getBoundsMaxX());
+                    minY = Math.min(minY,bounds.getBoundsMinY());
+                    maxY = Math.max(maxY,bounds.getBoundsMaxY());
+                    minZ = Math.min(minZ,bounds.getBoundsMinZ());
+                    maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
+                }
             }
         }
         else {
 
             for (int idx = 0, cnt = m.size(); idx < cnt; idx++){
 
-                fv3.model.Object object = m.get(idx);
+                fv3.Model.Element object = m.get(idx);
 
-                if (fv3.model.Object.Type.Vertex == object.getObjectType()){
+                if (object instanceof Vertex){
 
                     Vertex v = (Vertex)object;
 
@@ -103,6 +114,17 @@ public class Bounds
                         minZ = Math.min(minZ, z);
                         maxZ = Math.max(maxZ, z);
                     }
+                }
+                else if (object instanceof fv3.Bounds){
+
+                    fv3.Bounds bounds = (fv3.Bounds)object;
+
+                    minX = Math.min(minX,bounds.getBoundsMinX());
+                    maxX = Math.max(maxX,bounds.getBoundsMaxX());
+                    minY = Math.min(minY,bounds.getBoundsMinY());
+                    maxY = Math.max(maxY,bounds.getBoundsMaxY());
+                    minZ = Math.min(minZ,bounds.getBoundsMinZ());
+                    maxZ = Math.max(maxZ,bounds.getBoundsMaxZ());
                 }
             }
         }

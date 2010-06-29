@@ -31,10 +31,7 @@ public final class ShadeModel
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glShadeModel(this.glType);
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.ShadeModel;
     }
 }

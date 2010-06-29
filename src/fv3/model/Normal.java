@@ -34,10 +34,7 @@ public final class Normal
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glNormal3d(this.x,this.y,this.z);
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.Normal;
     }
 }

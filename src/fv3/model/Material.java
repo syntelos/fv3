@@ -17,6 +17,8 @@
  */
 package fv3.model;
 
+import fv3.math.Color;
+
 import javax.media.opengl.GL2;
 
 public final class Material
@@ -26,6 +28,9 @@ public final class Material
     private final float[] params;
 
 
+    public Material(int face, int name, Color color){
+        this(face,name,color.array());
+    }
     public Material(int face, int name, float[] params){
         super();
         if (0 < face && 0 < name && null != params){
@@ -38,10 +43,7 @@ public final class Material
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glMaterialfv(this.face,this.name,this.params,0);
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.Material;
     }
 }

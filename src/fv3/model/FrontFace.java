@@ -47,10 +47,7 @@ public class FrontFace
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glFrontFace(this.glType);
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.FrontFace;
     }
 }

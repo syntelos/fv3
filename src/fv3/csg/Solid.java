@@ -19,6 +19,7 @@
 package fv3.csg;
 
 import fv3.math.Vector;
+import fv3.math.VertexArray;
 
 import lxl.List;
 import lxl.Map;
@@ -26,40 +27,87 @@ import lxl.Map;
 import javax.media.opengl.GL2;
 
 /**
- * A solid (finite volume) with geometric construction operators.  No
- * two faces intersect (overlap).
- * 
- * Based on the work of Danilo Balby Silva Castanheira in <a
+ * A triangles solid (finite volume) with geometric construction
+ * operators.  No two faces intersect (overlap).  Based on the work of
+ * Danilo Balby Silva Castanheira in <a
  * href="http://unbboolean.sf.net/">J3DBool</a> following <a
  * href="http://www.cs.brown.edu/~jfh/papers/Laidlaw-CSG-1986/main.htm">"Constructive
  * Solid Geometry for Polyhedral Objects"</a>.
+ * 
+ * This is a mesh data structure: vertices are each unique.
+ * 
+ * Vertices are loaded, construction operations may be performed, and
+ * then the vertex array is compiled for rendering.
  */
 public class Solid
-    extends fv3.nui.Component
+    extends fv3.math.VertexArray
     implements fv3.csg.Notation,
-               java.lang.Iterable<Face>
+               java.lang.Iterable<Face>,
+               fv3.Bounds
 {
 
     protected State state;
 
 
-    public Solid(int v){
-        super();
-        this.state = new State(v);
+    /**
+     * @param countVertices Estimated or expected number of vertices
+     */
+    public Solid(int countVertices){
+        super(Type.Triangles,countVertices);/* [TODO] (TriangleStrip)
+                                             */
+        this.state = new State(countVertices);
+
+        this.visible = false;
     }
-    public Solid(){
-        this(1024);
+    public Solid(VertexArray array){
+        super(Type.Triangles,array);
+
+        this.state = new State(this.countVertices);
+
+        for (int face = 0, count = this.countFaces; face < count; face++){
+
+            this.add(this.getFace(face));
+        }
+    }
+    protected Solid(Solid from){
+        this(from.countVertices());
     }
 
 
+    /**
+     * Add a new triangular face in three vertices.  Face vertices are
+     * ordered clock wise looking at the "back" of the face, and
+     * counter clock wise looking at the "front" of the face.
+     */
     public Solid add(Vertex a, Vertex b, Vertex c){
         this.state.add(new Face(this,a,b,c));
         return this;
     }
-    protected Solid add(Face other){
-        this.state.add(other.clone(this));
-        return this;
+    /**
+     * Add a new triangular face in three (X,Y,Z) vertices
+     */
+    public Solid add(double[] a, double[] b, double[] c){
+        return this.add(new Vertex(a),new Vertex(b),new Vertex(c));
     }
+    /**
+     * Add a new triangular face from three sets of (X,Y,Z) vertices
+     */
+    public Solid add(double[] face){
+        return this.add(new Vertex(face,0),new Vertex(face,3),new Vertex(face,6));
+    }
+    /**
+     * Add a new triangular face in three (X,Y,Z) vertices
+     */
+    public Solid add(double ax, double ay, double az, 
+                     double bx, double by, double bz, 
+                     double cx, double cy, double cz)
+    {
+        return this.add(new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
+    }
+    /**
+     * Construct a new solid as the union of "this" and "that".  This
+     * union is the (minimal) sum of this and that.
+     */
     public Solid union(Solid that){
         this.init(that);
         try {
@@ -69,6 +117,10 @@ public class Solid
             this.reinit(that);
         }
     }
+    /**
+     * Construct a new solid as the intersection of "this" and "that".
+     * The intersection is the remainder of this minus that.
+     */
     public Solid intersection(Solid that){
         this.init(that);
         try {
@@ -78,6 +130,10 @@ public class Solid
             this.reinit(that);
         }
     }
+    /**
+     * Construct a new solid as the difference of "this" and "that".
+     * The difference is this minus that.
+     */
     public Solid difference(Solid that){
         this.init(that);
         try {
@@ -88,22 +144,71 @@ public class Solid
             this.reinit(that);
         }
     }
+    /**
+     * Compile the state of this solid into the superclass vertex
+     * array for rendering.
+     */
+    public Solid compile(){
+        {
+            super.countVertices(this.state.countVertices());
+
+            int fc = 0, vc = 0;
+
+            for (Face face: this.state){    /* [TODO] (TriangleStrip)
+                                             */
+                this.setVertices(vc, face.vertices(), 0, 3).setNormal(fc, face.normal());
+
+                fc += 1;
+                vc += 3;
+            }
+        }
+        this.visible = true;
+
+        return this;
+    }
     public Bound getBound(){
         return this.state.getBound();
     }
+    public double getBoundsMinX(){
+        return this.getBound().getBoundsMinX();
+    }
+    public double getBoundsMidX(){
+        return this.getBound().getBoundsMidX();
+    }
+    public double getBoundsMaxX(){
+        return this.getBound().getBoundsMaxX();
+    }
+    public double getBoundsMinY(){
+        return this.getBound().getBoundsMinY();
+    }
+    public double getBoundsMidY(){
+        return this.getBound().getBoundsMidY();
+    }
+    public double getBoundsMaxY(){
+        return this.getBound().getBoundsMaxY();
+    }
+    public double getBoundsMinZ(){
+        return this.getBound().getBoundsMinZ();
+    }
+    public double getBoundsMidZ(){
+        return this.getBound().getBoundsMidZ();
+    }
+    public double getBoundsMaxZ(){
+        return this.getBound().getBoundsMaxZ();
+    }
+    public int countVertices(){
+        return this.state.countVertices();
+    }
     public void destroy(){
-        super.destroy();
+
         this.state.destroy();
-    }
-    public void init(GL2 gl){
-        super.init(gl);
-
-    }
-    public void display(GL2 gl){
-
     }
     public java.util.Iterator<Face> iterator(){
         return this.state.iterator();
+    }
+    protected Solid add(Face other){
+        this.state.add(other.clone(this));
+        return this;
     }
     protected Vertex u(Vertex a){
         fv3.csg.Vertex b = this.state.vertices.get(a);
@@ -139,7 +244,7 @@ public class Solid
         this.state = this.state.pop();
     }
     protected Solid compose(Solid that, State.Face a, State.Face b, State.Face c){
-        Solid re = new Solid();
+        Solid re = new Solid(this);
         for (Face face: this.state){
             if (face.is(a) || face.is(b))
                 re.add(face);

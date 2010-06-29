@@ -33,7 +33,7 @@ public interface Notation
     {
 
         public enum Vertex {
-            Unknown, Inside, Outside, Boundary;
+            Unknown, Inside, Outside, Boundary, Superfluous;
 
             public final static State.Face ToFace(State.Vertex state){
                 switch (state){
@@ -45,6 +45,8 @@ public interface Notation
                     return State.Face.Outside;
                 case Boundary:
                     return State.Face.Same;
+                case Superfluous:
+                    return State.Face.Opposite;
                 default:
                     throw new IllegalArgumentException(state.toString());
                 }
@@ -63,6 +65,8 @@ public interface Notation
                     return State.Vertex.Outside;
                 case Same:
                     return State.Vertex.Boundary;
+                case Opposite:
+                    return State.Vertex.Superfluous;
                 default:
                     throw new IllegalArgumentException(state.toString());
                 }
@@ -84,6 +88,9 @@ public interface Notation
         }
 
 
+        public int countVertices(){
+            return (3*this.size());
+        }
         public Bound getBound(){
             Bound bound = this.bound;
             if (null == bound){

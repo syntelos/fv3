@@ -22,8 +22,9 @@ import fv3.math.Matrix;
 import javax.media.opengl.GL2;
 
 /**
- * A single display list (see {@link fv3.nui.List}) described by a
- * list of individual GL procedure calls from this package.
+ * This class implements one display list, exclusively.
+ * 
+ * @see fv3.model.Object
  */
 public class Model
     extends fv3.nui.List
@@ -31,18 +32,57 @@ public class Model
 {
 
 
-    protected volatile Object[] model;
+    protected volatile Element[] model;
+
+    protected volatile int[] ables;
 
 
     public Model(){
         super(1);
     }
-    public Model(Object[] model){
+    public Model(Element[] model){
         super(1);
         this.add(model);
     }
 
 
+    public int[] ables(){
+
+        return this.ables;
+    }
+    public void define(GL2 gl){
+
+        this.ables = null;
+
+        Element[] model = this.model;
+
+        if (null != model){
+
+            for (int cc = 0, count = model.length; cc < count; cc++){
+
+                Element el = model[cc];
+
+                int[] ables = el.ables();
+                {
+                    if (null != ables){
+                        for (int ac = 0, az = ables.length; ac < az; ac++)
+                            gl.glEnableClientState(ables[ac]);
+
+                        this.ables = fv3.model.Object.Add(this.ables,ables);
+                    }
+                }
+
+                el.define(gl);
+
+                {
+                    if (null != ables){
+                        for (int ac = 0, az = ables.length; ac < az; ac++)
+                            gl.glDisableClientState(ables[ac]);
+                    }
+                }
+            }
+        }
+    }
     public final boolean hasFv3Bounds(){
         return (0 != this.size());
     }
@@ -62,40 +102,30 @@ public class Model
         return this;
     }
     public final int size(){
-        Object[] model = this.model;
+        Element[] model = this.model;
         if (null == model)
             return 0;
         else
             return model.length;
     }
-    public final fv3.model.Object get(int idx){
+    public final fv3.Model.Element get(int idx){
         return this.model[idx];
     }
-    public final Model add(fv3.model.Object object){
+    public final Model add(fv3.Model.Element object){
         if (null != object)
-            this.model = Object.Add(this.model,object);
+            this.model = fv3.model.Object.Add(this.model,object);
 
         return this;
     }
-    public final Model add(fv3.model.Object[] list){
+    public final Model add(fv3.Model.Element[] list){
         if (null != list)
-            this.model = Object.Add(this.model,list);
+            this.model = fv3.model.Object.Add(this.model,list);
 
         return this;
     }
     public Element list(int idx){
         return this;
     }
-    public void define(GL2 gl){
-
-        Object[] model = this.model;
-
-        for (int cc = 0, count = model.length; cc < count; cc++){
-
-            model[cc].apply(gl);
-        }
-    }
-
     public String toString(String pr, String in){
 
         fv3.Bounds bounds = this.bounds;

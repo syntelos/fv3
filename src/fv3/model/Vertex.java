@@ -50,14 +50,11 @@ public final class Vertex
     }
 
 
-    public double[] copy(){
-        return new double[]{x,y,z};
-    }
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glVertex3d(this.x,this.y,this.z);
     }
-    public Object.Type getObjectType(){
-        return Object.Type.Vertex;
+    public double[] copy(){
+        return new double[]{x,y,z};
     }
     public int hashCode(){
         int hashCode = this.hashCode;
@@ -94,33 +91,5 @@ public final class Vertex
         }
         else
             return false;
-    }
-
-
-    public final static Vertex[] Add(Vertex[] list, Vertex item){
-        if (null == item)
-            return list;
-        else if (null == list)
-            return new Vertex[]{item};
-        else {
-            int len = list.length;
-            Vertex[] copier = new Vertex[len+1];
-            System.arraycopy(list,0,copier,0,len);
-            copier[len] = item;
-            return copier;
-        }
-    }
-    public final static Vertex[][] Add(Vertex[][] list, Vertex[] item){
-        if (null == item)
-            return list;
-        else if (null == list)
-            return new Vertex[][]{item};
-        else {
-            int len = list.length;
-            Vertex[][] copier = new Vertex[len+1][];
-            System.arraycopy(list,0,copier,0,len);
-            copier[len] = item;
-            return copier;
-        }
     }
 }

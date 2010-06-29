@@ -32,13 +32,24 @@ public interface Model
     /**
      * A model list element procedure defines a display list.
      * 
-     * This init method call occurs immediately following glNewList
-     * and before glEndList.  
-
-     * This method calls glBegin and glEnd.
+     * The define method is called immediately following glNewList
+     * and before glEndList to define a display list.
+     * 
+     * For example, the define method often calls glBegin and glEnd.
+     * 
+     * Each of the values returned by the ables method are passed into
+     * calls to glEnableClientState before glCallList, and into
+     * glDisableClientState after glCallList.
      */
     public interface Element {
-
+        /**
+         * @return List of client state enables before call list,
+         * disables after call list.  Null for none.
+         */
+        public int[] ables();
+        /**
+         * Define the display list
+         */
         public void define(GL2 gl);
     }
 

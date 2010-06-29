@@ -62,6 +62,9 @@ public final class Vertex
             this.hashCode = (int)(LhashCode & Integer.MAX_VALUE);
         }
     }
+    public Vertex(double[] array, int ofs){
+        this(array[ofs+X],array[ofs+Y],array[ofs+Z]);
+    }
     public Vertex(Vector pos, State.Vertex status){
         this(pos.array());
         this.status = status;
@@ -220,6 +223,12 @@ public final class Vertex
     }
     public double[] copy(){
         return new double[]{x,y,z};
+    }
+    public double[] copy(double[] a, int ofs){
+        a[ofs++] = this.x;
+        a[ofs++] = this.y;
+        a[ofs] = this.z;
+        return a;
     }
     public int hashCode(){
         return this.hashCode;

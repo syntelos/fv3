@@ -20,28 +20,27 @@ package fv3.model;
 import javax.media.opengl.GL2;
 
 /**
- * 
+ * Members of this class do not define a complete display list, but
+ * contribute elements to a display list.
  */
 public abstract class Object
     extends java.lang.Object
+    implements fv3.Model.Element
 {
-    public enum Type {
-        Begin, ShadeModel, Normal, Vertex, Material, Glyph, End, Enable, Disable, FrontFace;
-    }
-    public final static Object[] Add(Object[] list, Object object){
+    public final static fv3.Model.Element[] Add(fv3.Model.Element[] list, fv3.Model.Element object){
         if (null == object)
             return list;
         else if (null == list)
-            return new Object[]{object};
+            return new fv3.Model.Element[]{object};
         else {
             int len = list.length;
-            Object[] copier = new Object[len+1];
+            fv3.Model.Element[] copier = new fv3.Model.Element[len+1];
             System.arraycopy(list,0,copier,0,len);
             copier[len] = object;
             return copier;
         }
     }
-    public final static Object[] Add(Object[] list, Object[] object){
+    public final static fv3.Model.Element[] Add(fv3.Model.Element[] list, fv3.Model.Element[] object){
         if (null == object)
             return list;
         else if (null == list)
@@ -49,19 +48,72 @@ public abstract class Object
         else {
             int len1 = list.length;
             int len2 = object.length;
-            Object[] copier = new Object[len1+len2];
+            fv3.Model.Element[] copier = new fv3.Model.Element[len1+len2];
             System.arraycopy(list,0,copier,0,len1);
             System.arraycopy(object,0,copier,len1,len2);
             return copier;
         }
     }
-
-
-    public abstract Object.Type getObjectType();
-
     /**
-     * Apply to vertex list definition
+     * @param list List of values
+     * @param sublist List of values
+     * @return Sorted unique list of values from list and sublist.  If
+     * one of list or sublist is null, the other is returned as the
+     * sorted unique list.
      */
-    public abstract void apply(GL2 gl);
+    public final static int[] Add(int[] list, int[] sublist){
+        if (null == sublist)
+            return list;
+        else if (null == list)
+            return sublist;
+        else {
+            int len = list.length;
+            int slen = sublist.length;
+            int[] copier = new int[len+slen];
+            System.arraycopy(list,0,copier,0,len);
+            System.arraycopy(sublist,0,copier,len,slen);
 
+            java.util.Arrays.sort(copier);
+
+            for (int a = 0, b = 1; b < copier.length; a++,b++){
+
+                if (copier[a] == copier[b]){
+
+                    copier = Remove(copier,a);
+                }
+            }
+
+            return copier;
+        }
+    }
+    public final static int[] Remove(int[] list, int index){
+        if (0 > index || null == list)
+            return list;
+        else {
+            int len = list.length;
+            int term = (len-1);
+            if (0 == term)
+                return null;
+            else {
+                int[] copy = new int[term];
+
+                if (0 == index){
+                    System.arraycopy(list,1,copy,0,term);
+                }
+                else if (term == index){
+                    System.arraycopy(list,0,copy,0,term);
+                }
+                else {
+                    System.arraycopy(list,0,copy,0,index);
+                    System.arraycopy(list,(index+1),copy,index,(term-index));
+                }
+                return copy;
+            }
+        }
+    }
+
+
+    public int[] ables(){
+        return null;
+    }
 }

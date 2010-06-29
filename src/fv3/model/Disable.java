@@ -31,10 +31,7 @@ public final class Disable
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glDisable(this.glType);
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.Disable;
     }
 }

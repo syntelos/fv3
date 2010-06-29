@@ -29,10 +29,7 @@ public final class End
     }
 
 
-    public void apply(GL2 gl){
+    public void define(GL2 gl){
         gl.glEnd();
-    }
-    public Object.Type getObjectType(){
-        return Object.Type.End;
     }
 }

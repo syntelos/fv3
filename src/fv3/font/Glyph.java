@@ -44,6 +44,13 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
     }
 
 
+    public void define(GL2 gl){
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+    }
     public void destroy(){
         this.font = null;
         fv3.font.Path[] paths = this.list;
@@ -115,11 +122,6 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
                 this.list = copier;
             }
         }
-    }
-    public Type getObjectType(){
-        return Type.Glyph;
-    }
-    public void apply(GL2 gl){
     }
     public String toString(){
         return this.toString("; ");
