@@ -495,7 +495,7 @@ public class VertexArray
 
             DoubleBuffer n = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();
             for (int cc = 0, zz = a.length; cc < zz; cc++)
-                b.put(cc,a[cc]);
+                n.put(cc,a[cc]);
 
             return n;
         }
