@@ -18,6 +18,9 @@ import lxl.List;
 
 import javax.media.opengl.GL2;
 
+/**
+ * Shape data from "torus.c" by Silicon Graphics.
+ */
 public class Torus
     extends fv3.World
 {
