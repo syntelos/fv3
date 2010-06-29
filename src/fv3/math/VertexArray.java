@@ -35,7 +35,8 @@ import javax.media.opengl.GL2;
  */
 public class VertexArray
     extends Abstract
-    implements fv3.Model.Element
+    implements fv3.Model.Element,
+               fv3.Bounds
 {
     public enum Type {
         Points, Lines, LineStrip, LineLoop, Triangles, TriangleStrip, TriangleFan, Quads, QuadStrip, Polygon;
@@ -100,6 +101,8 @@ public class VertexArray
     protected volatile double[] normals;
 
     protected volatile boolean visible = true, useNormals;
+
+    protected volatile fv3.Bounds bounds;
 
 
     /**
@@ -283,7 +286,7 @@ public class VertexArray
             throw new IllegalStateException(this.type.toString());
         }
     }
-    public final int countVertex(){
+    public int countVertices(){
         return this.countVertices;
     }
     /**
@@ -296,7 +299,7 @@ public class VertexArray
 
         else {
             if (count != this.countVertices){
-
+                this.bounds = null;
                 {
                     int many = Math.min(count,this.countVertices);
                     double[] vertices = new double[3 * count];
@@ -784,7 +787,41 @@ public class VertexArray
         else
             throw new IllegalStateException("[TODO] additional conversions");
     }
-
+    public fv3.Bounds getBounds(){
+        fv3.Bounds bounds = this.bounds;
+        if (null == bounds){
+            bounds = new VertexArrayBounds(this);
+            this.bounds = bounds;
+        }
+        return bounds;
+    }
+    public double getBoundsMinX(){
+        return this.getBounds().getBoundsMinX();
+    }
+    public double getBoundsMidX(){
+        return this.getBounds().getBoundsMidX();
+    }
+    public double getBoundsMaxX(){
+        return this.getBounds().getBoundsMaxX();
+    }
+    public double getBoundsMinY(){
+        return this.getBounds().getBoundsMinY();
+    }
+    public double getBoundsMidY(){
+        return this.getBounds().getBoundsMidY();
+    }
+    public double getBoundsMaxY(){
+        return this.getBounds().getBoundsMaxY();
+    }
+    public double getBoundsMinZ(){
+        return this.getBounds().getBoundsMinZ();
+    }
+    public double getBoundsMidZ(){
+        return this.getBounds().getBoundsMidZ();
+    }
+    public double getBoundsMaxZ(){
+        return this.getBounds().getBoundsMaxZ();
+    }
     public String toString(){
         return this.toString("","\n");
     }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="fv3-torus0" default="jar">
+
+  <property name="src" value="."/>
+
+  <available file="../web" type="dir" property="dst" value="../web"/>
+  <property name="dst" value="."/>
+
+  <property name="jnlp.codebase" value="http://fv3.googlecode.com/svn/web/"/>
+
+  <property file="build.version"/>
+  <property name="this.version" value="${version.major}.${version.minor}.${version.build}"/>
+
+  <property name="src.app.jnlp" value="${dst}/${ant.project.name}-${this.version}.jnlp"/>
+
+  <property name="target.jar" value="${dst}/${ant.project.name}-loader-${this.version}.jar"/>
+
+  <path id="jnlp.loader.jar">
+    <fileset dir="loader">
+      <include name="**/jnlp-loader-*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="jar" description="Package target jar.">
+    <delete file="${target.jar}"/>
+
+    <delete file="main.jnlp"/>
+
+    <copy tofile="main.jnlp" file="${src.app.jnlp}" />
+
+    <jar jarfile="${target.jar}">
+      <manifest>
+        <attribute name="Main-Class" value="loader.Main"/>
+      </manifest>
+      <fileset file="main.jnlp"/>
+      <zipfileset src="${toString:jnlp.loader.jar}"/>
+    </jar>
+
+    <delete file="main.jnlp"/>
+
+  </target>
+
+  <target name="clean" description="Delete products">
+    <delete file="${target.jar}"/>
+  </target>
+
+  <target name="cleanb" depends="clean" description="Clean build">
+    <antcall target="jar"/>
+  </target>
+
+</project>
