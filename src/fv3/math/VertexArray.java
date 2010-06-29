@@ -17,6 +17,7 @@
  */
 package fv3.math;
 
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 
 import javax.media.opengl.GL2;
@@ -96,8 +97,6 @@ public class VertexArray
     protected volatile int countFaces;
 
     protected volatile double[] normals;
-
-    protected volatile DoubleBuffer n;
 
     protected volatile boolean visible = true, useNormals;
 
@@ -250,7 +249,6 @@ public class VertexArray
                     double[] vertices = new double[3 * count];
                     System.arraycopy(this.vertices,0,vertices,0,many);
                     this.vertices = vertices;
-                    super.b = null;
                 }
                 this.countVertices = count;
 
@@ -288,7 +286,6 @@ public class VertexArray
                     double[] normals = new double[3 * this.countFaces];
                     System.arraycopy(this.normals,0,normals,0,many);
                     this.normals = normals;
-                    this.n = null;
                 }
             }
             return this;
@@ -364,6 +361,19 @@ public class VertexArray
     }
     public final double[] array(){
         return this.vertices;
+    }
+    /**
+     * @return Direct memory snap shot, not cached, not updated from
+     * this array.
+     */
+    public DoubleBuffer buffer(){
+        double[] a = this.vertices;
+
+        DoubleBuffer b = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();
+        for (int cc = 0, zz = a.length; cc < zz; cc++)
+            b.put(cc,a[cc]);
+
+        return b;
     }
     public final int countFaces(){
         return this.countFaces;
@@ -474,18 +484,23 @@ public class VertexArray
     public final double[] normals(){
         return this.normals;
     }
+    /**
+     * @return Direct memory snap shot, not cached, not updated from
+     * this array.
+     */
     public final DoubleBuffer normalsBuffer(){
-        DoubleBuffer n = this.n;
-        if (null == n){
-            double[] a = this.normals();
-            if (null != a){
-                n = DoubleBuffer.wrap(a);
-                this.n = n;
-            }
-            else
-                return null;
+
+        double[] a = this.normals();
+        if (null != a){
+
+            DoubleBuffer n = ByteBuffer.allocateDirect(a.length*8).asDoubleBuffer();
+            for (int cc = 0, zz = a.length; cc < zz; cc++)
+                b.put(cc,a[cc]);
+
+            return n;
         }
-        return n;
+        else
+            return null;
     }
     /**
      * Indeces for features composed of vertices, i.e. "face" extended
