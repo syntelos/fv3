@@ -300,7 +300,10 @@ public class VertexArray
                 {
                     int many = Math.min(count,this.countVertices);
                     double[] vertices = new double[3 * count];
-                    System.arraycopy(this.vertices,0,vertices,0,many);
+                    if (0 < many){
+                        many *= 3;
+                        System.arraycopy(this.vertices,0,vertices,0,many);
+                    }
                     this.vertices = vertices;
                 }
                 this.countVertices = count;
@@ -310,7 +313,7 @@ public class VertexArray
                     int tnl = (null != this.normals)?(this.normals.length):(0);
                     double[] normals = new double[3 * this.countFaces];
                     if (0 < tnl){
-                        int many = Math.min(tnl,this.countFaces);
+                        int many = Math.min(tnl,(3 * this.countFaces));
                         System.arraycopy(this.normals,0,normals,0,many);
                     }
                     this.normals = normals;
