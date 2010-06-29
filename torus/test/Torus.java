@@ -909,7 +909,6 @@ public class Torus
             torus.add(new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             torus.add(new ShadeModel(GL2.GL_FLAT));
             torus.add(new Solid(A));
-            torus.add(new Disable(GL2.GL_CULL_FACE));
             torus.add(new Enable(GL2.GL_NORMALIZE));
         }
         this.add(torus);
