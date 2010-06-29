@@ -6,7 +6,8 @@ import fv3.Camera;
 import fv3.csg.Solid;
 import fv3.math.Color;
 import fv3.math.VertexArray;
-import fv3.model.CircumCube;
+import fv3.model.Disable;
+import fv3.model.Enable;
 import fv3.model.Material ;
 import fv3.model.Model;
 import fv3.model.ShadeModel ;
@@ -507,6 +508,8 @@ public class Torus
             torus.add(new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             torus.add(new ShadeModel(GL2.GL_FLAT));
             torus.add(new Solid(A));
+            torus.add(new Disable(GL2.GL_CULL_FACE));
+            torus.add(new Enable(GL2.GL_NORMALIZE));
         }
         this.add(torus);
 
