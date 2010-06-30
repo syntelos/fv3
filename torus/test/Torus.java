@@ -45,8 +45,10 @@ public class Torus
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
 
                         Model model = (Model)torus.get(1);
-                        Solid s = (Solid)model.get(2);
-                        System.out.println(s.getClass().getName());
+                        Solid s;
+
+                        s = (Solid)model.get(2);
+                        System.out.println();
                         System.out.println(s.toString("\t"));
                     }
                 }

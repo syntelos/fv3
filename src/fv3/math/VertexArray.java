@@ -446,10 +446,13 @@ public class VertexArray
         return this.copyNormal(index,(new double[3]),0);
     }
     public final double[] copyNormal(int index, double[] re, int ofs){
-
-        int start = (3 * index);
-        System.arraycopy(this.normals,start,re,ofs,3);
-        return re;
+        if (this.useNormals){
+            int start = (3 * index);
+            System.arraycopy(this.normals,start,re,ofs,3);
+            return re;
+        }
+        else
+            return null;
     }
     /**
      * @param index Normal index
@@ -835,12 +838,17 @@ public class VertexArray
             in = "";
 
         StringBuilder string = new StringBuilder();
+
+        string.append(pr);
+        string.append(this.type);
+
         for (int face = 0, count = this.countFaces, c, z; face < count; face++){
-            if (0 != face)
-                string.append(in);
+
+            string.append(in);
             string.append(pr);
 
             double[] fary = this.getFace(face);
+            double[] nary = this.getNormal(face);
             for (c = 0, z = fary.length; c < z; c++){
                 if (0 != c){
                     string.append(in);
@@ -853,6 +861,20 @@ public class VertexArray
                 string.append(String.format("%30.26f",fary[c++]));
                 string.append(' ');
                 string.append(String.format("%30.26f",fary[c]));
+            }
+
+            if (null != nary){
+
+                string.append(in);
+                string.append(pr);
+
+                string.append(String.format("N%4d",face));
+                string.append(' ');
+                string.append(String.format("%30.26f",nary[X]));
+                string.append(' ');
+                string.append(String.format("%30.26f",nary[Y]));
+                string.append(' ');
+                string.append(String.format("%30.26f",nary[Z]));
             }
         }
         return string.toString();

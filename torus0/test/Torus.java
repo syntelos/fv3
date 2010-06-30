@@ -31,18 +31,15 @@ public class Torus
                         System.out.println(torus.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
 
-                        for (fv3.Component child: torus.getChildren()){
-                            if (child instanceof Model){
-                                System.out.println(child.getClass().getName());
-                                System.out.println(((Model)child).toString("\t"));
-                            }
-                        }
+                        Model model = (Model)torus.get(1);
+                        System.out.println(model.getClass().getName());
+                        System.out.println(model.toString("\t"));
                     }
                     else if ("-geom".equals(arg)){
                         System.out.println(torus.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)torus.getFv3Bounds()).toString("\t"));
 
-                        Model model = (Model)torus.get(0);
+                        Model model = (Model)torus.get(1);
                         VertexArray s;
 
                         s = (VertexArray)model.get(2);
