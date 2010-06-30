@@ -736,8 +736,8 @@ public class VertexArray
 
                         indeces = FaceIndeces(thatType,thatFaceB);
                         SetVertex(indeces[0], thisFace, 3, thatVertices);
-                        SetVertex(indeces[1], thisFace, 9, thatVertices);
-                        SetVertex(indeces[2], thisFace, 6, thatVertices);
+                        SetVertex(indeces[1], thisFace, 6, thatVertices);
+                        SetVertex(indeces[2], thisFace, 9, thatVertices);
                         break;
                     }
                     case TriangleStrip:
