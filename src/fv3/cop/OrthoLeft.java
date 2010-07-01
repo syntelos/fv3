@@ -11,7 +11,7 @@ public class OrthoLeft
     extends Ortho
 {
 
-    protected Matrix view = new Matrix().rotateY(-PI2);
+    protected Matrix view = new Matrix().rotateY(-PI_D2);
 
 
     public OrthoLeft(Bounds.CircumSphere s){

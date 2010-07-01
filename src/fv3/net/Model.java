@@ -48,7 +48,7 @@ public abstract class Model
         return (GL2)javax.media.opengl.GLContext.getCurrentGL();
     }
 
-    public final static double PI2 = (Math.PI * 2.0);
+
 
 
     protected volatile fv3.Component parent;

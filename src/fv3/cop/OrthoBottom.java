@@ -10,7 +10,7 @@ import fv3.math.Matrix;
 public class OrthoBottom
     extends Ortho
 {
-    protected Matrix view = new Matrix().rotateX(-PI2);
+    protected Matrix view = new Matrix().rotateX(-PI_D2);
 
 
     public OrthoBottom(Bounds.CircumSphere s){

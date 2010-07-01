@@ -32,7 +32,9 @@ public interface Notation
     public final static double EPS2 = (EPSILON*2.0);
 
     public final static double PI = Math.PI;
-    public final static double PI2 = (Math.PI/2.0);
+    public final static double PI_D2 = (PI / 2.0);
+    public final static double PI_M2 = (PI * 2.0);
+    public final static double PI_D3 = (PI / 3.0);
 
     /**
      * Vector array notation

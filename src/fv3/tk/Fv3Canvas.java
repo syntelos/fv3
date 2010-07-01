@@ -52,7 +52,7 @@ public class Fv3Canvas
         System.setProperty("java.awt.headless","true");
     }
 
-    public final static double PI2 = (Math.PI * 2.0);
+
 
 
     protected volatile GLU glu;

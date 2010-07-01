@@ -18,8 +18,6 @@ public abstract class Ortho
     implements Camera.Operator
 {
     protected final static double MZ = -0.0;
-    protected final static double PI = Math.PI;
-    protected final static double PI2 = (Math.PI / 2.0);
 
 
     protected volatile Bounds.CircumSphere s;
