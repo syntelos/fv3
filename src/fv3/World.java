@@ -90,7 +90,7 @@ public class World
     }
 
 
-    private volatile Camera[] cameras = new Camera[26];
+    private volatile Camera[] cameras = new Camera[20];
 
     private volatile int cameraCurrent;
     private volatile boolean cameraChange;
@@ -121,13 +121,13 @@ public class World
         return this.cameras[this.cameraCurrent];
     }
     public Camera getCamera(char name){
-        if ('A' <= name && 'Z' >= name){
+        if ('A' <= name && 'T' >= name){
 
             int idx = name-'A';
 
             return this.cameras[idx];
         }
-        else if ('a' <= name && 'z' >= name){
+        else if ('a' <= name && 't' >= name){
             
             int idx = name-'a';
 
@@ -142,7 +142,7 @@ public class World
      * pre-existing current camera. 
      */
     public Camera useCamera(char name){
-        if ('A' <= name && 'Z' >= name){
+        if ('A' <= name && 'T' >= name){
 
             int idx = name-'A';
 
@@ -154,7 +154,7 @@ public class World
                 return this.cameras[idx];
             }
         }
-        else if ('a' <= name && 'z' >= name){
+        else if ('a' <= name && 't' >= name){
 
             int idx = name-'a';
 
@@ -186,7 +186,7 @@ public class World
      */
     public Camera defineCamera(char name){
 
-        if ('A' <= name && 'Z' >= name){
+        if ('A' <= name && 't' >= name){
 
             int idx = name-'A';
 
@@ -195,7 +195,7 @@ public class World
 
             return this.cameras[idx];
         }
-        else if ('a' <= name && 'z' >= name){
+        else if ('a' <= name && 't' >= name){
 
             int idx = name-'a';
 
@@ -215,6 +215,16 @@ public class World
 
         this.cameras[camera.index] = camera;
         return camera;
+    }
+    /**
+     * @param ch Key character
+     * @param cc Key code
+     * @param mm Key modifiers
+     * @see com.sun.javafx.newt.KeyEvent
+     */
+    public void keyNav(char ch, int cc, int mm){
+
+        this.getCamera().keyNav(ch,cc,mm);
     }
     public boolean hasBgColor(){
         return (null != this.bg);
@@ -293,12 +303,24 @@ public class World
         throw new UnsupportedOperationException("To be done");
     }
     public void keyTyped(KeyEvent e) {
-        char ch = e.getKeyChar();
-        if ('a' <= ch && ch <= 'z')
-            this.useCamera(ch);
-        else if ('A' <= ch && ch <= 'Z')
-            this.useCamera(ch);
-        else
+
+        int cc = e.getKeyCode();
+        switch (cc){
+        case KeyEvent.VK_ESCAPE:
+        case KeyEvent.VK_F4:
             super.keyTyped(e);
+            return;
+        default:
+            char ch = e.getKeyChar();
+
+            if ('a' <= ch && ch <= 't')
+                this.useCamera(ch);
+            else if ('A' <= ch && ch <= 't')
+                this.useCamera(ch);
+            else 
+                this.keyNav(ch,cc,e.getModifiers());
+
+            return;
+        }
     }
 }

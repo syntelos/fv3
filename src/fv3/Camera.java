@@ -27,6 +27,7 @@ import lxl.List;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
+import com.sun.javafx.newt.KeyEvent;
 
 /**
  * The {@link World} manages a set of cameras, and can dynamically
@@ -123,6 +124,9 @@ public class Camera
     protected volatile int vpX, vpY, vpWidth, vpHeight;
 
     protected volatile Matrix projection, view;
+
+    protected volatile char keyNav = 'z';
+
 
 
     public Camera(char name){
@@ -354,7 +358,83 @@ public class Camera
             gl.glLoadMatrixd(view.buffer());
 
     }
+    public void keyNav(char ch, int cc, int mm){
+        switch (ch){
+        case 'U':
+        case 'V':
+        case 'W':
+            break;
+        case 'X':
+            this.keyNav = 'x';
+            break;
+        case 'Y':
+            this.keyNav = 'y';
+            break;
+        case 'Z':
+            this.keyNav = 'z';
+            break;
+        case 'u':
+        case 'v':
+        case 'w':
+            break;
+        case 'x':
+        case 'y':
+        case 'z':
+            this.keyNav = ch;
+            break;
+        default:
+            Matrix V = this.getView();
 
+            switch (cc){
+            case KeyEvent.VK_LEFT:
+                switch (this.keyNav){
+                case 'x':
+                    V.translate(-10.0,0.0,0.0);
+                    break;
+                case 'y':
+                    V.translate(0.0,-10.0,0.0);
+                    break;
+                case 'z':
+                    V.translate(0.0,0.0,-10.0);
+                    break;
+                }
+                break;
+            case KeyEvent.VK_UP:
+                switch (this.keyNav){
+                case 'x':
+                    break;
+                case 'y':
+                    break;
+                case 'z':
+                    break;
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                switch (this.keyNav){
+                case 'x':
+                    V.translate(10.0,0.0,0.0);
+                    break;
+                case 'y':
+                    V.translate(0.0,10.0,0.0);
+                    break;
+                case 'z':
+                    V.translate(0.0,0.0,10.0);
+                    break;
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                switch (this.keyNav){
+                case 'x':
+                    break;
+                case 'y':
+                    break;
+                case 'z':
+                    break;
+                }
+                break;
+            }
+        }
+    }
     public String toString(){
 
         String projection;
