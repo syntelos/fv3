@@ -146,7 +146,6 @@ public class Region
         }
     }
     public fv3.Component setFv3Bounds(){
-        super.setFv3Bounds();
 
         for (fv3.Component child: this.children){
             try {
@@ -155,7 +154,7 @@ public class Region
             catch (RuntimeException ignore){
             }
         }
-        return this;
+        return super.setFv3Bounds();
     }
     public void keyPressed(KeyEvent e){
         fv3.Component current = this.current;
