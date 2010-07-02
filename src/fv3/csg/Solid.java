@@ -105,6 +105,28 @@ public class Solid
     {
         return this.add(new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
     }
+    public Solid add(VertexArray array){
+
+        double[] triangles = array.vertices(VertexArray.Type.Triangles);
+
+        for (int index = 0, count = triangles.length; index < count; ){
+
+            double x0 = triangles[index++];
+            double y0 = triangles[index++];
+            double z0 = triangles[index++];
+
+            double x1 = triangles[index++];
+            double y1 = triangles[index++];
+            double z1 = triangles[index++];
+
+            double x2 = triangles[index++];
+            double y2 = triangles[index++];
+            double z2 = triangles[index++];
+
+            this.add(new Vertex(x0,y0,z0),new Vertex(x1,y1,z1),new Vertex(x2,y2,z2));
+        }
+        return this;
+    }
     /**
      * Construct a new solid as the union of "this" and "that".  This
      * union is the (minimal) sum of this and that.

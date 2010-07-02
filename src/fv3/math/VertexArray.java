@@ -90,7 +90,7 @@ public class VertexArray
         }
     }
 
-    public final Type type;
+    protected volatile Type type;
 
     protected volatile int countVertices;
 
@@ -134,6 +134,9 @@ public class VertexArray
         this.countFaces = CountFaces(this.type,count);
         if (0 < this.countFaces)
             this.normals = new double[3 * this.countFaces];
+    }
+    public VertexArray(VertexArray src){
+        this(src.type,src);
     }
     public VertexArray(Type type, VertexArray src){
         super();
@@ -286,6 +289,59 @@ public class VertexArray
             throw new IllegalStateException(this.type.toString());
         }
     }
+    public VertexArray transform(Matrix m){
+
+        double[] vertices = this.vertices;
+
+        for (int index = 0, count = vertices.length; index < count; index += 3){
+
+            m.transform(vertices,index);
+        }
+
+        return this;
+    }
+    public VertexArray translate(double dx, double dy, double dz){
+
+        double[] vertices = this.vertices;
+
+        for (int index = 0, count = vertices.length; index < count; ){
+
+            vertices[index++] += dx;
+            vertices[index++] += dy;
+            vertices[index++] += dz;
+        }
+        return this;
+    }
+    public VertexArray translateX(double dx){
+
+        double[] vertices = this.vertices;
+
+        for (int index = X, count = vertices.length; index < count; index += 3){
+
+            vertices[index] += dx;
+        }
+        return this;
+    }
+    public VertexArray translateY(double dy){
+
+        double[] vertices = this.vertices;
+
+        for (int index = Y, count = vertices.length; index < count; index += 3){
+
+            vertices[index] += dy;
+        }
+        return this;
+    }
+    public VertexArray translateZ(double dz){
+
+        double[] vertices = this.vertices;
+
+        for (int index = Z, count = vertices.length; index < count; index += 3){
+
+            vertices[index] += dz;
+        }
+        return this;
+    }
     public int countVertices(){
         return this.countVertices;
     }
@@ -362,7 +418,7 @@ public class VertexArray
 
         this.vertices[X] = x;
         this.vertices[Y] = y;
-        this.vertices[Z]   = z;
+        this.vertices[Z] = z;
 
         return this;
     }

@@ -317,6 +317,20 @@ public class Matrix
 
         return v;
     }
+    public final double[] transform(double[] v, final int ofs){
+
+        final double[] mm = this.m;
+
+        final double vX = v[ofs+X];
+        final double vY = v[ofs+Y];
+        final double vZ = v[ofs+Z];
+
+        v[ofs+X] = mm[M00] * vX + mm[M01] * vY + mm[M02] * vZ + mm[M03];
+        v[ofs+Y] = mm[M10] * vX + mm[M11] * vY + mm[M12] * vZ + mm[M13];
+        v[ofs+Z] = mm[M20] * vX + mm[M21] * vY + mm[M22] * vZ + mm[M23];
+
+        return v;
+    }
     public final double m00(){
         return this.m[M00];
     }

@@ -88,6 +88,12 @@ public class Component
     }
     public final fv3.Component setParent(fv3.Component p){
         this.parent = p;
+        if (null == this.bounds)
+            try {
+                this.setFv3Bounds();
+            }
+            catch (RuntimeException ignore){
+            }
         return this;
     }
     public final boolean hasFv3Matrix(){
