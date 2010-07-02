@@ -898,39 +898,60 @@ public class VertexArray
         string.append(pr);
         string.append(this.type);
 
-        for (int face = 0, count = this.countFaces, c, z; face < count; face++){
+        if (0 == this.countFaces){
 
-            string.append(in);
-            string.append(pr);
+            final double[] vertices = this.vertices;
 
-            double[] fary = this.getFace(face);
-            double[] nary = this.getNormal(face);
-            for (c = 0, z = fary.length; c < z; c++){
-                if (0 != c){
-                    string.append(in);
-                    string.append(pr);
-                }
-                string.append(String.format("%5d",face));
-                string.append(' ');
-                string.append(String.format("%30.26f",fary[c++]));
-                string.append(' ');
-                string.append(String.format("%30.26f",fary[c++]));
-                string.append(' ');
-                string.append(String.format("%30.26f",fary[c]));
-            }
-
-            if (null != nary){
+            for (int vertex = 0, count = vertices.length; vertex < count; ){
 
                 string.append(in);
                 string.append(pr);
 
-                string.append(String.format("N%4d",face));
+                string.append(String.format("%5d",(vertex/3)));
                 string.append(' ');
-                string.append(String.format("%30.26f",nary[X]));
+                string.append(String.format("%30.26f",vertices[vertex++]));
                 string.append(' ');
-                string.append(String.format("%30.26f",nary[Y]));
+                string.append(String.format("%30.26f",vertices[vertex++]));
                 string.append(' ');
-                string.append(String.format("%30.26f",nary[Z]));
+                string.append(String.format("%30.26f",vertices[vertex++]));
+            }
+        }
+        else {
+
+            for (int face = 0, count = this.countFaces, c, z; face < count; face++){
+
+                string.append(in);
+                string.append(pr);
+
+                double[] fary = this.getFace(face);
+                double[] nary = this.getNormal(face);
+                for (c = 0, z = fary.length; c < z; c++){
+                    if (0 != c){
+                        string.append(in);
+                        string.append(pr);
+                    }
+                    string.append(String.format("%5d",face));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",fary[c++]));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",fary[c++]));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",fary[c]));
+                }
+
+                if (null != nary){
+
+                    string.append(in);
+                    string.append(pr);
+
+                    string.append(String.format("N%4d",face));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",nary[X]));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",nary[Y]));
+                    string.append(' ');
+                    string.append(String.format("%30.26f",nary[Z]));
+                }
             }
         }
         return string.toString();
