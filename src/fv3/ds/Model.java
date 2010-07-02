@@ -168,6 +168,9 @@ public class Model
     public final fv3.Bounds getFv3Bounds(){
         return this;
     }
+    public final fv3.Component setFv3Bounds(){
+        return this;
+    }
     public double getBoundsMinX(){
         return this.minX;
     }

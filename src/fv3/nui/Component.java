@@ -62,7 +62,7 @@ public class Component
 
     private volatile boolean alive;
 
-    private volatile Matrix matrix;
+    protected volatile Matrix matrix;
 
     protected volatile boolean visible = true;
 
@@ -88,12 +88,6 @@ public class Component
     }
     public final fv3.Component setParent(fv3.Component p){
         this.parent = p;
-        if (null == this.bounds)
-            try {
-                this.setFv3Bounds();
-            }
-            catch (RuntimeException ignore){
-            }
         return this;
     }
     public final boolean hasFv3Matrix(){

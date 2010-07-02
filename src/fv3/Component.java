@@ -98,6 +98,12 @@ public interface Component
      */
     public Bounds getFv3Bounds();
     /**
+     * Throws a runtime exception, argument or state, on error
+     * conditions.  
+     * @return This instance object
+     */
+    public Component setFv3Bounds();
+    /**
      * The current state of component visibility.  A component is
      * visible by default (typically).
      */

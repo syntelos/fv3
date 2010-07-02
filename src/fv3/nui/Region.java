@@ -98,6 +98,7 @@ public class Region
                 child.init(gl);
             }
             this.visible = visibility;
+            this.pushMatrix = (visibility && (null != this.matrix));
         }
     }
     public void display(GL2 gl){
@@ -143,6 +144,18 @@ public class Region
             if (ps)
                 gl.glPopMatrix();
         }
+    }
+    public fv3.Component setFv3Bounds(){
+        super.setFv3Bounds();
+
+        for (fv3.Component child: this.children){
+            try {
+                child.setFv3Bounds();
+            }
+            catch (RuntimeException ignore){
+            }
+        }
+        return this;
     }
     public void keyPressed(KeyEvent e){
         fv3.Component current = this.current;
