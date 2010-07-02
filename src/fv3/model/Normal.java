@@ -17,6 +17,8 @@
  */
 package fv3.model;
 
+import fv3.math.Vector;
+
 import javax.media.opengl.GL2;
 
 public final class Normal
@@ -31,6 +33,12 @@ public final class Normal
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    public Normal(double[] vector){
+        this(vector[X],vector[Y],vector[Z]);
+    }
+    public Normal(Vector vector){
+        this(vector.array());
     }
 
 

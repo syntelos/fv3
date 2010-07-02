@@ -52,6 +52,89 @@ public abstract class Geom
     public static class Circle
         extends Geom
     {
+        public static class XY
+            extends Circle
+        {
+            public XY(double r){
+                super(r);
+            }
+            public XY(XY c){
+                super(c);
+            }
+        }
+        public static class ZY
+            extends Circle
+        {
+            /**
+             * Construct a circle in the Z-Y plane centered at (0,0,0)
+             */
+            public ZY(double r){
+                super(Type.LineLoop,(r*2.0));
+
+                final double ds = (PI_M2 / (double)this.countVertices);
+
+                double a = 0.0;
+
+                if (r != 1.0){
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,0.0,(r*Math.sin(a)),(r*Math.cos(a)));
+
+                        a += ds;
+                    }
+                }
+                else {
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,0.0,(Math.sin(a)),(Math.cos(a)));
+
+                        a += ds;
+                    }
+                }
+            }
+            public ZY(ZY c){
+                super(c);
+            }
+        }
+        public static class ZX
+            extends Circle
+        {
+            /**
+             * Construct a circle in the Z-X plane centered at (0,0,0)
+             */
+            public ZX(double r){
+                super(Type.LineLoop,(r*2.0));
+
+                final double ds = (PI_M2 / (double)this.countVertices);
+
+                double a = 0.0;
+
+                if (r != 1.0){
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,(r*Math.sin(a)),0.0,(r*Math.cos(a)));
+
+                        a += ds;
+                    }
+                }
+                else {
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,(Math.sin(a)),0.0,(Math.cos(a)));
+
+                        a += ds;
+                    }
+                }
+            }
+            public ZX(ZX c){
+                super(c);
+            }
+        }
+
         /**
          * Construct a circle in the X-Y plane centered at (0,0,0)
          */
@@ -83,6 +166,12 @@ public abstract class Geom
         }
         public Circle(Circle c){
             super(c);
+        }
+        protected Circle(Type t, int c){
+            super(t,c);
+        }
+        protected Circle(Type t, double c){
+            super(t,c);
         }
     }
 

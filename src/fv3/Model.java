@@ -41,7 +41,9 @@ public interface Model
      * calls to glEnableClientState before glCallList, and into
      * glDisableClientState after glCallList.
      */
-    public interface Element {
+    public interface Element
+        extends fv3.math.Notation
+    {
         /**
          * @return List of client state enables before call list,
          * disables after call list.  Null for none.
