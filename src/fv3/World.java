@@ -250,6 +250,8 @@ public class World
          * Propagate event to children via 'fv3.nui.Region'
          */
         super.init(gl);
+
+        this.checkErrors(gl);
     }
     public void display(GL2 gl){
 

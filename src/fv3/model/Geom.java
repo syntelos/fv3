@@ -56,7 +56,7 @@ public abstract class Geom
          * Construct a circle in the X-Y plane centered at (0,0,0)
          */
         public Circle(double r){
-            super(Type.LineLoop,((r*r)/2.0));
+            super(Type.LineLoop,(r*2.0));
 
             final double ds = (PI_M2 / (double)this.countVertices);
 
