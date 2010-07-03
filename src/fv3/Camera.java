@@ -65,15 +65,21 @@ public class Camera
     implements fv3.math.Notation
 {
     /**
-     * An operator is called from the camera init event, once the
-     * camera has the viewport aspect ratio.  
+     * An operator is a stateless matrix constructor, while a camera
+     * maintains the dynamic state of the projection and view matrices
+     * once constructed.
+     * 
+     * An operator is called once from the camera init event to define
+     * the projection and view matrices, immmediately after the camera
+     * has the viewport aspect ratio, and only when one of the
+     * projection or view matrices have not been defined (non null).
      * 
      * The camera init event is called on camera start and camera
      * change, from the init state and from the run state.
      * 
-     * The operator methods are called in the order of projection,
-     * then view.  Shared computation can be performed once in the
-     * projection method.
+     * The operator methods are called in the order of (method)
+     * projection, and then (method) view.  Shared computation can be
+     * performed once in the projection method.
      * 
      * @see fv3.cop.Frustrum
      * @see fv3.cop.Ortho
@@ -349,13 +355,15 @@ public class Camera
                 this.vpHeight = (int)fv3s.height;
             }
 
+            if (null == this.projection || null == this.view){
 
-            Camera.Operator operator = this.operator;
-            if (null != operator){
+                Camera.Operator operator = this.operator;
+                if (null != operator){
 
-                this.projection = operator.projection(this);
+                    this.projection = operator.projection(this);
 
-                this.view = operator.view(this);
+                    this.view = operator.view(this);
+                }
             }
 
             if (Camera.Debug)
