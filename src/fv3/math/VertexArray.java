@@ -619,7 +619,8 @@ public class VertexArray
             throw new IllegalArgumentException();
 
         else if (thatType == this.type)
-            return this.array();
+
+            return this.vertices.clone();
 
         else if (this.type.hasFaces() && thatType.hasFaces()){
 
