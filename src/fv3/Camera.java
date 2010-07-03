@@ -384,64 +384,45 @@ public class Camera
             gl.glLoadMatrixd(view.buffer());
 
     }
-    public void keyNav(char ch, boolean mm){
+    public void keyNav(char ch){
         switch (ch){
         case 'u':
+            this.rotateX(NavRotate);
+            break;
         case 'U':
-            if (mm)
-                this.rotateX(-NavRotate);
-            else
-                this.rotateX(NavRotate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.rotateX(-NavRotate);
             break;
         case 'v':
+            this.rotateY(NavRotate);
+            break;
         case 'V':
-            if (mm)
-                this.rotateY(-NavRotate);
-            else
-                this.rotateY(NavRotate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.rotateY(-NavRotate);
             break;
         case 'w':
+            this.rotateZ(NavRotate);
+            break;
         case 'W':
-            if (mm)
-                this.rotateZ(-NavRotate);
-            else
-                this.rotateZ(NavRotate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.rotateZ(-NavRotate);
             break;
         case 'x':
+            this.translateX(NavTranslate);
+            break;
         case 'X':
-            if (mm)
-                this.translateX(-NavTranslate);
-            else
-                this.translateX(NavTranslate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.translateX(-NavTranslate);
             break;
         case 'y':
+            this.translateY(NavTranslate);
+            break;
         case 'Y':
-            if (mm)
-                this.translateY(-NavTranslate);
-            else
-                this.translateY(NavTranslate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.translateY(-NavTranslate);
             break;
         case 'z':
+            this.translateZ(NavTranslate);
+            break;
         case 'Z':
-            if (mm)
-                this.translateZ(-NavTranslate);
-            else
-                this.translateZ(NavTranslate);
-
-            System.err.printf("Cam nav%n%s%n",this.toString());
+            this.translateZ(-NavTranslate);
             break;
         default:
-            System.err.printf("Unbound cam nav key(%x,%b)%n",(int)ch,mm);
             break;
         }
     }
