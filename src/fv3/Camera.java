@@ -470,7 +470,7 @@ public class Camera
                 System.err.printf("Cam nav (+)%n%s%n",this.toString());
                 break;
             default:
-                System.err.printf("Unbound cam nav key(%c,%d)%n",ch,cc);
+                System.err.printf("Unbound cam nav key(%x,%x)%n",(int)ch,cc);
                 break;
             }
         }
