@@ -130,8 +130,6 @@ public class Camera
 
     protected volatile Matrix projection, view;
 
-    protected volatile char keyNav = 'z';
-
 
 
     public Camera(char name){
@@ -386,93 +384,65 @@ public class Camera
             gl.glLoadMatrixd(view.buffer());
 
     }
-    public void keyNav(char ch, int cc, int mm){
+    public void keyNav(char ch, boolean mm){
         switch (ch){
-        case 'U':
-            this.keyNav = 'u';
-            break;
-        case 'V':
-            this.keyNav = 'v';
-            break;
-        case 'W':
-            this.keyNav = 'w';
-            break;
-        case 'X':
-            this.keyNav = 'x';
-            break;
-        case 'Y':
-            this.keyNav = 'y';
-            break;
-        case 'Z':
-            this.keyNav = 'z';
-            break;
         case 'u':
+        case 'U':
+            if (mm)
+                this.rotateX(-NavRotate);
+            else
+                this.rotateX(NavRotate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
+            break;
         case 'v':
+        case 'V':
+            if (mm)
+                this.rotateY(-NavRotate);
+            else
+                this.rotateY(NavRotate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
+            break;
         case 'w':
+        case 'W':
+            if (mm)
+                this.rotateZ(-NavRotate);
+            else
+                this.rotateZ(NavRotate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
+            break;
         case 'x':
+        case 'X':
+            if (mm)
+                this.translateX(-NavTranslate);
+            else
+                this.translateX(NavTranslate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
+            break;
         case 'y':
+        case 'Y':
+            if (mm)
+                this.translateY(-NavTranslate);
+            else
+                this.translateY(NavTranslate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
+            break;
         case 'z':
-            this.keyNav = ch;
+        case 'Z':
+            if (mm)
+                this.translateZ(-NavTranslate);
+            else
+                this.translateZ(NavTranslate);
+
+            System.err.printf("Cam nav%n%s%n",this.toString());
             break;
         default:
-
-            switch (cc){
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_DOWN:
-                switch (this.keyNav){
-                case 'u':
-                    this.rotateX(-NavRotate);
-                    break;
-                case 'v':
-                    this.rotateY(-NavRotate);
-                    break;
-                case 'w':
-                    this.rotateZ(-NavRotate);
-                    break;
-                case 'x':
-                    this.translateX(-NavTranslate);
-                    break;
-                case 'y':
-                    this.translateY(-NavTranslate);
-                    break;
-                case 'z':
-                    this.translateZ(-NavTranslate);
-                    break;
-                default:
-                    throw new IllegalStateException(String.valueOf(this.keyNav));
-                }
-                System.err.printf("Cam nav (-)%n%s%n",this.toString());
-                break;
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_RIGHT:
-                switch (this.keyNav){
-                case 'u':
-                    this.rotateX(NavRotate);
-                    break;
-                case 'v':
-                    this.rotateY(NavRotate);
-                    break;
-                case 'w':
-                    this.rotateZ(NavRotate);
-                    break;
-                case 'x':
-                    this.translateX(NavTranslate);
-                    break;
-                case 'y':
-                    this.translateY(NavTranslate);
-                    break;
-                case 'z':
-                    this.translateZ(NavTranslate);
-                    break;
-                default:
-                    throw new IllegalStateException(String.valueOf(this.keyNav));
-                }
-                System.err.printf("Cam nav (+)%n%s%n",this.toString());
-                break;
-            default:
-                System.err.printf("Unbound cam nav key(%x,%x)%n",(int)ch,cc);
-                break;
-            }
+            System.err.printf("Unbound cam nav key(%x,%b)%n",(int)ch,mm);
+            break;
         }
     }
     public String toString(){

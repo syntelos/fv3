@@ -218,13 +218,12 @@ public class World
     }
     /**
      * @param ch Key character
-     * @param cc Key code
-     * @param mm Key modifiers
+     * @param mm Key modifiers present
      * @see com.sun.javafx.newt.KeyEvent
      */
-    public void keyNav(char ch, int cc, int mm){
+    public void keyNav(char ch, boolean mm){
 
-        this.getCamera().keyNav(ch,cc,mm);
+        this.getCamera().keyNav(ch,mm);
     }
     public boolean hasBgColor(){
         return (null != this.bg);
@@ -320,7 +319,7 @@ public class World
             else if ('A' <= ch && ch <= 't')
                 this.useCamera(ch);
             else 
-                this.keyNav(ch,cc,e.getModifiers());
+                this.keyNav(ch,(0 != e.getModifiers()));
 
             return;
         }
