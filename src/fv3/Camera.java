@@ -62,6 +62,7 @@ import com.sun.javafx.newt.KeyEvent;
  */
 public class Camera
     extends java.lang.Object
+    implements fv3.math.Notation
 {
     /**
      * An operator is called from the camera init event, once the
@@ -109,6 +110,10 @@ public class Camera
         }
         Debug = value;
     }
+
+    protected final static double NavTranslate = 10.0;
+
+    protected final static double NavRotate = PI_D2/8.0;
 
 
     public final char name;
@@ -248,12 +253,36 @@ public class Camera
         this.getView().translate(x,y,z);
         return this;
     }
+    public Camera translateX(double x){
+        this.getView().translateX(x);
+        return this;
+    }
+    public Camera translateY(double y){
+        this.getView().translateY(y);
+        return this;
+    }
+    public Camera translateZ(double z){
+        this.getView().translateZ(z);
+        return this;
+    }
     public Camera scale(double x, double y, double z){
         this.getView().scale(x,y,z);
         return this;
     }
     public Camera rotate(double x, double y, double z){
         this.getView().rotate(x,y,z);
+        return this;
+    }
+    public Camera rotateX(double x){
+        this.getView().rotateX(x);
+        return this;
+    }
+    public Camera rotateY(double y){
+        this.getView().rotateY(y);
+        return this;
+    }
+    public Camera rotateZ(double z){
+        this.getView().rotateZ(z);
         return this;
     }
     public Camera frustrum(double left, double right, double bottom, double top, double near, double far){
@@ -336,7 +365,6 @@ public class Camera
         }
 
         gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
 
         Matrix projection = this.projection;
 
@@ -361,8 +389,13 @@ public class Camera
     public void keyNav(char ch, int cc, int mm){
         switch (ch){
         case 'U':
+            this.keyNav = 'u';
+            break;
         case 'V':
+            this.keyNav = 'v';
+            break;
         case 'W':
+            this.keyNav = 'w';
             break;
         case 'X':
             this.keyNav = 'x';
@@ -376,61 +409,68 @@ public class Camera
         case 'u':
         case 'v':
         case 'w':
-            break;
         case 'x':
         case 'y':
         case 'z':
             this.keyNav = ch;
             break;
         default:
-            Matrix V = this.getView();
 
             switch (cc){
             case KeyEvent.VK_LEFT:
-                switch (this.keyNav){
-                case 'x':
-                    V.translate(-10.0,0.0,0.0);
-                    break;
-                case 'y':
-                    V.translate(0.0,-10.0,0.0);
-                    break;
-                case 'z':
-                    V.translate(0.0,0.0,-10.0);
-                    break;
-                }
-                break;
-            case KeyEvent.VK_UP:
-                switch (this.keyNav){
-                case 'x':
-                    break;
-                case 'y':
-                    break;
-                case 'z':
-                    break;
-                }
-                break;
-            case KeyEvent.VK_RIGHT:
-                switch (this.keyNav){
-                case 'x':
-                    V.translate(10.0,0.0,0.0);
-                    break;
-                case 'y':
-                    V.translate(0.0,10.0,0.0);
-                    break;
-                case 'z':
-                    V.translate(0.0,0.0,10.0);
-                    break;
-                }
-                break;
             case KeyEvent.VK_DOWN:
                 switch (this.keyNav){
+                case 'u':
+                    this.rotateX(-NavRotate);
+                    break;
+                case 'v':
+                    this.rotateY(-NavRotate);
+                    break;
+                case 'w':
+                    this.rotateZ(-NavRotate);
+                    break;
                 case 'x':
+                    this.translateX(-NavTranslate);
                     break;
                 case 'y':
+                    this.translateY(-NavTranslate);
                     break;
                 case 'z':
+                    this.translateZ(-NavTranslate);
                     break;
+                default:
+                    throw new IllegalStateException(String.valueOf(this.keyNav));
                 }
+                System.err.printf("Cam nav (-)%n%s%n",this.toString());
+                break;
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_RIGHT:
+                switch (this.keyNav){
+                case 'u':
+                    this.rotateX(NavRotate);
+                    break;
+                case 'v':
+                    this.rotateY(NavRotate);
+                    break;
+                case 'w':
+                    this.rotateZ(NavRotate);
+                    break;
+                case 'x':
+                    this.translateX(NavTranslate);
+                    break;
+                case 'y':
+                    this.translateY(NavTranslate);
+                    break;
+                case 'z':
+                    this.translateZ(NavTranslate);
+                    break;
+                default:
+                    throw new IllegalStateException(String.valueOf(this.keyNav));
+                }
+                System.err.printf("Cam nav (+)%n%s%n",this.toString());
+                break;
+            default:
+                System.err.printf("Unbound cam nav key(%c,%d)%n",ch,cc);
                 break;
             }
         }

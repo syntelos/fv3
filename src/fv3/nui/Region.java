@@ -241,7 +241,7 @@ public class Region
         this.current = c;
         return this;
     }
-    public final List<fv3.Component> getChildren(){
+    public final List<fv3.Component> getFv3Children(){
         return this.children;
     }
     protected final List<fv3.Component> children(){
@@ -252,7 +252,7 @@ public class Region
         }
         return c;
     }
-    public final Region setChildren(List<fv3.Component> c){
+    public final Region setFv3Children(List<fv3.Component> c){
         this.children = c;
         return this;
     }
@@ -264,7 +264,7 @@ public class Region
             else
                 this.children().add(c);
 
-            c.setParent(this);
+            c.setFv3Parent(this);
         }
         return this;
     }
@@ -275,7 +275,7 @@ public class Region
         else
             return null;
     }
-    public final Region dropChildren(){
+    public final Region dropFv3Children(){
         this.children = null;
         this.pushMatrix = false;
         return this;

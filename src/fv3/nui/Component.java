@@ -83,10 +83,10 @@ public class Component
         this.parent = null;
         this.matrix = null;
     }
-    public final fv3.Component getParent(){
+    public final fv3.Component getFv3Parent(){
         return this.parent;
     }
-    public final fv3.Component setParent(fv3.Component p){
+    public final fv3.Component setFv3Parent(fv3.Component p){
         this.parent = p;
         return this;
     }

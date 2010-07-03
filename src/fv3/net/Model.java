@@ -86,10 +86,10 @@ public abstract class Model
     }
     public void display(GL2 gl){
     }
-    public final fv3.Component getParent(){
+    public final fv3.Component getFv3Parent(){
         return this.parent;
     }
-    public final fv3.Component setParent(fv3.Component p){
+    public final fv3.Component setFv3Parent(fv3.Component p){
         this.parent = p;
         return this;
     }

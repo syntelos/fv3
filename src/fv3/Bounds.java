@@ -134,7 +134,7 @@ public interface Bounds
                 double maxX = 0, maxY = 0, maxZ = 0;
 
                 Region region = (Region)c;
-                for (Component child : region.getChildren()){
+                for (Component child : region.getFv3Children()){
                     if (child.hasFv3Bounds()){
                         Bounds bounds = child.getFv3Bounds();
                         if (once){

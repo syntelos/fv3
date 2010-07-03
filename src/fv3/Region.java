@@ -47,10 +47,10 @@ public interface Region
      */
     public Region setCurrent(Component c);
 
-    public List<Component> getChildren();
+    public List<Component> getFv3Children();
 
-    public Region setChildren(List<Component> c);
+    public Region setFv3Children(List<Component> c);
 
-    public Region dropChildren();
+    public Region dropFv3Children();
 
 }

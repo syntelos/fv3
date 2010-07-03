@@ -41,7 +41,7 @@ public class Gears
                     if ("-dim".equals(arg)){
                         System.out.println(gears.getClass().getName());
                         System.out.println(((Bounds.CircumSphere)gears.getFv3Bounds()).toString("\t"));
-                        List<fv3.Component> children = gears.getChildren();
+                        List<fv3.Component> children = gears.getFv3Children();
                         for (fv3.Component child: children){
                             if (child instanceof Model){
                                 System.out.println(child.getClass().getName());

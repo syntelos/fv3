@@ -159,6 +159,15 @@ public class Matrix
         }
         return this;
     }
+    public final Matrix translateX(double x){
+        return this.translate(x,0,0);
+    }
+    public final Matrix translateY(double y){
+        return this.translate(0,y,0);
+    }
+    public final Matrix translateZ(double z){
+        return this.translate(0,0,z);
+    }
     public final Matrix translate(Vector v){
         double[] vv = v.array();
         return this.translate(vv[X],vv[Y],vv[Z]);

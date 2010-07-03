@@ -55,12 +55,12 @@ public interface Component
     /**
      * @return Parent
      */
-    public Component getParent();
+    public Component getFv3Parent();
     /**
      * @param p Parent
      * @return This (not the argument, parent)
      */
-    public Component setParent(Component p);
+    public Component setFv3Parent(Component p);
 
     public boolean hasFv3Matrix();
     public boolean hasNotFv3Matrix();
