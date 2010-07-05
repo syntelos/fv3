@@ -38,35 +38,39 @@ public abstract class Cylinder
             double z0 = -dd2;
             double z1 = +dd2;
 
-            for (int cc = 0, count = cv.length; cc < count; ){
+            for (int cc = 0, count = cv.length; ; ){
 
                 double x0 = cv[cc++];
                 double y0 = cv[cc++];
 
-                double x1 = cv[cc];
-                double y1 = cv[cc+1];
+                if (cc < count){
+                    double x1 = cv[cc];
+                    double y1 = cv[cc+1];
 
-                /*
-                 * Triangle fan disk @ z0
-                 */
-                this.add(0.0,0.0,z0,
-                         x0,y0,z0,
-                         x1,y1,z0);
-                /*
-                 * Quad triangle pair in depth
-                 */
-                this.add(x0,y0,z0,
-                         x0,y0,z1,
-                         x1,y1,z1);
-                this.add(x0,y0,z0,
-                         x1,y1,z1,
-                         x1,y1,z0);
-                /*
-                 * Triangle fan disk @ z1
-                 */
-                this.add(0.0,0.0,z1,
-                         x1,y1,z1,
-                         x0,y0,z1);
+                    /*
+                     * Triangle fan disk @ z0
+                     */
+                    this.add(0.0,0.0,z0,
+                             x0,y0,z0,
+                             x1,y1,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
+                    /*
+                     * Triangle fan disk @ z1
+                     */
+                    this.add(0.0,0.0,z1,
+                             x1,y1,z1,
+                             x0,y0,z1);
+                }
+                else
+                    break;
             }
         }
         public XY(XY c){
@@ -86,35 +90,39 @@ public abstract class Cylinder
             double x0 = -dd2;
             double x1 = +dd2;
 
-            for (int cc = 0, count = cv.length; cc < count; ){
+            for (int cc = 0, count = cv.length; ; ){
 
                 double z0 = cv[cc++];
                 double y0 = cv[cc++];
 
-                double z1 = cv[cc];
-                double y1 = cv[cc+1];
+                if (cc < count){
+                    double z1 = cv[cc];
+                    double y1 = cv[cc+1];
 
-                /*
-                 * Triangle fan disk @ x0
-                 */
-                this.add(x0,0.0,0.0,
-                         x0,y0,z0,
-                         x1,y1,z0);
-                /*
-                 * Quad triangle pair in depth
-                 */
-                this.add(x0,y0,z0,
-                         x0,y0,z1,
-                         x1,y1,z1);
-                this.add(x0,y0,z0,
-                         x1,y1,z1,
-                         x1,y1,z0);
-                /*
-                 * Triangle fan disk @ x1
-                 */
-                this.add(x1,0.0,0.0,
-                         x1,y1,z1,
-                         x0,y0,z1);
+                    /*
+                     * Triangle fan disk @ x0
+                     */
+                    this.add(x0,0.0,0.0,
+                             x0,y0,z0,
+                             x1,y1,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
+                    /*
+                     * Triangle fan disk @ x1
+                     */
+                    this.add(x1,0.0,0.0,
+                             x1,y1,z1,
+                             x0,y0,z1);
+                }
+                else
+                    break;
             }
         }
         public ZY(ZY c){
@@ -134,35 +142,39 @@ public abstract class Cylinder
             double y0 = -dd2;
             double y1 = +dd2;
 
-            for (int cc = 0, count = cv.length; cc < count; ){
+            for (int cc = 0, count = cv.length; ; ){
 
                 double z0 = cv[cc++];
                 double x0 = cv[cc++];
 
-                double z1 = cv[cc];
-                double x1 = cv[cc+1];
+                if (cc < count){
+                    double z1 = cv[cc];
+                    double x1 = cv[cc+1];
 
-                /*
-                 * Triangle fan disk @ x0
-                 */
-                this.add(0.0,y0,0.0,
-                         x0,y0,z0,
-                         x1,y1,z0);
-                /*
-                 * Quad triangle pair in depth
-                 */
-                this.add(x0,y0,z0,
-                         x0,y0,z1,
-                         x1,y1,z1);
-                this.add(x0,y0,z0,
-                         x1,y1,z1,
-                         x1,y1,z0);
-                /*
-                 * Triangle fan disk @ x1
-                 */
-                this.add(0.0,y0,0.0,
-                         x1,y1,z1,
-                         x0,y0,z1);
+                    /*
+                     * Triangle fan disk @ x0
+                     */
+                    this.add(0.0,y0,0.0,
+                             x0,y0,z0,
+                             x1,y1,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
+                    /*
+                     * Triangle fan disk @ x1
+                     */
+                    this.add(0.0,y0,0.0,
+                             x1,y1,z1,
+                             x0,y0,z1);
+                }
+                else
+                    break;
             }
         }
         public ZX(ZX c){
