@@ -110,6 +110,14 @@ public class Vector
         a[Z] = a[Z] + b[Z];
         return this;
     }
+    public final Vector add(double[] b){
+        double[] a = this.v;
+
+        a[X] = a[X] + b[X];
+        a[Y] = a[Y] + b[Y];
+        a[Z] = a[Z] + b[Z];
+        return this;
+    }
     public final Vector add(double dx, double dy, double dz){
         double[] a = this.v;
         a[X] = a[X] + dx;
@@ -133,7 +141,15 @@ public class Vector
             a[Z] = a[Z] * s;
         }
         return this;
-
+    }
+    public final Vector div(double s){
+        if (1.0 != s){
+            double[] a = this.v;
+            a[X] = a[X] / s;
+            a[Y] = a[Y] / s;
+            a[Z] = a[Z] / s;
+        }
+        return this;
     }
     public final double dot(Vector v){
         double[] a = this.v;
@@ -193,6 +209,14 @@ public class Vector
         Vector q = new Vector(a).sub(this);
 
         return q.cross(p).normalize();
+    }
+    /**
+     * Compute a point centroid in the triangle described by the
+     * points this 'a', and the arguments 'b' and 'c'.
+     */
+    public final Vector centroid(Vector b, Vector c){
+
+        return new Vector(this).add(b).add(c).div(3);
     }
     public final Vector transform(Matrix m){
         double[] c = this.v;

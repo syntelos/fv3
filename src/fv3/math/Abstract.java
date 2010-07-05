@@ -70,6 +70,23 @@ public abstract class Abstract
         else
             return true;
     }
+    /**
+     * @param v Some real value (not NaN)
+     * 
+     * @return Negative one for a value less than zero, or positive
+     * one for a value greater than or equal to zero.
+     * 
+     * @see java.lang.Math#signum(double)
+     */
+    public final static int Sign(double v){
+        if (v != v)
+            throw new IllegalArgumentException(String.valueOf(v));
+
+        else if (0.0 > v)
+            return -1;
+        else
+            return 1;
+    }
 
 
     /**

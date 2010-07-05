@@ -23,7 +23,7 @@ package fv3.csg;
  * parallel to XY, ZY or ZX and the solid centered at (0,0,0).
  */
 public abstract class Cylinder
-    extends Solid
+    extends Geom
 {
     public static class XY
         extends Cylinder
@@ -56,23 +56,12 @@ public abstract class Cylinder
                     /*
                      * Quad triangle pair in depth
                      */
-                    if (0.0 > x1){
-
-                        this.add(x0,y0,z0,
-                                 x0,y0,z1,
-                                 x1,y1,z1);
-                        this.add(x0,y0,z0,
-                                 x1,y1,z1,
-                                 x1,y1,z0);
-                    }
-                    else {
-                        this.add(x0,y0,z0,
-                                 x1,y1,z1,
-                                 x0,y0,z1);
-                        this.add(x0,y0,z0,
-                                 x1,y1,z0,
-                                 x1,y1,z1);
-                    }
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
                     /*
                      * Triangle fan disk @ z1
                      */
@@ -93,23 +82,12 @@ public abstract class Cylinder
                     /*
                      * Quad triangle pair in depth
                      */
-                    if (0.0 > x1){
-
-                        this.add(x0,y0,z0,
-                                 x0,y0,z1,
-                                 x1,y1,z1);
-                        this.add(x0,y0,z0,
-                                 x1,y1,z1,
-                                 x1,y1,z0);
-                    }
-                    else {
-                        this.add(x0,y0,z0,
-                                 x1,y1,z1,
-                                 x0,y0,z1);
-                        this.add(x0,y0,z0,
-                                 x1,y1,z0,
-                                 x1,y1,z1);
-                    }
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
                     /*
                      * Triangle fan disk @ z1
                      */
@@ -169,8 +147,34 @@ public abstract class Cylinder
                              x1,y1,z1,
                              x0,y0,z1);
                 }
-                else
+                else {
+
+                    double z1 = cv[0];
+                    double y1 = cv[1];
+
+                    /*
+                     * Triangle fan disk @ x0
+                     */
+                    this.add(x0,0.0,0.0,
+                             x0,y0,z0,
+                             x1,y1,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
+                    /*
+                     * Triangle fan disk @ x1
+                     */
+                    this.add(x1,0.0,0.0,
+                             x1,y1,z1,
+                             x0,y0,z1);
                     break;
+                }
             }
         }
         public ZY(ZY c){
@@ -221,8 +225,34 @@ public abstract class Cylinder
                              x1,y1,z1,
                              x0,y0,z1);
                 }
-                else
+                else {
+                    double z1 = cv[0];
+                    double x1 = cv[1];
+
+                    /*
+                     * Triangle fan disk @ x0
+                     */
+                    this.add(0.0,y0,0.0,
+                             x0,y0,z0,
+                             x1,y1,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    this.add(x0,y0,z0,
+                             x0,y0,z1,
+                             x1,y1,z1);
+                    this.add(x0,y0,z0,
+                             x1,y1,z1,
+                             x1,y1,z0);
+                    /*
+                     * Triangle fan disk @ x1
+                     */
+                    this.add(0.0,y0,0.0,
+                             x1,y1,z1,
+                             x0,y0,z1);
+
                     break;
+                }
             }
         }
         public ZX(ZX c){
@@ -235,7 +265,7 @@ public abstract class Cylinder
 
 
     protected Cylinder(double r, double d){
-        super((int)Math.ceil(r*4.0));
+        super(0);
         if (r == r && 0.0 < r){
             if (d == d && 0.0 < d){
                 this.radius = r;
@@ -260,7 +290,7 @@ public abstract class Cylinder
      */
     protected final static double[] CV(double r){
 
-        final int cn = (int)Math.ceil(r*2.0);
+        final int cn = (int)Math.ceil(r*4.0);
         final double ds = (PI_M2 / (double)cn);
 
         double[] cv = new double[cn<<1];

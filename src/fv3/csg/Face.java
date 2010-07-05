@@ -155,7 +155,7 @@ public final class Face
 
     protected State.Face status = State.Face.Unknown;
 
-    private Vector normal;
+    private Vector normal, centroid;
 
     private Bound bound;
 
@@ -200,6 +200,9 @@ public final class Face
     }
     public double[] normal(){
         return this.getNormal().array();
+    }
+    public double[] centroid(){
+        return this.getCentroid().array();
     }
     public boolean is(State.Face s){
         return (s == this.status);
@@ -272,6 +275,14 @@ public final class Face
 
         return this;
     }
+    public Face deconstruct(){
+
+        this.a.dropMember(this);
+        this.b.dropMember(this);
+        this.c.dropMember(this);
+
+        return this;
+    }
 	public Vector getNormal(){
 
         Vector n = this.normal;
@@ -283,6 +294,18 @@ public final class Face
             this.normal = n;
         }
         return n;
+	}
+	public Vector getCentroid(){
+
+        Vector c = this.centroid;
+
+        if (null == c){
+
+            c = this.a.getVector().centroid(this.b.getVector(),this.c.getVector());
+		
+            this.centroid = c;
+        }
+        return c;
 	}
     public int compareTo(Face that){
         if (this == that)

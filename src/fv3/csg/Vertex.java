@@ -39,6 +39,8 @@ public final class Vertex
 
     private String string;
 
+    private Vector normal;
+
 
     public Vertex(double[] array){
         this(array[X],array[Y],array[Z]);
@@ -214,12 +216,16 @@ public final class Vertex
         }
     }
     public Vector normal(Vertex b, Vertex c){
+        Vector n = this.normal;
+        if (null == n){
+            Vector va = new Vector(this.x,this.y,this.z);
+            Vector vb = new Vector(b.x,b.y,b.z);
+            Vector vc = new Vector(c.x,c.y,c.z);
 
-        Vector va = new Vector(this.x,this.y,this.z);
-        Vector vb = new Vector(b.x,b.y,b.z);
-        Vector vc = new Vector(c.x,c.y,c.z);
-
-        return new Vector(va.normal(vb,vc).array());
+            n = new Vector(va.normal(vb,vc).array());
+            this.normal = n;
+        }
+        return n;
     }
     public double[] copy(){
         return new double[]{x,y,z};

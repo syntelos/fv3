@@ -85,32 +85,31 @@ public class Solid
      * ordered clock wise looking at the "back" of the face, and
      * counter clock wise looking at the "front" of the face.
      */
-    public Solid add(Vertex a, Vertex b, Vertex c){
-        this.state.add(new Face(this,a,b,c));
-        return this;
+    public final Solid add(Vertex a, Vertex b, Vertex c){
+        return this.add(new Face(this,a,b,c));
     }
     /**
      * Add a new triangular face in three (X,Y,Z) vertices
      */
-    public Solid add(double[] a, double[] b, double[] c){
-        return this.add(new Vertex(a),new Vertex(b),new Vertex(c));
+    public final Solid add(double[] a, double[] b, double[] c){
+        return this.add(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c)));
     }
     /**
      * Add a new triangular face from three sets of (X,Y,Z) vertices
      */
-    public Solid add(double[] face){
-        return this.add(new Vertex(face,0),new Vertex(face,3),new Vertex(face,6));
+    public final Solid add(double[] face){
+        return this.add(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6)));
     }
     /**
      * Add a new triangular face in three (X,Y,Z) vertices
      */
-    public Solid add(double ax, double ay, double az, 
-                     double bx, double by, double bz, 
-                     double cx, double cy, double cz)
+    public final Solid add(double ax, double ay, double az, 
+                           double bx, double by, double bz, 
+                           double cx, double cy, double cz)
     {
-        return this.add(new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
+        return this.add(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz)));
     }
-    public Solid add(VertexArray array){
+    public final Solid add(VertexArray array){
 
         double[] triangles = array.vertices(VertexArray.Type.Triangles);
 
@@ -136,7 +135,7 @@ public class Solid
      * Construct a new solid as the union of "this" and "that".  This
      * union is the (minimal) sum of this and that.
      */
-    public Solid union(Solid that){
+    public final Solid union(Solid that){
         this.init(that);
         try {
             Solid re = this.compose(that,State.Face.Outside,State.Face.Same,State.Face.Outside);
@@ -153,7 +152,7 @@ public class Solid
      * Construct a new solid as the intersection of "this" and "that".
      * The intersection is the remainder of this minus that.
      */
-    public Solid intersection(Solid that){
+    public final Solid intersection(Solid that){
         this.init(that);
         try {
             Solid re = this.compose(that,State.Face.Inside,State.Face.Same,State.Face.Inside);
@@ -170,7 +169,7 @@ public class Solid
      * Construct a new solid as the difference of "this" and "that".
      * The difference is this minus that.
      */
-    public Solid difference(Solid that){
+    public final Solid difference(Solid that){
         this.init(that);
         try {
             that.invertInsideFaces();
@@ -193,7 +192,7 @@ public class Solid
      * 
      * Otherwise this step is necessary to rendering this shape.
      */
-    public Solid compile(){
+    public final Solid compile(){
         {
             super.countVertices(this.state.countVertices());
 
@@ -211,51 +210,51 @@ public class Solid
 
         return this;
     }
-    public Bound getBound(){
+    public final Bound getBound(){
         return this.state.getBound();
     }
-    public double getBoundsMinX(){
+    public final double getBoundsMinX(){
         return this.getBound().getBoundsMinX();
     }
-    public double getBoundsMidX(){
+    public final double getBoundsMidX(){
         return this.getBound().getBoundsMidX();
     }
-    public double getBoundsMaxX(){
+    public final double getBoundsMaxX(){
         return this.getBound().getBoundsMaxX();
     }
-    public double getBoundsMinY(){
+    public final double getBoundsMinY(){
         return this.getBound().getBoundsMinY();
     }
-    public double getBoundsMidY(){
+    public final double getBoundsMidY(){
         return this.getBound().getBoundsMidY();
     }
-    public double getBoundsMaxY(){
+    public final double getBoundsMaxY(){
         return this.getBound().getBoundsMaxY();
     }
-    public double getBoundsMinZ(){
+    public final double getBoundsMinZ(){
         return this.getBound().getBoundsMinZ();
     }
-    public double getBoundsMidZ(){
+    public final double getBoundsMidZ(){
         return this.getBound().getBoundsMidZ();
     }
-    public double getBoundsMaxZ(){
+    public final double getBoundsMaxZ(){
         return this.getBound().getBoundsMaxZ();
     }
-    public int countVertices(){
+    public final int countVertices(){
         return this.state.countVertices();
     }
     public void destroy(){
 
         this.state.destroy();
     }
-    public java.util.Iterator<Face> iterator(){
+    public final java.util.Iterator<Face> iterator(){
         return this.state.iterator();
     }
-    protected Solid add(Face other){
-        this.state.add(other.clone(this));
+    protected Solid add(Face face){
+        this.state.add(face);
         return this;
     }
-    protected Vertex u(Vertex a){
+    protected final Vertex u(Vertex a){
         fv3.csg.Vertex b = this.state.vertices.get(a);
         if (null == b){
             this.state.vertices.put(a,a);
@@ -292,11 +291,11 @@ public class Solid
         Solid re = new Solid(this.countVertices());
         for (Face face: this.state){
             if (face.is(a) || face.is(b))
-                re.add(face);
+                re.add(face.clone(this));
         }
         for (Face face: that.state){
             if (face.is(c))
-                re.add(face);
+                re.add(face.clone(this));
         }
         return re;
     }
