@@ -51,26 +51,74 @@ public abstract class Cylinder
                      * Triangle fan disk @ z0
                      */
                     this.add(0.0,0.0,z0,
-                             x0,y0,z0,
-                             x1,y1,z0);
+                             x1,y1,z0,
+                             x0,y0,z0);
                     /*
                      * Quad triangle pair in depth
                      */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
+                    if (0.0 > x1){
+
+                        this.add(x0,y0,z0,
+                                 x0,y0,z1,
+                                 x1,y1,z1);
+                        this.add(x0,y0,z0,
+                                 x1,y1,z1,
+                                 x1,y1,z0);
+                    }
+                    else {
+                        this.add(x0,y0,z0,
+                                 x1,y1,z1,
+                                 x0,y0,z1);
+                        this.add(x0,y0,z0,
+                                 x1,y1,z0,
+                                 x1,y1,z1);
+                    }
                     /*
                      * Triangle fan disk @ z1
                      */
                     this.add(0.0,0.0,z1,
-                             x1,y1,z1,
-                             x0,y0,z1);
+                             x0,y0,z1,
+                             x1,y1,z1);
                 }
-                else
+                else {
+                    double x1 = cv[0];
+                    double y1 = cv[1];
+
+                    /*
+                     * Triangle fan disk @ z0
+                     */
+                    this.add(0.0,0.0,z0,
+                             x1,y1,z0,
+                             x0,y0,z0);
+                    /*
+                     * Quad triangle pair in depth
+                     */
+                    if (0.0 > x1){
+
+                        this.add(x0,y0,z0,
+                                 x0,y0,z1,
+                                 x1,y1,z1);
+                        this.add(x0,y0,z0,
+                                 x1,y1,z1,
+                                 x1,y1,z0);
+                    }
+                    else {
+                        this.add(x0,y0,z0,
+                                 x1,y1,z1,
+                                 x0,y0,z1);
+                        this.add(x0,y0,z0,
+                                 x1,y1,z0,
+                                 x1,y1,z1);
+                    }
+                    /*
+                     * Triangle fan disk @ z1
+                     */
+                    this.add(0.0,0.0,z1,
+                             x0,y0,z1,
+                             x1,y1,z1);
+
                     break;
+                }
             }
         }
         public XY(XY c){
