@@ -47,7 +47,7 @@ public class Cylinder
                         Model model = (Model)cylinder.get(1);
                         Solid s;
 
-                        s = (Solid)model.get(2);
+                        s = (Solid)model.get(3);
                         System.out.println();
                         System.out.println(s.toString("\t"));
                     }
@@ -80,6 +80,7 @@ public class Cylinder
         {
             cylinder.add(new Material(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             cylinder.add(new ShadeModel(GL2.GL_FLAT));
+            cylinder.add(new Enable(GL2.GL_CULL_FACE));
             cylinder.add(new fv3.csg.Cylinder.XY(10,10).compile());
             cylinder.add(new Enable(GL2.GL_NORMALIZE));
         }
