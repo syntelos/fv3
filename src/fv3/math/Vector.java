@@ -28,6 +28,52 @@ public class Vector
     extends Abstract
     implements java.lang.Cloneable
 {
+    /**
+     * Magnitude classes with one and two axes.
+     */
+    public enum Direction {
+
+        DX, DY, DZ, DXY, DXZ, DZY;
+
+        public final static double E = 1e-2;
+
+        public static Direction For(double[] n){
+
+            final double nX = n[X];
+            final double nY = n[Y];
+            final double nZ = n[Z];
+
+            final double anX = Math.abs(nX);
+            final double anY = Math.abs(nY);
+            final double anZ = Math.abs(nZ);
+
+            if (0.0 == DE((anX - anY),E))
+
+                return DXY;
+
+            else if (0.0 == DE((anX - anZ),E))
+
+                return DXZ;
+
+            else if (0.0 == DE((anZ - anY),E))
+
+                return DZY;
+
+            else if (anX > anY){
+
+                if (anX > anZ)
+
+                    return DX;
+                else
+                    return DZ;
+            }
+            else if (anY > anZ)
+
+                return DY;
+            else
+                return DZ;
+        }
+    }
 
     /**
      * Unique array for buffer changes only under construction and
@@ -255,6 +301,9 @@ public class Vector
     }
     public double distance(Vector b){
         return Math.sqrt( Math.pow((this.v[X]-b.v[X]),2)+Math.pow((this.v[Y]-b.v[Y]),2)+Math.pow((this.v[Z]-b.v[Z]),2));
+    }
+    public Direction direction(){
+        return Direction.For(this.v);
     }
     public final double[] array(){
         return this.v;

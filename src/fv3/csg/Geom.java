@@ -18,6 +18,8 @@
  */
 package fv3.csg;
 
+import fv3.math.Vector;
+import static fv3.math.Vector.Direction.*;
 import fv3.math.VertexArray;
 
 /**
@@ -29,6 +31,9 @@ import fv3.math.VertexArray;
 public class Geom
     extends Solid
 {
+    public enum Norm {
+        NX, NY, NZ, NXY, NXZ, NZY;
+    }
 
     public Geom(int c){
         super(c);
@@ -44,67 +49,80 @@ public class Geom
      */
     protected Solid add(Face f){
 
-        final double[] n = f.normal();
+        final Vector normal = f.getNormal();
+        final double[] n = normal.array();
         final double nX = n[X];
         final double nY = n[Y];
         final double nZ = n[Z];
-        final double anX = Math.abs(nX);
-        final double anY = Math.abs(nY);
-        final double anZ = Math.abs(nZ);
 
         final double[] c = f.centroid();
         final double cX = c[X];
         final double cY = c[Y];
         final double cZ = c[Z];
 
+        switch (normal.direction()){
+        case DX:
 
-        if (anX > anY){
-            if (anX > anZ){
-                /*
-                 * Normal in X
-                 */
-                if (Sign(nX) == Sign(cX))
-                    super.add(f);
-                else {
-                    f.deconstruct();
-                    super.add(new Face(this,f.a,f.c,f.b));
-                }
-            }
+            if (Sign(nX) == Sign(cX))
+                super.add(f);
             else {
-                /*
-                 * Normal in Z
-                 */
-                if (Sign(nZ) == Sign(cZ))
-                    super.add(f);
-                else {
-                    f.deconstruct();
-                    super.add(new Face(this,f.a,f.c,f.b));
-                }
+                f.deconstruct();
+                super.add(new Face(this,f.a,f.c,f.b));
             }
-        }
-        else if (anY > anZ){
-            /*
-             * Normal in Y
-             */
+            return this;
+
+        case DY:
+
             if (Sign(nY) == Sign(cY))
                 super.add(f);
             else {
                 f.deconstruct();
                 super.add(new Face(this,f.a,f.c,f.b));
             }
-        }
-        else {
-            /*
-             * Normal in Z
-             */
+            return this;
+
+        case DZ:
+
             if (Sign(nZ) == Sign(cZ))
                 super.add(f);
             else {
                 f.deconstruct();
                 super.add(new Face(this,f.a,f.c,f.b));
             }
-        }
+            return this;
 
-        return this;
+        case DXY:
+
+            if (Sign(nX) == Sign(cX) && Sign(nY) == Sign(cY))
+                super.add(f);
+            else {
+                f.deconstruct();
+                super.add(new Face(this,f.a,f.c,f.b));
+            }
+            return this;
+
+        case DXZ:
+
+            if (Sign(nX) == Sign(cX) && Sign(nZ) == Sign(cZ))
+                super.add(f);
+            else {
+                f.deconstruct();
+                super.add(new Face(this,f.a,f.c,f.b));
+            }
+            return this;
+
+        case DZY:
+
+            if (Sign(nZ) == Sign(cZ) && Sign(nY) == Sign(cY))
+                super.add(f);
+            else {
+                f.deconstruct();
+                super.add(new Face(this,f.a,f.c,f.b));
+            }
+            return this;
+
+        default:
+            throw new IllegalStateException();
+        }
     }
 }

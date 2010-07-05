@@ -63,12 +63,62 @@ public abstract class Abstract
         if (Double.isNaN(d))
 
             return false;
-
-        else if (Math.abs(d) > EPSILON)
-
-            return false;
         else
+            return (Math.abs(d) <= EPSILON);
+    }
+    public final static boolean EEQ(double a, double b, double e){
+
+        return (Math.abs(a - b) <= e);
+    }
+    public final static boolean ELE(double a, double b, double e){
+
+        double d = (a - b);
+
+        if (Math.abs(d) <= e)
             return true;
+        else if (0.0 > d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean ELT(double a, double b, double e){
+
+        double d = (a - b);
+
+        if (Math.abs(d) <= e)
+            return false;
+        else if (0.0 > d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean EGE(double a, double b, double e){
+
+        double d = (a - b);
+
+        if (Math.abs(d) <= e)
+            return true;
+        else if (0.0 < d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean EGT(double a, double b, double e){
+
+        double d = (a - b);
+
+        if (Math.abs(d) <= e)
+            return false;
+        else if (0.0 < d)
+            return true;
+        else
+            return false;
+    }
+    public final static double DE(double d, double e){
+        if (Math.abs(d) <= e)
+            return 0.0;
+        else
+            return d;
     }
     /**
      * @param v Some real value (not NaN)
