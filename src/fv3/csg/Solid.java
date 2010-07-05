@@ -18,6 +18,7 @@
  */
 package fv3.csg;
 
+import fv3.math.Matrix;
 import fv3.math.Vector;
 import fv3.math.VertexArray;
 
@@ -54,6 +55,8 @@ public class Solid
 
     protected State state;
 
+    protected Matrix transform;
+
     protected Construct constructOp;
 
     protected Solid constructA, constructB;
@@ -62,8 +65,8 @@ public class Solid
      * @param countVertices Estimated or expected number of vertices
      */
     public Solid(int countVertices){
-        super(Type.Triangles,countVertices);/* [TODO] (TriangleStrip)
-                                             */
+        super(Type.Triangles,countVertices);
+
         this.state = new State(countVertices);
 
         this.visible = false;
@@ -183,6 +186,15 @@ public class Solid
             this.reinit(that);
         }
     }
+    public final Solid transform(Matrix m){
+
+        if (this.visible)
+            super.transform(m);
+        else
+            this.transform = m;
+
+        return this;
+    }
     /**
      * Update the superclass vertex array with the state of the faces
      * in this instance, as for rendering.  
@@ -193,17 +205,40 @@ public class Solid
      * Otherwise this step is necessary to rendering this shape.
      */
     public final Solid compile(){
+
+        return this.compile(this.transform);
+    }
+    public final Solid compile(Matrix m){
         {
             super.countVertices(this.state.countVertices());
 
             int fc = 0, vc = 0;
 
-            for (Face face: this.state){    /* [TODO] (TriangleStrip)
-                                             */
-                this.setVertices(vc, face.vertices(), 0, 3).setNormal(fc, face.normal());
+            if (null != m){
 
-                fc += 1;
-                vc += 3;
+                for (Face face: this.state){
+
+                    Vector a = m.transform(face.a.getVector());
+                    Vector b = m.transform(face.b.getVector());
+                    Vector c = m.transform(face.c.getVector());
+                    Vector n = a.normal(b,c);
+
+                    this.setVertex(vc++, a);
+                    this.setVertex(vc++, b);
+                    this.setVertex(vc++, c);
+
+                    this.setNormal(fc++, n);
+                }
+            }
+            else {
+
+                for (Face face: this.state){
+
+                    this.setVertices(vc, face.vertices(), 0, 3).setNormal(fc, face.normal());
+
+                    fc += 1;
+                    vc += 3;
+                }
             }
         }
         this.visible = true;

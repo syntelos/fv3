@@ -418,6 +418,10 @@ public class VertexArray
         System.arraycopy(this.vertices,start,re,ofs,3);
         return re;
     }
+    public final VertexArray setVertex(int index, Vector vertex){
+
+        return this.setVertex(index,vertex.array());
+    }
     /**
      * @param index Vertex index
      * @param vertex Array of three values to copy into the referenced vertex.
@@ -529,6 +533,10 @@ public class VertexArray
         }
         else
             return null;
+    }
+    public final VertexArray setNormal(int index, Vector vector){
+
+        return this.setNormal(index,vector.array());
     }
     /**
      * @param index Normal index
