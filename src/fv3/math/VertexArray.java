@@ -342,6 +342,26 @@ public class VertexArray
         }
         return this;
     }
+    public VertexArray scale(double x, double y, double z){
+
+        return this.transform(new Matrix().scale(x,y,z));
+    }
+    public VertexArray rotate(double x, double y, double z){
+
+        return this.transform(new Matrix().rotate(x,y,z));
+    }
+    public VertexArray rotateX(double x){
+
+        return this.transform(new Matrix().rotateX(x));
+    }
+    public VertexArray rotateY(double y){
+
+        return this.transform(new Matrix().rotateY(y));
+    }
+    public VertexArray rotateZ(double z){
+
+        return this.transform(new Matrix().rotateZ(z));
+    }
     public int countVertices(){
         return this.countVertices;
     }
