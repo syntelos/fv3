@@ -19,7 +19,7 @@
 package fv3.csg;
 
 import fv3.math.Vector;
-import static fv3.math.Vector.Direction.*;
+import static fv3.math.Vector.Direction1.*;
 import fv3.math.VertexArray;
 
 /**
@@ -60,7 +60,7 @@ public class Geom
         final double cY = c[Y];
         final double cZ = c[Z];
 
-        switch (normal.direction()){
+        switch (normal.direction1()){
         case DX:
 
             if (Sign(nX) == Sign(cX))
@@ -84,36 +84,6 @@ public class Geom
         case DZ:
 
             if (Sign(nZ) == Sign(cZ))
-                super.add(f);
-            else {
-                f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
-            }
-            return this;
-
-        case DXY:
-
-            if (Sign(nX) == Sign(cX) && Sign(nY) == Sign(cY))
-                super.add(f);
-            else {
-                f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
-            }
-            return this;
-
-        case DXZ:
-
-            if (Sign(nX) == Sign(cX) && Sign(nZ) == Sign(cZ))
-                super.add(f);
-            else {
-                f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
-            }
-            return this;
-
-        case DZY:
-
-            if (Sign(nZ) == Sign(cZ) && Sign(nY) == Sign(cY))
                 super.add(f);
             else {
                 f.deconstruct();
