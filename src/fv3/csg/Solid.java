@@ -35,7 +35,9 @@ import javax.media.opengl.GL2;
  * href="http://www.cs.brown.edu/~jfh/papers/Laidlaw-CSG-1986/main.htm">"Constructive
  * Solid Geometry for Polyhedral Objects"</a>.
  * 
- * This is a mesh data structure: vertices are each unique.
+ * This is a mesh data structure: vertices are each unique.  The mesh
+ * sub class data structure is "compiled" into the super class vertex
+ * array for rendering.
  * 
  * Vertices are loaded, construction operations may be performed, and
  * then the vertex array is compiled for rendering.
@@ -46,9 +48,15 @@ public class Solid
                java.lang.Iterable<Face>,
                fv3.Bounds
 {
+    public enum Construct {
+        Union, Intersection, Difference;
+    }
 
     protected State state;
 
+    protected Construct constructOp;
+
+    protected Solid constructA, constructB;
 
     /**
      * @param countVertices Estimated or expected number of vertices
@@ -69,9 +77,6 @@ public class Solid
 
             this.add(this.getFace(face));
         }
-    }
-    protected Solid(Solid from){
-        this(from.countVertices());
     }
 
 
@@ -134,7 +139,11 @@ public class Solid
     public Solid union(Solid that){
         this.init(that);
         try {
-            return this.compose(that,State.Face.Outside,State.Face.Same,State.Face.Outside);
+            Solid re = this.compose(that,State.Face.Outside,State.Face.Same,State.Face.Outside);
+            re.constructOp = Solid.Construct.Union;
+            re.constructA = this;
+            re.constructB = that;
+            return re;
         }
         finally {
             this.reinit(that);
@@ -147,7 +156,11 @@ public class Solid
     public Solid intersection(Solid that){
         this.init(that);
         try {
-            return this.compose(that,State.Face.Inside,State.Face.Same,State.Face.Inside);
+            Solid re = this.compose(that,State.Face.Inside,State.Face.Same,State.Face.Inside);
+            re.constructOp = Solid.Construct.Intersection;
+            re.constructA = this;
+            re.constructB = that;
+            return re;
         }
         finally {
             this.reinit(that);
@@ -161,7 +174,11 @@ public class Solid
         this.init(that);
         try {
             that.invertInsideFaces();
-            return this.compose(that,State.Face.Outside,State.Face.Opposite,State.Face.Inside);
+            Solid re = this.compose(that,State.Face.Outside,State.Face.Opposite,State.Face.Inside);
+            re.constructOp = Solid.Construct.Difference;
+            re.constructA = this;
+            re.constructB = that;
+            return re;
         }
         finally {
             this.reinit(that);
@@ -247,7 +264,7 @@ public class Solid
         else
             return b;
     }
-    protected void init(Solid that){
+    private void init(Solid that){
         this.push();
         that.push();
 		this.splitFaces(that);
@@ -255,7 +272,7 @@ public class Solid
 		this.classifyFaces(that);
 		that.classifyFaces(this);
     }
-    protected void reinit(Solid that){
+    private void reinit(Solid that){
         this.pop();
         that.pop();
         for (Face thisFace: this){
@@ -265,14 +282,14 @@ public class Solid
             thatFace.init();
         }
     }
-    protected void push(){
+    private void push(){
         this.state = this.state.push();
     }
-    protected void pop(){
+    private void pop(){
         this.state = this.state.pop();
     }
-    protected Solid compose(Solid that, State.Face a, State.Face b, State.Face c){
-        Solid re = new Solid(this);
+    private Solid compose(Solid that, State.Face a, State.Face b, State.Face c){
+        Solid re = new Solid(this.countVertices());
         for (Face face: this.state){
             if (face.is(a) || face.is(b))
                 re.add(face);
@@ -283,7 +300,7 @@ public class Solid
         }
         return re;
     }
-    protected void classifyFaces(Solid that){
+    private void classifyFaces(Solid that){
 
         for (Face face: this.state){
 
@@ -305,13 +322,13 @@ public class Solid
             }
         }
     }
-    protected void invertInsideFaces(){
+    private void invertInsideFaces(){
         for (Face face: this.state){
             if (face.isInside())
                 face.invertNormal();
         }
     }
-    protected void splitFaces(Solid that){
+    private void splitFaces(Solid that){
 
         Bound thatBound = that.getBound();
 

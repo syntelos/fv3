@@ -318,12 +318,27 @@ public class Matrix
     public final double[] transform(double[] v){
 
         double[] mm = this.m;
-        double[] a = v.clone();
 
-        v[X] = mm[M00] * a[X] + mm[M01] * a[Y] + mm[M02] * a[Z] + mm[M03];
-        v[Y] = mm[M10] * a[X] + mm[M11] * a[Y] + mm[M12] * a[Z] + mm[M13];
-        v[Z] = mm[M20] * a[X] + mm[M21] * a[Y] + mm[M22] * a[Z] + mm[M23];
+        if (3 < v.length){
 
+            for (int index = 0, count = v.length; index < count; index += 3){
+
+                final double vX = v[index+X];
+                final double vY = v[index+Y];
+                final double vZ = v[index+Z];
+
+                v[index+X] = mm[M00] * vX + mm[M01] * vY + mm[M02] * vZ + mm[M03];
+                v[index+Y] = mm[M10] * vX + mm[M11] * vY + mm[M12] * vZ + mm[M13];
+                v[index+Z] = mm[M20] * vX + mm[M21] * vY + mm[M22] * vZ + mm[M23];
+            }
+        }
+        else {
+            double[] a = v.clone();
+
+            v[X] = mm[M00] * a[X] + mm[M01] * a[Y] + mm[M02] * a[Z] + mm[M03];
+            v[Y] = mm[M10] * a[X] + mm[M11] * a[Y] + mm[M12] * a[Z] + mm[M13];
+            v[Z] = mm[M20] * a[X] + mm[M21] * a[Y] + mm[M22] * a[Z] + mm[M23];
+        }
         return v;
     }
     public final double[] transform(double[] v, final int ofs){
