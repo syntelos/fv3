@@ -95,4 +95,84 @@ public class Geom
             throw new IllegalStateException();
         }
     }
+    /**
+     * Convert geometric parameters with maximum error into a
+     * resolution parameter.
+     */
+    public static class Error
+        extends java.lang.Object
+        implements fv3.csg.Notation
+    {
+        public final static class Circle
+            extends Error
+        {
+            public final static double Min = 1e-6;
+            public final static double Max = 1e1;
+
+            /**
+             * @param e Maximum sagitta
+             * @return Generally acceptable value for 'e'
+             */
+            public final static boolean V(double e){
+                return (e == e && Error.Circle.Min <= e && Error.Circle.Max >= e);
+            }
+            /**
+             * @param r Radius of circle
+             * @param n Number of arc sectors in circle
+             * @return Sagitta for 'r' and 'n'
+             */
+            public final static double E(double r, int n){
+
+                final double s = (r*(PI_M2 / (double)n));
+
+                final double l = (s / 2.0);
+
+                return (r-Math.sqrt((r*r)-(l*l)));
+            }
+            /**
+             * Scanner for largest value of N satisfying requirement
+             * E.
+             * 
+             * @param r Radius
+             * @param e Maximum sagitta
+             * @return An even number of circular arc-parts greater
+             * than or equal to four that satisfies requirement E
+             */
+            public final static int N(double r, double e){
+
+                if (0.0 < r && 0.0 < e){
+
+                    double qr0 = 4;
+
+                    while (true){
+
+                        int n0 = (int)(r * qr0);
+
+                        if (E(r,n0) <= e){
+
+                            double qr1 = (qr0 - 2.0);
+
+                            while (true){
+
+                                int n1 = (int)(r * qr1);
+
+                                if (E(r,n1) > e)
+
+                                    return (int)(r * (qr1 + 2.0));
+
+                                else {
+                                    qr1 -= 2.0;
+                                }
+                            }
+                        }
+                        else {
+                            qr0 *= 2;
+                        }
+                    }
+                }
+                else
+                    throw new IllegalArgumentException();
+            }
+        }
+    }
 }

@@ -29,9 +29,12 @@ public abstract class Cylinder
         extends Cylinder
     {
         public XY(double r, double d){
-            super(r,d);
+            this(r,d,ERROR);
+        }
+        public XY(double r, double d, double e){
+            super(r,d,e);
 
-            double[] cv = CV(r);
+            double[] cv = CV(r,e);
 
             double dd2 = (d/2.0);
 
@@ -75,9 +78,12 @@ public abstract class Cylinder
         extends Cylinder
     {
         public ZY(double r, double d){
-            super(r,d);
+            this(r,d,ERROR);
+        }
+        public ZY(double r, double d, double e){
+            super(r,d,e);
 
-            double[] cv = CV(r);
+            double[] cv = CV(r,e);
 
             double dd2 = (d/2.0);
 
@@ -122,9 +128,12 @@ public abstract class Cylinder
         extends Cylinder
     {
         public ZX(double r, double d){
-            super(r,d);
+            this(r,d,ERROR);
+        }
+        public ZX(double r, double d, double e){
+            super(r,d,e);
 
-            double[] cv = CV(r);
+            double[] cv = CV(r,e);
 
             double dd2 = (d/2.0);
 
@@ -166,15 +175,20 @@ public abstract class Cylinder
     }
 
 
-    public final double radius, depth;
+    public final double radius, depth, error;
 
 
-    protected Cylinder(double r, double d){
+    protected Cylinder(double r, double d, double e){
         super(0);
         if (r == r && 0.0 < r){
             if (d == d && 0.0 < d){
-                this.radius = r;
-                this.depth = d;
+                if (Error.Circle.V(e)){
+                    this.radius = r;
+                    this.depth = d;
+                    this.error = e;
+                }
+                else
+                    throw new IllegalArgumentException(String.format("Invalid error %g",e));
             }
             else
                 throw new IllegalArgumentException(String.format("Invalid depth %g",d));
@@ -186,42 +200,52 @@ public abstract class Cylinder
         super(c);
         this.radius = c.radius;
         this.depth = c.depth;
+        this.error = c.error;
     }
 
 
+    protected final static double ERROR = 0.0001;
+
     /**
      * @param r Radius of circle
+     * @param e Error between zero and one (default 0.0001)
      * @return Circle vertices for R in (domain,range) order
      */
-    protected final static double[] CV(double r){
+    protected final static double[] CV(double r, double e){
 
-        final int cn = (int)Math.ceil(r*4.0);
-        final double ds = (PI_M2 / (double)cn);
+        if (0.0 < e){
 
-        double[] cv = new double[cn<<1];
-        double a = 0.0;
+            final int cn = Error.Circle.N(r,e);
 
-        if (r != 1.0){
+            final double ds = (PI_M2 / (double)cn);
 
-            for (int idx = 0, count = (cn<<1); idx < count; ){
+            double[] cv = new double[cn<<1];
+            double a = 0.0;
 
-                cv[idx++] = (r*Math.cos(a));
-                cv[idx++] = (r*Math.sin(a));
+            if (r != 1.0){
 
-                a += ds;
+                for (int idx = 0, count = (cn<<1); idx < count; ){
+
+                    cv[idx++] = (r*Math.cos(a));
+                    cv[idx++] = (r*Math.sin(a));
+
+                    a += ds;
+                }
             }
-        }
-        else {
+            else {
 
-            for (int idx = 0, count = (cn<<1); idx < count; ){
+                for (int idx = 0, count = (cn<<1); idx < count; ){
 
-                cv[idx++] = Math.cos(a);
-                cv[idx++] = Math.sin(a);
+                    cv[idx++] = Math.cos(a);
+                    cv[idx++] = Math.sin(a);
 
-                a += ds;
+                    a += ds;
+                }
             }
+            return cv;
         }
-        return cv;
+        else
+            throw new IllegalArgumentException(String.valueOf(e));
     }
     protected final static void DCXY(Cylinder geom, 
                                      double cx0, double cy0, double cz0,
