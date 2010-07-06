@@ -71,7 +71,7 @@ public class Cylinder
 
 
     public Cylinder(){
-        this(CylinderType.ZY);
+        this(CylinderType.ZX);
     }
     public Cylinder(CylinderType type){
         super();
