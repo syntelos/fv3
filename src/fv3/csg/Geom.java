@@ -47,7 +47,7 @@ public class Geom
      * If face is improperly ordered, reorder it (by replacement)
      * before adding it internally.
      */
-    protected Solid add(Face f){
+    protected Solid addN(Face f){
 
         final Vector normal = f.getNormal();
         final double[] n = normal.array();
@@ -64,30 +64,30 @@ public class Geom
         case DX:
 
             if (Sign(nX) == Sign(cX))
-                super.add(f);
+                super.addN(f);
             else {
                 f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
+                super.addN(new Face(this,f.a,f.c,f.b));
             }
             return this;
 
         case DY:
 
             if (Sign(nY) == Sign(cY))
-                super.add(f);
+                super.addN(f);
             else {
                 f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
+                super.addN(new Face(this,f.a,f.c,f.b));
             }
             return this;
 
         case DZ:
 
             if (Sign(nZ) == Sign(cZ))
-                super.add(f);
+                super.addN(f);
             else {
                 f.deconstruct();
-                super.add(new Face(this,f.a,f.c,f.b));
+                super.addN(new Face(this,f.a,f.c,f.b));
             }
             return this;
 

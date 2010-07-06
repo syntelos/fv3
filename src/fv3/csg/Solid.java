@@ -89,19 +89,19 @@ public class Solid
      * counter clock wise looking at the "front" of the face.
      */
     public final Solid add(Vertex a, Vertex b, Vertex c){
-        return this.add(new Face(this,a,b,c));
+        return this.addN(new Face(this,a,b,c));
     }
     /**
      * Add a new triangular face in three (X,Y,Z) vertices
      */
     public final Solid add(double[] a, double[] b, double[] c){
-        return this.add(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c)));
+        return this.addN(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c)));
     }
     /**
      * Add a new triangular face from three sets of (X,Y,Z) vertices
      */
     public final Solid add(double[] face){
-        return this.add(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6)));
+        return this.addN(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6)));
     }
     /**
      * Add a new triangular face in three (X,Y,Z) vertices
@@ -110,7 +110,7 @@ public class Solid
                            double bx, double by, double bz, 
                            double cx, double cy, double cz)
     {
-        return this.add(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz)));
+        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz)));
     }
     public final Solid add(VertexArray array){
 
@@ -141,11 +141,7 @@ public class Solid
     public final Solid union(Solid that){
         this.init(that);
         try {
-            Solid re = this.compose(that,State.Face.Outside,State.Face.Same,State.Face.Outside);
-            re.constructOp = Solid.Construct.Union;
-            re.constructA = this;
-            re.constructB = that;
-            return re;
+            return this.compose(Construct.Union,that);
         }
         finally {
             this.reinit(that);
@@ -158,11 +154,7 @@ public class Solid
     public final Solid intersection(Solid that){
         this.init(that);
         try {
-            Solid re = this.compose(that,State.Face.Inside,State.Face.Same,State.Face.Inside);
-            re.constructOp = Solid.Construct.Intersection;
-            re.constructA = this;
-            re.constructB = that;
-            return re;
+            return this.compose(Construct.Intersection,that);
         }
         finally {
             this.reinit(that);
@@ -176,11 +168,7 @@ public class Solid
         this.init(that);
         try {
             that.invertInsideFaces();
-            Solid re = this.compose(that,State.Face.Outside,State.Face.Opposite,State.Face.Inside);
-            re.constructOp = Solid.Construct.Difference;
-            re.constructA = this;
-            re.constructB = that;
-            return re;
+            return this.compose(Construct.Difference,that);
         }
         finally {
             this.reinit(that);
@@ -285,8 +273,27 @@ public class Solid
     public final java.util.Iterator<Face> iterator(){
         return this.state.iterator();
     }
-    protected Solid add(Face face){
+    /**
+     * Initial build "add" is overridden by {@link Geom} for sorting
+     * face vertex order in three space.
+     */
+    protected Solid addN(Face face){
+
         this.state.add(face);
+        return this;
+    }
+    /**
+     * Construction "add" is literal, unlike "builder add" which may
+     * have builder convenience semantics.
+     */
+    protected Solid addC0(Construct op, Face face){
+
+        this.state.add(face.clone(this));
+        return this;
+    }
+    protected Solid addC1(Construct op, Face face){
+
+        this.state.add(face.clone(this));
         return this;
     }
     protected final Vertex u(Vertex a){
@@ -322,16 +329,39 @@ public class Solid
     private void pop(){
         this.state = this.state.pop();
     }
-    private Solid compose(Solid that, State.Face a, State.Face b, State.Face c){
+    private Solid compose(Construct op, Solid that){
         Solid re = new Solid(this.countVertices());
+        State.Face a, b, c;
+        switch (op){
+        case Union:
+            a = State.Face.Outside;
+            b = State.Face.Same;
+            c = State.Face.Outside;
+            break;
+        case Intersection:
+            a = State.Face.Inside;
+            b = State.Face.Same;
+            c = State.Face.Inside;
+            break;
+        case Difference:
+            a = State.Face.Outside;
+            b = State.Face.Opposite;
+            c = State.Face.Inside;
+            break;
+        default:
+            throw new IllegalStateException();
+        }
         for (Face face: this.state){
             if (face.is(a) || face.is(b))
-                re.add(face.clone(this));
+                re.addC0(op,face);
         }
         for (Face face: that.state){
             if (face.is(c))
-                re.add(face.clone(this));
+                re.addC1(op,face);
         }
+        re.constructOp = op;
+        re.constructA = this;
+        re.constructB = that;
         return re;
     }
     private void classifyFaces(Solid that){
