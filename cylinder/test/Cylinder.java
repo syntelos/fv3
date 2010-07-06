@@ -65,9 +65,15 @@ public class Cylinder
         }
     }
 
+    public enum CylinderType {
+        XY, ZY, ZX;
+    }
 
 
     public Cylinder(){
+        this(CylinderType.ZY);
+    }
+    public Cylinder(CylinderType type){
         super();
         this.setBgColor(Color.White);
 
@@ -79,7 +85,19 @@ public class Cylinder
             cylinder.add(new ShadeModel(GL2.GL_FLAT));
             cylinder.add(new Enable(GL2.GL_CULL_FACE));
             cylinder.add(new Enable(GL2.GL_NORMALIZE));
-            cylinder.add(new fv3.csg.Cylinder.XY(10,10).compile());
+            switch(type){
+            case XY:
+                cylinder.add(new fv3.csg.Cylinder.XY(10,10).compile());
+                break;
+            case ZX:
+                cylinder.add(new fv3.csg.Cylinder.ZX(10,10).compile());
+                break;
+            case ZY:
+                cylinder.add(new fv3.csg.Cylinder.ZY(10,10).compile());
+                break;
+            default:
+                throw new IllegalStateException();
+            }
         }
         this.add(cylinder);
 
