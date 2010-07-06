@@ -47,53 +47,21 @@ public abstract class Cylinder
                     double x1 = cv[cc];
                     double y1 = cv[cc+1];
 
-                    /*
-                     * Triangle fan disk @ z0
-                     */
-                    this.add(0.0,0.0,z0,
-                             x1,y1,z0,
-                             x0,y0,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ z1
-                     */
-                    this.add(0.0,0.0,z1,
-                             x0,y0,z1,
-                             x1,y1,z1);
+                    DC(this,
+                       0.0, 0.0,  z0,
+                       0.0, 0.0,  z1,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
                 }
                 else {
                     double x1 = cv[0];
                     double y1 = cv[1];
 
-                    /*
-                     * Triangle fan disk @ z0
-                     */
-                    this.add(0.0,0.0,z0,
-                             x1,y1,z0,
-                             x0,y0,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ z1
-                     */
-                    this.add(0.0,0.0,z1,
-                             x0,y0,z1,
-                             x1,y1,z1);
+                    DC(this,
+                       0.0, 0.0,  z0,
+                       0.0, 0.0,  z1,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
 
                     break;
                 }
@@ -125,54 +93,23 @@ public abstract class Cylinder
                     double z1 = cv[cc];
                     double y1 = cv[cc+1];
 
-                    /*
-                     * Triangle fan disk @ x0
-                     */
-                    this.add(x0,0.0,0.0,
-                             x0,y0,z0,
-                             x1,y1,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ x1
-                     */
-                    this.add(x1,0.0,0.0,
-                             x1,y1,z1,
-                             x0,y0,z1);
+                    DC(this,
+                       x0,  0.0, 0.0,
+                       x1,  0.0, 0.0,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
                 }
                 else {
 
                     double z1 = cv[0];
                     double y1 = cv[1];
 
-                    /*
-                     * Triangle fan disk @ x0
-                     */
-                    this.add(x0,0.0,0.0,
-                             x0,y0,z0,
-                             x1,y1,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ x1
-                     */
-                    this.add(x1,0.0,0.0,
-                             x1,y1,z1,
-                             x0,y0,z1);
+                    DC(this,
+                       x0,  0.0, 0.0,
+                       x1,  0.0, 0.0,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
+
                     break;
                 }
             }
@@ -203,53 +140,21 @@ public abstract class Cylinder
                     double z1 = cv[cc];
                     double x1 = cv[cc+1];
 
-                    /*
-                     * Triangle fan disk @ x0
-                     */
-                    this.add(0.0,y0,0.0,
-                             x0,y0,z0,
-                             x1,y1,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ x1
-                     */
-                    this.add(0.0,y0,0.0,
-                             x1,y1,z1,
-                             x0,y0,z1);
+                    DC(this,
+                       0.0,  y0, 0.0,
+                       0.0,  y1, 0.0,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
                 }
                 else {
                     double z1 = cv[0];
                     double x1 = cv[1];
 
-                    /*
-                     * Triangle fan disk @ x0
-                     */
-                    this.add(0.0,y0,0.0,
-                             x0,y0,z0,
-                             x1,y1,z0);
-                    /*
-                     * Quad triangle pair in depth
-                     */
-                    this.add(x0,y0,z0,
-                             x0,y0,z1,
-                             x1,y1,z1);
-                    this.add(x0,y0,z0,
-                             x1,y1,z1,
-                             x1,y1,z0);
-                    /*
-                     * Triangle fan disk @ x1
-                     */
-                    this.add(0.0,y0,0.0,
-                             x1,y1,z1,
-                             x0,y0,z1);
+                    DC(this,
+                       0.0,  y0, 0.0,
+                       0.0,  y1, 0.0,
+                       x0,   y0,  z0,
+                       x1,   y1,  z1);
 
                     break;
                 }
@@ -317,5 +222,33 @@ public abstract class Cylinder
             }
         }
         return cv;
+    }
+    protected final static void DC(Cylinder geom, 
+                                   double cx0, double cy0, double cz0,
+                                   double cx1, double cy1, double cz1,
+                                   double  x0, double  y0, double  z0,
+                                   double  x1, double  y1, double  z1)
+    {
+        /*
+         * Triangle fan disk (0)
+         */
+        geom.add(cx0, cy0, cz0,
+                 x0,   y0,  z0,
+                 x1,   y1,  z0);
+        /*
+         * Quad triangle pair in depth
+         */
+        geom.add(x0, y0, z0,
+                 x0, y0, z1,
+                 x1, y1, z1);
+        geom.add(x0, y0, z0,
+                 x1, y1, z1,
+                 x1, y1, z0);
+        /*
+         * Triangle fan disk (1)
+         */
+        geom.add(cx1, cy1, cz1,
+                 x0,   y0,  z1,
+                 x1,   y1,  z1);
     }
 }
