@@ -28,13 +28,52 @@ public class Light
     protected volatile float position[];
 
 
+    /**
+     * Nominal Z infinite light number zero
+     */
     public Light(){
-        super();
+        this(0,0f,0f,1f);
     }
+    /**
+     * @param num Positive light number from zero
+     * @param pos Homogeneous light position coordinates (homogeneous
+     * scale zero indicates an infinite light having parallel rays,
+     * rather than a local light having angular rays).
+     */
     public Light(int num, float[] pos){
         super();
         this.setNumber(num);
         this.setPosition(pos);
+    }
+    /**
+     * @param num Positive light number from zero
+     * @param x Homogeneous light position coordinates
+     * @param y Homogeneous light position coordinates
+     * @param z Homogeneous light position coordinates
+     * @param w Homogeneous light position scale (value zero indicates
+     * an infinite light having parallel rays, rather than a local
+     * light having angular rays).
+     */
+    public Light(int num, float x, float y, float z, float w){
+        this(num, new float[]{x,y,z,w});
+    }
+    /**
+     * @param num Positive light number from zero
+     * @param x Infinite light position coordinates
+     * @param y Infinite light position coordinates
+     * @param z Infinite light position coordinates
+     */
+    public Light(int num, float x, float y, float z){
+        this(num, x, y, z, 0.0f);
+    }
+    /**
+     * @param num Positive light number from zero
+     * @param x Infinite light position coordinates
+     * @param y Infinite light position coordinates
+     * @param z Infinite light position coordinates
+     */
+    public Light(int num, double x, double y, double z){
+        this(num, (float)x, (float)y, (float)z);
     }
 
 

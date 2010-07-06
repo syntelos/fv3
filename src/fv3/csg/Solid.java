@@ -222,7 +222,6 @@ public class Solid
                     Vector b = m.transform(face.b.getVector());
                     Vector c = m.transform(face.c.getVector());
                     Vector n = a.normal(b,c);
-                    //Vector n = m.transform(face.getNormal());
 
                     this.setVertex(vc++, a);
                     this.setVertex(vc++, b);
