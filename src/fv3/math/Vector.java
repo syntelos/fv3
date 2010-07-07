@@ -35,8 +35,6 @@ public class Vector
 
         MX, MY, MZ;
 
-        public final static double E = 1e-2;
-
         public static Magnitude1 For(double[] n){
 
             final double nX = n[X];
@@ -69,7 +67,49 @@ public class Vector
 
         DXP, DXN, DYP, DYN, DZP, DZN;
 
-        public final static double E = 1e-2;
+        /**
+         * @param that Comparison direction
+         * 
+         * @return Zero for same direction, one for same axis,
+         * negative one for different axes.
+         */
+        public int colinear(Direction1 that){
+            if (this == that)
+                return 0;
+            else {
+                switch (this){
+                case DXP:
+                case DXN:
+                    switch (that){
+                    case DXP:
+                    case DXN:
+                        return 1;
+                    default:
+                        return -1;
+                    }
+                case DYP:
+                case DYN:
+                    switch (that){
+                    case DYP:
+                    case DYN:
+                        return 1;
+                    default:
+                        return -1;
+                    }
+                case DZP:
+                case DZN:
+                    switch (that){
+                    case DZP:
+                    case DZN:
+                        return 1;
+                    default:
+                        return -1;
+                    }
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+        }
 
         public static Direction1 For(double[] n){
 

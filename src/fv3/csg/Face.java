@@ -177,23 +177,24 @@ public final class Face
         if (null != s && null != a && null != b && null != c && null != n){
 
             Vector check = a.getVector().normal(b.getVector(),c.getVector());
-            Vector.Magnitude1 checkM = check.magnitude1();
-            Vector.Magnitude1 nM = n.magnitude1();
-            if (checkM == nM){
+            Vector.Direction1 checkD = check.direction1();
+            Vector.Direction1 nD = n.direction1();
+            switch (checkD.colinear(nD)){
 
-                if (check.direction1() == n.direction1()){
-                    this.a = s.u(a).memberOf(this);
-                    this.b = s.u(b).memberOf(this);
-                    this.c = s.u(c).memberOf(this);
-                }
-                else {
-                    this.a = s.u(a).memberOf(this);
-                    this.b = s.u(c).memberOf(this);
-                    this.c = s.u(b).memberOf(this);
-                }
+            case 0:
+                this.a = s.u(a).memberOf(this);
+                this.b = s.u(b).memberOf(this);
+                this.c = s.u(c).memberOf(this);
+                break;
+            case 1:
+                this.a = s.u(a).memberOf(this);
+                this.b = s.u(c).memberOf(this);
+                this.c = s.u(b).memberOf(this);
+                break;
+
+            default:
+                throw new IllegalStateException("Direction of argument normal ("+nD+") is incongruous with direction of face normal ("+checkD+")");
             }
-            else
-                throw new IllegalStateException("Direction of argument normal ("+nM+") is incongruous with direction of face normal ("+checkM+")");
         }
         else
             throw new IllegalArgumentException();
