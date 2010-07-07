@@ -22,7 +22,7 @@ import fv3.math.Vector;
 /**
  * 
  */
-public final class Vertex
+public class Vertex
     extends java.lang.Object
     implements fv3.csg.Notation,
                java.lang.Comparable<Vertex>,
@@ -69,7 +69,10 @@ public final class Vertex
     }
     public Vertex(Vector pos, State.Vertex status){
         this(pos.array());
-        this.status = status;
+        if (null != status)
+            this.status = status;
+        else
+            throw new IllegalArgumentException();
     }
 
 

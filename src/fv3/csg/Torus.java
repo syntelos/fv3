@@ -21,10 +21,10 @@ package fv3.csg;
 import fv3.math.Vector;
 
 /**
- * CSG Rotation subclasses are nonconvex solids centered at (0,0,0).  
+ * 
  */
 public class Torus
-    extends Rotation
+    extends NonConvex
 {
     public static class XY
         extends Torus
@@ -54,15 +54,9 @@ public class Torus
 
                     Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
 
-                    this.add(qa.x,qa.y,qa.z,
-                             qb.x,qb.y,qb.z,
-                             qc.x,qc.y,qc.z,
-                             qn);
+                    this.add(qa,qb,qc,qn);
 
-                    this.add(qc.x,qc.y,qc.z,
-                             qd.x,qd.y,qd.z,
-                             qa.x,qa.y,qa.z,
-                             qn);
+                    this.add(qc,qd,qa,qn);
                 }
             }
         }
@@ -71,7 +65,9 @@ public class Torus
         }
 
 
-        protected static class Vertex {
+        public static class Vertex
+            extends fv3.csg.Vertex
+        {
 
             protected static Vertex[][] List(Torus t){
 
@@ -100,23 +96,30 @@ public class Torus
             }
 
 
-            protected final double x, y, z;
             protected final Vector n;
+
 
             protected Vertex(double iR, double oR, 
                              double cos_ra, double sin_ra, 
                              double ca)
             {
-                super();
+                this(iR,oR,cos_ra,sin_ra,ca,Math.cos(ca),Math.sin(ca));
+            }
+            private Vertex(double iR, double oR, 
+                           double cos_ra, double sin_ra, 
+                           double ca, 
+                           double cos_ca, double sin_ca)
+            {
+                this(iR,oR,cos_ra,sin_ra,ca,cos_ca,sin_ca,(oR+cos_ca*iR));
+            }
 
-                final double cos_ca = Math.cos(ca);
-                final double sin_ca = Math.sin(ca);
-
-                final double oR_P_cosCa_M_iR = (oR+cos_ca*iR);
-
-                this.x = cos_ra*oR_P_cosCa_M_iR;
-                this.y = sin_ra*oR_P_cosCa_M_iR;
-                this.z = sin_ca*iR;
+            private Vertex(double iR, double oR, 
+                           double cos_ra, double sin_ra, 
+                           double ca, 
+                           double cos_ca, double sin_ca,
+                           double oR_P_cosCa_M_iR)
+            {
+                super((cos_ra*oR_P_cosCa_M_iR),(sin_ra*oR_P_cosCa_M_iR),(sin_ca*iR));
                 /*
                  * Tangent of arc of revolution
                  */

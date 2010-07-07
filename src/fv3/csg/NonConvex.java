@@ -19,16 +19,16 @@
 package fv3.csg;
 
 /**
- * CSG Rotation subclasses are nonconvex solids centered at (0,0,0).  
+ * Subclasses are nonconvex solids centered at (0,0,0).  
  */
-public class Rotation
+public class NonConvex
     extends Solid
 {
 
-    public Rotation(int c){
+    public NonConvex(int c){
         super(c);
     }
-    public Rotation(Rotation v){
+    public NonConvex(NonConvex v){
         super(v);
     }
 
