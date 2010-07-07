@@ -187,7 +187,6 @@ public final class Face
                 this.c = s.u(c).memberOf(this);
                 break;
             case 1:
-                System.out.println(">Reversing normal");
                 this.a = s.u(a).memberOf(this);
                 this.b = s.u(c).memberOf(this);
                 this.c = s.u(b).memberOf(this);

@@ -52,8 +52,6 @@ public class Torus
                     Vertex qc = t[rv][cv];
                     Vertex qd = t[ru][cv];
 
-                    //Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
-
                     this.add(qa,qb,qd);
                     this.add(qb,qc,qd);
                 }
@@ -94,10 +92,6 @@ public class Torus
                 return re;
             }
 
-
-            protected final Vector n;
-
-
             protected Vertex(double iR, double oR, 
                              double cos_ra, double sin_ra, 
                              double ca)
@@ -119,27 +113,6 @@ public class Torus
                            double oR_P_cosCa_M_iR)
             {
                 super((cos_ra*oR_P_cosCa_M_iR),(sin_ra*oR_P_cosCa_M_iR),(sin_ca*iR));
-                /*
-                 * Tangent of arc of revolution
-                 */
-                final double rx = -sin_ra;
-                final double ry = cos_ra;
-                final double rz = 0;
-                /*
-                 * Tangent of circle in revolution
-                 */
-                final double cx = cos_ra*(-sin_ca);
-                final double cy = sin_ra*(-sin_ca);
-                final double cz = cos_ca;
-                /*
-                 * Normal: cross product of tangents
-                 */
-                final double nx = ry*cz - rz*cy;
-                final double ny = rz*cx - rx*cz;
-                final double nz = rx*cy - ry*cx;
-                final double nlen = Math.sqrt(nx*nx + ny*ny + nz*nz);
-
-                this.n = new Vector( (nx / nlen), (ny / nlen), (nz / nlen));
             }
         }
     }
