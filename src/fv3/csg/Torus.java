@@ -59,7 +59,7 @@ public class Torus
 //                     this.add(qc,qd,qa,qn);
 
                     this.add(qa,qb,qc);
-                    this.add(qc,qa,qd);
+                    this.add(qc,qd,qa);
                 }
             }
         }
