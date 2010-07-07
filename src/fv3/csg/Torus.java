@@ -23,7 +23,7 @@ import fv3.math.Vector;
 /**
  * 
  */
-public class Torus
+public abstract class Torus
     extends NonConvex
 {
     public static class XY
@@ -125,7 +125,7 @@ public class Torus
     protected final double cs,rs;
 
 
-    public Torus(double innerR, double outerR, double e){
+    protected Torus(double innerR, double outerR, double e){
         super(0);
         if (innerR == innerR && 0.0 < innerR){
             if (outerR == outerR && 0.0 < outerR){
@@ -161,7 +161,7 @@ public class Torus
         else
             throw new IllegalArgumentException(String.format("Invalid radius %g",innerR));
     }
-    public Torus(Torus t){
+    protected Torus(Torus t){
         super(t);
         this.innerRadius = t.innerRadius;
         this.outerRadius = t.outerRadius;
