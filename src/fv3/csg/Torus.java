@@ -58,6 +58,8 @@ public class Torus
 
                     this.add(qa,qb,qc);
                     this.add(qc,qd,qa);
+
+                    return;
                 }
             }
         }
