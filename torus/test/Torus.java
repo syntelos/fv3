@@ -47,7 +47,7 @@ public class Torus
                         Model model = (Model)torus.get(1);
                         Solid s;
 
-                        s = (Solid)model.get(2);
+                        s = (Solid)model.get(3);
                         System.out.println();
                         System.out.println(s.toString("\t"));
                     }
@@ -74,10 +74,10 @@ public class Torus
 
         Model torus = new Model();
         {
-            torus.add(new Material(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
+            torus.add(new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             torus.add(new ShadeModel(GL2.GL_FLAT));
-            torus.add(new fv3.csg.Torus.XY(5,10).compile());
             torus.add(new Enable(GL2.GL_NORMALIZE));
+            torus.add(new fv3.csg.Torus.XY(5,10).compile());
         }
         this.add(torus);
 
