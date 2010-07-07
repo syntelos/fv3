@@ -48,16 +48,15 @@ public class Torus
                         cv = 0;
 
                     Vertex qa = t[ru][cu];
-                    Vertex qb = t[ru][cv];
-                    Vertex qc = t[rv][cu];
-                    Vertex qd = t[rv][cv];
+                    Vertex qb = t[rv][cu];
+                    Vertex qc = t[rv][cv];
+                    Vertex qd = t[ru][cv];
 
 //                     Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
-//                     this.add(qa,qb,qc,qn);
-//                     this.add(qc,qd,qa,qn);
 
-                    this.add(qa,qb,qc);
-                    this.add(qc,qd,qa);
+
+                    this.add(qa,qb,qd);
+                    this.add(qb,qc,qd);
 
                     return;
                 }
