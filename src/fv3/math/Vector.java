@@ -29,11 +29,45 @@ public class Vector
     implements java.lang.Cloneable
 {
     /**
-     * Principal magnitude classes in one axis.
+     * Principal magnitude classes.
+     */
+    public enum Magnitude1 {
+
+        MX, MY, MZ;
+
+        public final static double E = 1e-2;
+
+        public static Magnitude1 For(double[] n){
+
+            final double nX = n[X];
+            final double nY = n[Y];
+            final double nZ = n[Z];
+
+            final double anX = Math.abs(nX);
+            final double anY = Math.abs(nY);
+            final double anZ = Math.abs(nZ);
+
+            if (anX > anY){
+
+                if (anX > anZ)
+
+                    return MX;
+                else
+                    return MZ;
+            }
+            else if (anY > anZ)
+
+                return MY;
+            else
+                return MZ;
+        }
+    }
+    /**
+     * Positive and negative direction classes.
      */
     public enum Direction1 {
 
-        DX, DY, DZ;
+        DXP, DXN, DYP, DYN, DZP, DZN;
 
         public final static double E = 1e-2;
 
@@ -49,17 +83,28 @@ public class Vector
 
             if (anX > anY){
 
-                if (anX > anZ)
-
-                    return DX;
+                if (anX > anZ){
+                    if (0.0 > nX)
+                        return DXN;
+                    else
+                        return DXP;
+                }
+                else if (0.0 > nZ)
+                    return DZN;
                 else
-                    return DZ;
+                    return DZP;
             }
-            else if (anY > anZ)
+            else if (anY > anZ){
 
-                return DY;
+                if (0.0 > nY)
+                    return DYN;
+                else
+                    return DYP;
+            }
+            else if (0.0 > nZ)
+                return DZN;
             else
-                return DZ;
+                return DZP;
         }
     }
     /**
@@ -336,11 +381,14 @@ public class Vector
     public double distance(Vector b){
         return Math.sqrt( Math.pow((this.v[X]-b.v[X]),2)+Math.pow((this.v[Y]-b.v[Y]),2)+Math.pow((this.v[Z]-b.v[Z]),2));
     }
-    public Direction2 direction2(){
-        return Direction2.For(this.v);
+    public Magnitude1 magnitude1(){
+        return Magnitude1.For(this.v);
     }
     public Direction1 direction1(){
         return Direction1.For(this.v);
+    }
+    public Direction2 direction2(){
+        return Direction2.For(this.v);
     }
     public final double[] array(){
         return this.v;

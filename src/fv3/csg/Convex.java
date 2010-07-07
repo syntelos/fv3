@@ -19,7 +19,7 @@
 package fv3.csg;
 
 import fv3.math.Vector;
-import static fv3.math.Vector.Direction1.*;
+import static fv3.math.Vector.Magnitude1.*;
 import fv3.math.VertexArray;
 
 /**
@@ -56,8 +56,8 @@ public class Convex
         final double cY = c[Y];
         final double cZ = c[Z];
 
-        switch (normal.direction1()){
-        case DX:
+        switch (normal.magnitude1()){
+        case MX:
 
             if (Sign(nX) == Sign(cX))
                 super.addN(f);
@@ -67,7 +67,7 @@ public class Convex
             }
             return this;
 
-        case DY:
+        case MY:
 
             if (Sign(nY) == Sign(cY))
                 super.addN(f);
@@ -77,7 +77,7 @@ public class Convex
             }
             return this;
 
-        case DZ:
+        case MZ:
 
             if (Sign(nZ) == Sign(cZ))
                 super.addN(f);

@@ -176,18 +176,24 @@ public final class Face
         super();
         if (null != s && null != a && null != b && null != c && null != n){
 
-
             Vector check = a.getVector().normal(b.getVector(),c.getVector());
-            if (check.direction1() == n.direction1()){
-                this.a = s.u(a).memberOf(this);
-                this.b = s.u(b).memberOf(this);
-                this.c = s.u(c).memberOf(this);
+            Vector.Magnitude1 checkM = check.magnitude1();
+            Vector.Magnitude1 nM = n.magnitude1();
+            if (checkM == nM){
+
+                if (check.direction1() == n.direction1()){
+                    this.a = s.u(a).memberOf(this);
+                    this.b = s.u(b).memberOf(this);
+                    this.c = s.u(c).memberOf(this);
+                }
+                else {
+                    this.a = s.u(a).memberOf(this);
+                    this.b = s.u(c).memberOf(this);
+                    this.c = s.u(b).memberOf(this);
+                }
             }
-            else {
-                this.a = s.u(a).memberOf(this);
-                this.b = s.u(c).memberOf(this);
-                this.c = s.u(b).memberOf(this);
-            }
+            else
+                throw new IllegalStateException("Direction of argument normal ("+nM+") is incongruous with direction of face normal ("+checkM+")");
         }
         else
             throw new IllegalArgumentException();
