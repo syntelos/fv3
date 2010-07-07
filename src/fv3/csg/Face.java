@@ -172,6 +172,26 @@ public final class Face
         else
             throw new IllegalArgumentException();
     }
+    protected Face(Solid s, Vertex a, Vertex b, Vertex c, Vector n){
+        super();
+        if (null != s && null != a && null != b && null != c && null != n){
+
+
+            Vector check = a.getVector().normal(b.getVector(),c.getVector());
+            if (check.direction1() == n.direction1()){
+                this.a = s.u(a).memberOf(this);
+                this.b = s.u(b).memberOf(this);
+                this.c = s.u(c).memberOf(this);
+            }
+            else {
+                this.a = s.u(a).memberOf(this);
+                this.b = s.u(c).memberOf(this);
+                this.c = s.u(b).memberOf(this);
+            }
+        }
+        else
+            throw new IllegalArgumentException();
+    }
 
 
     public void init(){

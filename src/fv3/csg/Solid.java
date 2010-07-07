@@ -92,16 +92,37 @@ public class Solid
         return this.addN(new Face(this,a,b,c));
     }
     /**
+     * Add a new triangular face in three (X,Y,Z) vertices and an
+     * approximate normal.
+     */
+    public final Solid add(Vertex a, Vertex b, Vertex c, Vector n){
+        return this.addN(new Face(this,a,b,c,n));
+    }
+    /**
      * Add a new triangular face in three (X,Y,Z) vertices
      */
     public final Solid add(double[] a, double[] b, double[] c){
         return this.addN(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c)));
     }
     /**
+     * Add a new triangular face in three (X,Y,Z) vertices and an
+     * approximate normal.
+     */
+    public final Solid add(double[] a, double[] b, double[] c, double[] n){
+        return this.addN(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c),new Vector(n)));
+    }
+    /**
      * Add a new triangular face from three sets of (X,Y,Z) vertices
      */
     public final Solid add(double[] face){
         return this.addN(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6)));
+    }
+    /**
+     * Add a new triangular face from three sets of (X,Y,Z) vertices
+     * and an approximate normal.
+     */
+    public final Solid add(double[] face, double[] normal){
+        return this.addN(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6),new Vector(normal)));
     }
     /**
      * Add a new triangular face in three (X,Y,Z) vertices
@@ -111,6 +132,28 @@ public class Solid
                            double cx, double cy, double cz)
     {
         return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz)));
+    }
+    /**
+     * Add a new triangular face in three (X,Y,Z) vertices and an
+     * approximate normal.
+     */
+    public final Solid add(double ax, double ay, double az, 
+                           double bx, double by, double bz, 
+                           double cx, double cy, double cz,
+                           double nx, double ny, double nz)
+    {
+        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz)));
+    }
+    /**
+     * Add a new triangular face in three (X,Y,Z) vertices and an
+     * approximate normal.
+     */
+    public final Solid add(double ax, double ay, double az, 
+                           double bx, double by, double bz, 
+                           double cx, double cy, double cz,
+                           Vector n)
+    {
+        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),n));
     }
     public final Solid add(VertexArray array){
 

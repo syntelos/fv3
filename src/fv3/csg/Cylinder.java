@@ -29,7 +29,7 @@ public abstract class Cylinder
         extends Cylinder
     {
         public XY(double r, double d){
-            this(r,d,ERROR);
+            this(r,d,Error.Default);
         }
         public XY(double r, double d, double e){
             super(r,d,e);
@@ -78,7 +78,7 @@ public abstract class Cylinder
         extends Cylinder
     {
         public ZY(double r, double d){
-            this(r,d,ERROR);
+            this(r,d,Error.Default);
         }
         public ZY(double r, double d, double e){
             super(r,d,e);
@@ -128,7 +128,7 @@ public abstract class Cylinder
         extends Cylinder
     {
         public ZX(double r, double d){
-            this(r,d,ERROR);
+            this(r,d,Error.Default);
         }
         public ZX(double r, double d, double e){
             super(r,d,e);
@@ -204,7 +204,7 @@ public abstract class Cylinder
     }
 
 
-    protected final static double ERROR = 0.0001;
+
 
     /**
      * @param r Radius of circle
