@@ -54,8 +54,7 @@ public class Torus
 
                     Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
                     this.add(qa,qb,qc,qn);
-                    //this.add(qc,qd,qa,qn);
-                    this.add(qa,qc,qd,qn);
+                    this.add(qc,qd,qa,qn);
                 }
             }
         }
