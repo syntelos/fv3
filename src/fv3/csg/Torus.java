@@ -40,12 +40,12 @@ public class Torus
             for (int ru = 0, rv = 1; ru < this.rn; ru++, rv++){
 
                 if (rv >= this.rn)
-                    rv = 0;
+                    rv = (rv - this.rn);
 
                 for (int cu = 0, cv = 1; cu < this.cn; cu++, cv++){
 
                     if (cv >= this.cn)
-                        cv = 0;
+                        cv = (cv - this.cn);
 
                     Vertex qa = t[ru][cu];
                     Vertex qb = t[ru][cv];
@@ -53,6 +53,13 @@ public class Torus
                     Vertex qd = t[rv][cv];
 
                     Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
+
+                    System.out.println();
+                    System.out.printf("\t%4d,%4d\t%s%n",ru,cu,qa.n);
+                    System.out.printf("\t%4d,%4d\t%s%n",ru,cv,qb.n);
+                    System.out.printf("\t%4d,%4d\t%s%n",rv,cu,qc.n);
+                    System.out.printf("\t%4d,%4d\t%s%n",rv,cv,qd.n);
+                    System.out.printf("\t%4d,%4d\t%s%n",ru,cu,qn);
 
                     this.add(qa,qb,qc,qn);
 
