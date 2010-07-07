@@ -52,13 +52,10 @@ public class Torus
                     Vertex qc = t[rv][cv];
                     Vertex qd = t[ru][cv];
 
-//                     Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
-
+                    //Vector qn = new Vector(qa.n).add(qb.n).add(qc.n).add(qd.n).div(4);
 
                     this.add(qa,qb,qd);
                     this.add(qb,qc,qd);
-
-                    return;
                 }
             }
         }
