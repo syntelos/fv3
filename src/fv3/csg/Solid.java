@@ -243,7 +243,7 @@ public class Solid
         {
             super.countVertices(this.state.countVertices());
 
-            int fc = 0, vc = 0;
+            int nc = 0, vc = 0;
 
             if (null != m){
 
@@ -258,17 +258,23 @@ public class Solid
                     this.setVertex(vc++, b);
                     this.setVertex(vc++, c);
 
-                    this.setNormal(fc++, n);
+                    this.setNormal(nc++, n);
+                    this.setNormal(nc++, n);
+                    this.setNormal(nc++, n);
                 }
             }
             else {
 
                 for (Face face: this.state){
 
-                    this.setVertices(vc, face.vertices(), 0, 3).setNormal(fc, face.normal());
-
-                    fc += 1;
+                    this.setVertices(vc, face.vertices(), 0, 3);
                     vc += 3;
+
+                    double[] n = face.normal();
+
+                    this.setNormal(nc++, n);
+                    this.setNormal(nc++, n);
+                    this.setNormal(nc++, n);
                 }
             }
         }

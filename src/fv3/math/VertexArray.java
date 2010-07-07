@@ -133,7 +133,7 @@ public class VertexArray
 
         this.countFaces = CountFaces(this.type,count);
         if (0 < this.countFaces)
-            this.normals = new double[3 * this.countFaces];
+            this.normals = new double[this.vertices.length];
     }
     public VertexArray(VertexArray src){
         this(src.type,src);
@@ -151,7 +151,7 @@ public class VertexArray
 
         this.countFaces = CountFaces(this.type,this.countVertices);
         if (0 < this.countFaces){
-            this.normals = new double[3 * this.countFaces];
+            this.normals = new double[this.vertices.length];
             this.computeNormals();
         }
     }
@@ -168,7 +168,7 @@ public class VertexArray
 
         this.countFaces = CountFaces(this.type,this.countVertices);
         if (0 < this.countFaces){
-            this.normals = new double[3 * this.countFaces];
+            this.normals = new double[this.vertices.length];
             this.computeNormals();
         }
     }
@@ -389,10 +389,9 @@ public class VertexArray
 
                 this.countFaces = CountFaces(this.type,count);
                 if (0 < this.countFaces){
-                    int tnl = (null != this.normals)?(this.normals.length):(0);
-                    double[] normals = new double[3 * this.countFaces];
-                    if (0 < tnl){
-                        int many = Math.min(tnl,(3 * this.countFaces));
+                    int many = (null != this.normals)?(this.normals.length):(0);
+                    double[] normals = new double[this.vertices.length];
+                    if (0 < many){
                         System.arraycopy(this.normals,0,normals,0,many);
                     }
                     this.normals = normals;
@@ -564,8 +563,11 @@ public class VertexArray
             Vector va = new Vector(this.getVertex(vertices[0]));
             Vector vb = new Vector(this.getVertex(vertices[1]));
             Vector vc = new Vector(this.getVertex(vertices[2]));
-            Vector normal = va.normal(vb,vc);
-            return this.setNormal(face,normal.array());
+            double[] normal = va.normal(vb,vc).array();
+            this.setNormal(vertices[0],normal);
+            this.setNormal(vertices[1],normal);
+            this.setNormal(vertices[2],normal);
+            return this;
         }
     }
     public final VertexArray computeNormals(){
@@ -584,6 +586,7 @@ public class VertexArray
         case TriangleFan:
         case Quads:
         case QuadStrip:
+        case Polygon:
 
             this.useNormals = true;
 
@@ -595,14 +598,13 @@ public class VertexArray
                 Vector vb = new Vector(this.getVertex(vertices[1]));
                 Vector vc = new Vector(this.getVertex(vertices[2]));
 
-                Vector normal = va.normal(vb,vc);
+                double[] normal = va.normal(vb,vc).array();
 
-                System.arraycopy(normal.array(),0,this.normals,(3*face),3);
+                this.setNormal(vertices[0],normal);
+                this.setNormal(vertices[1],normal);
+                this.setNormal(vertices[2],normal);
             }
             return this;
-
-        case Polygon:
-            return this.computeNormal(0);
 
         default:
             throw new IllegalStateException();
@@ -953,7 +955,7 @@ public class VertexArray
                 string.append(pr);
 
                 double[] fary = this.getFace(face);
-                double[] nary = this.getNormal(face);
+
                 for (c = 0, z = fary.length; c < z; c++){
                     if (0 != c){
                         string.append(in);
@@ -966,20 +968,6 @@ public class VertexArray
                     string.append(String.format("%30.26f",fary[c++]));
                     string.append(' ');
                     string.append(String.format("%30.26f",fary[c]));
-                }
-
-                if (null != nary){
-
-                    string.append(in);
-                    string.append(pr);
-
-                    string.append(String.format("N%4d",face));
-                    string.append(' ');
-                    string.append(String.format("%30.26f",nary[X]));
-                    string.append(' ');
-                    string.append(String.format("%30.26f",nary[Y]));
-                    string.append(' ');
-                    string.append(String.format("%30.26f",nary[Z]));
                 }
             }
         }
