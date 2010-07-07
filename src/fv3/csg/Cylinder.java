@@ -23,7 +23,7 @@ package fv3.csg;
  * parallel to XY, ZY or ZX and the solid centered at (0,0,0).
  */
 public abstract class Cylinder
-    extends Geom
+    extends Convex
 {
     public static class XY
         extends Cylinder

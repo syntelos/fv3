@@ -23,22 +23,22 @@ import static fv3.math.Vector.Direction1.*;
 import fv3.math.VertexArray;
 
 /**
- * CSG Geom subclasses are convex solids centered at (0,0,0).  This
+ * CSG Convex subclasses are convex solids centered at (0,0,0).  This
  * class provides tools for adding outward facing vertices based on
  * these constraint.  Using this class, the order of vertices within a
  * face
  */
-public class Geom
+public class Convex
     extends Solid
 {
     public enum Norm {
         NX, NY, NZ, NXY, NXZ, NZY;
     }
 
-    public Geom(int c){
+    public Convex(int c){
         super(c);
     }
-    public Geom(VertexArray v){
+    public Convex(VertexArray v){
         super(v);
     }
 
