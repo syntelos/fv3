@@ -55,8 +55,6 @@ public class Solid
 
     protected State state;
 
-    protected Matrix transform;
-
     protected Construct constructOp;
 
     protected Solid constructA, constructB;
@@ -221,9 +219,13 @@ public class Solid
 
         if (this.visible)
             super.transform(m);
-        else
-            this.transform = m;
+        else {
 
+            for (Face face: this.state){
+
+                face.transform(this,m);
+            }
+        }
         return this;
     }
     /**
@@ -237,50 +239,53 @@ public class Solid
      */
     public final Solid compile(){
 
-        return this.compile(this.transform);
-    }
-    public final Solid compile(Matrix m){
-        {
-            super.countVertices(this.state.countVertices());
+        super.countVertices(this.state.countVertices());
 
-            int nc = 0, vc = 0;
+        int nc = 0, vc = 0;
 
-            if (null != m){
+        for (Face face: this.state){
 
-                for (Face face: this.state){
+            this.setVertices(vc, face.vertices(), 0, 3);
+            vc += 3;
 
-                    Vector a = m.transform(face.a.getVector());
-                    Vector b = m.transform(face.b.getVector());
-                    Vector c = m.transform(face.c.getVector());
-                    Vector n = a.normal(b,c);
+            double[] n = face.normal();
 
-                    this.setVertex(vc++, a);
-                    this.setVertex(vc++, b);
-                    this.setVertex(vc++, c);
-
-                    this.setNormal(nc++, n);
-                    this.setNormal(nc++, n);
-                    this.setNormal(nc++, n);
-                }
-            }
-            else {
-
-                for (Face face: this.state){
-
-                    this.setVertices(vc, face.vertices(), 0, 3);
-                    vc += 3;
-
-                    double[] n = face.normal();
-
-                    this.setNormal(nc++, n);
-                    this.setNormal(nc++, n);
-                    this.setNormal(nc++, n);
-                }
-            }
+            this.setNormal(nc++, n);
+            this.setNormal(nc++, n);
+            this.setNormal(nc++, n);
         }
         this.visible = true;
 
         return this;
+    }
+    public final Solid compile(Matrix m){
+        if (null != m){
+            super.countVertices(this.state.countVertices());
+
+            int nc = 0, vc = 0;
+
+            for (Face face: this.state){
+
+                Vector a = m.transform(face.a.getVector());
+                Vector b = m.transform(face.b.getVector());
+                Vector c = m.transform(face.c.getVector());
+                Vector n = a.normal(b,c);
+
+                this.setVertex(vc++, a);
+                this.setVertex(vc++, b);
+                this.setVertex(vc++, c);
+
+                this.setNormal(nc++, n);
+                this.setNormal(nc++, n);
+                this.setNormal(nc++, n);
+            }
+
+            this.visible = true;
+
+            return this;
+        }
+        else
+            return this.compile();
     }
     public final Bound getBound(){
         return this.state.getBound();

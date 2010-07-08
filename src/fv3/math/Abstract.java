@@ -137,6 +137,79 @@ public abstract class Abstract
         else
             return 1;
     }
+    public final static double[] Add(double[] vertices, double[] vertex){
+        if (-1 == IndexOf(vertices,vertex))
+            return Cat(vertices,vertex);
+        else
+            return vertices;
+    }
+    public final static double[] Cat(double[] vertices, double[] vertex){
+        if (null == vertices)
+            return vertex;
+        else if (null == vertex)
+            return vertices;
+        else {
+            int len1 = vertices.length;
+            int len2 = vertex.length;
+            double[] copier = new double[len1+len2];
+            System.arraycopy(vertices,0,copier,0,len1);
+            System.arraycopy(vertex,0,copier,len1,len2);
+            return copier;
+        }
+    }
+    public final static int IndexOf(double[] vertices, double[] vertex){
+        if (null == vertices)
+            return -1;
+        else if (null == vertex)
+            return -1;
+        else {
+            int len1 = vertices.length;
+            int len2 = vertex.length;
+            if (len1 > len2){
+                scan:
+                for (int c1 = 0, c2 = 0; c1 < len1; ){
+                    if (vertices[c1] == vertex[c2]){
+                        final int index = c1;
+                        c1 += 1;
+                        c2 += 1;
+                        while (c2 < len2){
+                            if (vertices[c1] != vertex[c2]){
+                                c1 = (index+len2);
+                                continue scan;
+                            }
+                        }
+                        return index;
+                    }
+                    else
+                        c1 += len2;
+                }
+            }
+            return -1;
+        }
+    }
+    /**
+     * Sort vertices on any two dimensions for rotational order.
+     * 
+     * @param vertices Vertex list in (X,Y,Z)+
+     * @param fix Fixed or excluded dimension from {@link fv3.math.Notation} 
+     * 
+     * @return Argument 'vertices'
+     */
+    public final static double[] Sort(double[] vertices, int fix){
+        if (null == vertices)
+            return null;
+        else {
+            int len = vertices.length;
+            if (0 == (len%3)){
+
+                new QuickSort(vertices,fix);
+
+                return vertices;
+            }
+            else
+                throw new IllegalArgumentException(String.valueOf(len));
+        }
+    }
 
 
     /**

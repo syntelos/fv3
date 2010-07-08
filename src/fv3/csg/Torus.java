@@ -26,6 +26,9 @@ import fv3.math.Vector;
 public abstract class Torus
     extends NonConvex
 {
+    /**
+     * 
+     */
     public static class XY
         extends Torus
     {

@@ -2,6 +2,7 @@ package test;
 
 import fv3.math.AxisAngle;
 import fv3.model.Begin ;
+import fv3.model.Enable ;
 import fv3.model.End ;
 import fv3.model.Material ;
 import fv3.model.Model ;
@@ -23,6 +24,7 @@ public class GearRed
     private final static fv3.model.Object[] MODEL1 = {
         new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, MatRed),
         new ShadeModel(GL2.GL_FLAT),
+        new Enable(GL2.GL_DEPTH_TEST),
         new Normal(  0.00000000000000000000000000,  0.00000000000000000000000000,  1.00000000000000000000000000),
         new Begin(GL2.GL_QUAD_STRIP),
         new Vertex(  1.00000000000000000000000000,  0.00000000000000000000000000,  0.50000000000000000000000000),

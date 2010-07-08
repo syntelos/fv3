@@ -41,33 +41,44 @@ public abstract class Cylinder
             double z0 = -dd2;
             double z1 = +dd2;
 
-            for (int cc = 0, count = cv.length; ; ){
+            final int count = cv.length;
+
+            for (int cc = 0; cc < count; ){
 
                 double x0 = cv[cc++];
                 double y0 = cv[cc++];
+                double x1, y1;
 
                 if (cc < count){
-                    double x1 = cv[cc];
-                    double y1 = cv[cc+1];
-
-                    DCXY(this,
-                         0.0, 0.0,  z0,
-                         0.0, 0.0,  z1,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
+                    x1 = cv[cc];
+                    y1 = cv[cc+1];
                 }
                 else {
-                    double x1 = cv[0];
-                    double y1 = cv[1];
-
-                    DCXY(this,
-                         0.0, 0.0,  z0,
-                         0.0, 0.0,  z1,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
-
-                    break;
+                    x1 = cv[0];
+                    y1 = cv[1];
                 }
+
+                /*
+                 * Triangle fan disk (Z+)
+                 */
+                this.add(0.0, 0.0,  z1,
+                         x0,   y0,  z1,
+                         x1,   y1,  z1);
+                /*
+                 * Quad triangle pair
+                 */
+                this.add(x0, y0, z1,
+                         x0, y0, z0,
+                         x1, y1, z0);
+                this.add(x0, y0, z1,
+                         x1, y1, z0,
+                         x1, y1, z1);
+                /*
+                 * Triangle fan disk (Z-)
+                 */
+                this.add(0.0, 0.0,  z0,
+                         x1,   y1,  z0,
+                         x0,   y0,  z0);
             }
         }
         public XY(XY c){
@@ -99,22 +110,12 @@ public abstract class Cylinder
                     double z1 = cv[cc];
                     double y1 = cv[cc+1];
 
-                    DCZY(this,
-                         x0,  0.0, 0.0,
-                         x1,  0.0, 0.0,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
                 }
                 else {
 
                     double z1 = cv[0];
                     double y1 = cv[1];
 
-                    DCZY(this,
-                         x0,  0.0, 0.0,
-                         x1,  0.0, 0.0,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
 
                     break;
                 }
@@ -149,21 +150,11 @@ public abstract class Cylinder
                     double z1 = cv[cc];
                     double x1 = cv[cc+1];
 
-                    DCZX(this,
-                         0.0,  y0, 0.0,
-                         0.0,  y1, 0.0,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
                 }
                 else {
                     double z1 = cv[0];
                     double x1 = cv[1];
 
-                    DCZX(this,
-                         0.0,  y0, 0.0,
-                         0.0,  y1, 0.0,
-                         x0,   y0,  z0,
-                         x1,   y1,  z1);
 
                     break;
                 }
@@ -246,89 +237,5 @@ public abstract class Cylinder
         }
         else
             throw new IllegalArgumentException(String.valueOf(e));
-    }
-    protected final static void DCXY(Cylinder geom, 
-                                     double cx0, double cy0, double cz0,
-                                     double cx1, double cy1, double cz1,
-                                     double  x0, double  y0, double  z0,
-                                     double  x1, double  y1, double  z1)
-    {
-        /*
-         * Triangle fan disk (0)
-         */
-        geom.add(cx0, cy0, cz0,
-                 x0,   y0,  z0,
-                 x1,   y1,  z0);
-        /*
-         * Quad triangle pair in depth
-         */
-        geom.add(x0, y0, z0,
-                 x0, y0, z1,
-                 x1, y1, z1);
-        geom.add(x0, y0, z0,
-                 x1, y1, z1,
-                 x1, y1, z0);
-        /*
-         * Triangle fan disk (1)
-         */
-        geom.add(cx1, cy1, cz1,
-                 x0,   y0,  z1,
-                 x1,   y1,  z1);
-    }
-    protected final static void DCZY(Cylinder geom, 
-                                     double cx0, double cy0, double cz0,
-                                     double cx1, double cy1, double cz1,
-                                     double  x0, double  y0, double  z0,
-                                     double  x1, double  y1, double  z1)
-    {
-        /*
-         * Triangle fan disk (0)
-         */
-        geom.add(cx0, cy0, cz0,
-                 x0,   y0,  z0,
-                 x0,   y1,  z1);
-        /*
-         * Quad triangle pair in depth
-         */
-        geom.add(x0, y0, z0,
-                 x1, y0, z0,
-                 x1, y1, z1);
-        geom.add(x0, y0, z0,
-                 x1, y1, z1,
-                 x0, y1, z1);
-        /*
-         * Triangle fan disk (1)
-         */
-        geom.add(cx1, cy1, cz1,
-                 x1,   y0,  z0,
-                 x1,   y1,  z1);
-    }
-    protected final static void DCZX(Cylinder geom, 
-                                     double cx0, double cy0, double cz0,
-                                     double cx1, double cy1, double cz1,
-                                     double  x0, double  y0, double  z0,
-                                     double  x1, double  y1, double  z1)
-    {
-        /*
-         * Triangle fan disk (0)
-         */
-        geom.add(cx0, cy0, cz0,
-                 x0,   y0,  z0,
-                 x1,   y0,  z1);
-        /*
-         * Quad triangle pair in depth
-         */
-        geom.add(x0, y0, z0,
-                 x0, y1, z0,
-                 x1, y1, z1);
-        geom.add(x0, y0, z0,
-                 x1, y1, z1,
-                 x1, y0, z1);
-        /*
-         * Triangle fan disk (1)
-         */
-        geom.add(cx1, cy1, cz1,
-                 x0,   y1,  z0,
-                 x1,   y1,  z1);
     }
 }

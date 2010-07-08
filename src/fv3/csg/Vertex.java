@@ -195,27 +195,31 @@ public class Vertex
                     break;
                 }
             }
-            if (1 == count){
-                this.membership = null;
-                return true;
-            }
-            else {
-                final int term = (count-1);
-                Face[] copy = new Face[term];
-
-                if (0 == index){
-                    System.arraycopy(m,1,copy,0,term);
-                }
-                else if (term == index){
-                    System.arraycopy(m,0,copy,0,term);
+            if (-1 != index){
+                if (1 == count){
+                    this.membership = null;
+                    return true;
                 }
                 else {
-                    System.arraycopy(m,0,copy,0,index);
-                    System.arraycopy(m,(index+1),copy,index,(term-index));
+                    final int term = (count-1);
+                    Face[] copy = new Face[term];
+
+                    if (0 == index){
+                        System.arraycopy(m,1,copy,0,term);
+                    }
+                    else if (term == index){
+                        System.arraycopy(m,0,copy,0,term);
+                    }
+                    else {
+                        System.arraycopy(m,0,copy,0,index);
+                        System.arraycopy(m,(index+1),copy,index,(term-index));
+                    }
+                    this.membership = copy;
+                    return false;
                 }
-                this.membership = copy;
-                return false;
             }
+            else
+                return false;
         }
     }
     public Vector normal(Vertex b, Vertex c){

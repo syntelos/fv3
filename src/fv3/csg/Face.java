@@ -17,6 +17,7 @@
  */
 package fv3.csg;
 
+import fv3.math.Matrix;
 import fv3.math.Vector;
 
 /**
@@ -274,6 +275,20 @@ public final class Face
         this.b.destroy();
         this.c.destroy();
     }
+    public Face transform(Solid s, Matrix m){
+
+        this.deconstruct(s);
+
+        Vertex a = new Vertex(m.transform(this.a.copy()));
+        Vertex b = new Vertex(m.transform(this.b.copy()));
+        Vertex c = new Vertex(m.transform(this.c.copy()));
+
+        this.a = s.u(a).memberOf(this);
+        this.b = s.u(b).memberOf(this);
+        this.c = s.u(c).memberOf(this);
+
+        return this;
+    }
     public Face clone(Solid s){
         try {
             Face clone = (Face)super.clone();
@@ -288,9 +303,11 @@ public final class Face
         }
     }
     public Face dropFrom(Solid s){
-
-        s.state.remove(this);
-
+        try {
+            s.state.remove(this);
+        }
+        catch (java.util.NoSuchElementException ignore){
+        }
         if (this.a.dropMember(this))
             s.state.vertices.remove(this.a);
 
@@ -302,11 +319,16 @@ public final class Face
 
         return this;
     }
-    public Face deconstruct(){
+    public Face deconstruct(Solid s){
 
-        this.a.dropMember(this);
-        this.b.dropMember(this);
-        this.c.dropMember(this);
+        if (this.a.dropMember(this))
+            s.state.vertices.remove(this.a);
+
+        if (this.b.dropMember(this))
+            s.state.vertices.remove(this.b);
+
+        if (this.c.dropMember(this))
+            s.state.vertices.remove(this.c);
 
         return this;
     }

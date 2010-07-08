@@ -494,6 +494,12 @@ public class VertexArray
         else
             throw new IllegalStateException();
     }
+    public final boolean hasFaces(){
+        return (0 < this.countFaces);
+    }
+    public final boolean hasNotFaces(){
+        return (0 == this.countFaces);
+    }
     public final int countFaces(){
         return this.countFaces;
     }
@@ -911,6 +917,33 @@ public class VertexArray
     }
     public double getBoundsMaxZ(){
         return this.getBounds().getBoundsMaxZ();
+    }
+    public VertexArrayProfile profileXY(){
+        return new VertexArrayProfile.XY(this,0.0);
+    }
+    public VertexArrayProfile profileXY(double z){
+        return new VertexArrayProfile.XY(this,z);
+    }
+    public VertexArrayProfile profileXY(double z, double e){
+        return new VertexArrayProfile.XY(this,z,e);
+    }
+    public VertexArrayProfile profileZY(){
+        return new VertexArrayProfile.ZY(this,0.0);
+    }
+    public VertexArrayProfile profileZY(double x){
+        return new VertexArrayProfile.ZY(this,x);
+    }
+    public VertexArrayProfile profileZY(double x, double e){
+        return new VertexArrayProfile.ZY(this,x,e);
+    }
+    public VertexArrayProfile profileZX(){
+        return new VertexArrayProfile.ZX(this,0.0);
+    }
+    public VertexArrayProfile profileZX(double y){
+        return new VertexArrayProfile.ZX(this,y);
+    }
+    public VertexArrayProfile profileZX(double y, double e){
+        return new VertexArrayProfile.ZX(this,y,e);
     }
     public String toString(){
         return this.toString("","\n");

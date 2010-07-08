@@ -18,24 +18,12 @@
  */
 package fv3.csg;
 
-import fv3.math.Vector;
-import static fv3.math.Vector.Magnitude1.*;
-import fv3.math.VertexArray;
-
-/**
- * CSG Convex subclasses are convex solids centered at (0,0,0).  This
- * class provides tools for adding outward facing vertices based on
- * these constraints.
- */
-public class Convex
-    extends Solid
+public class Cube
+    extends Convex
 {
 
-    public Convex(int c){
-        super(c);
-    }
-    public Convex(Convex v){
-        super(v);
+    public Cube(double w, double h, double d){
+        super(0);
     }
 
 }
