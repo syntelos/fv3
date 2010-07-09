@@ -927,14 +927,14 @@ public class VertexArray
     public VertexArrayProfile profileXY(double z, double e){
         return new VertexArrayProfile.XY(this,z,e);
     }
-    public VertexArrayProfile profileZY(){
-        return new VertexArrayProfile.ZY(this,0.0);
+    public VertexArrayProfile profileYZ(){
+        return new VertexArrayProfile.YZ(this,0.0);
     }
-    public VertexArrayProfile profileZY(double x){
-        return new VertexArrayProfile.ZY(this,x);
+    public VertexArrayProfile profileYZ(double x){
+        return new VertexArrayProfile.YZ(this,x);
     }
-    public VertexArrayProfile profileZY(double x, double e){
-        return new VertexArrayProfile.ZY(this,x,e);
+    public VertexArrayProfile profileYZ(double x, double e){
+        return new VertexArrayProfile.YZ(this,x,e);
     }
     public VertexArrayProfile profileZX(){
         return new VertexArrayProfile.ZX(this,0.0);

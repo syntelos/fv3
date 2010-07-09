@@ -30,12 +30,12 @@ public abstract class Geom
     extends VertexArray
 {
 
+    /**
+     * Line 
+     */
     public static class Line
         extends Geom
     {
-        /**
-         * Line 
-         */
         public Line(double x0, double y0, double z0,
                     double x1, double y1, double z1)
         {
@@ -49,27 +49,20 @@ public abstract class Geom
         }
     }
 
-    public static class Circle
+    /**
+     * Circle
+     */
+    public static abstract class Circle
         extends Geom
     {
+        /**
+         * Construct a circle in the X-Y plane centered at (0,0,0)
+         */
         public static class XY
             extends Circle
         {
             public XY(double r){
                 super(r);
-            }
-            public XY(XY c){
-                super(c);
-            }
-        }
-        public static class ZY
-            extends Circle
-        {
-            /**
-             * Construct a circle in the Z-Y plane centered at (0,0,0)
-             */
-            public ZY(double r){
-                super(Type.LineLoop,(r*2.0));
 
                 final double ds = (PI_M2 / (double)this.countVertices);
 
@@ -79,7 +72,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,0.0,(r*Math.sin(a)),(r*Math.cos(a)));
+                        this.setVertex(idx,(r*Math.cos(a)),(r*Math.sin(a)),0.0);
 
                         a += ds;
                     }
@@ -88,24 +81,60 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,0.0,(Math.sin(a)),(Math.cos(a)));
+                        this.setVertex(idx,Math.cos(a),Math.sin(a),0.0);
 
                         a += ds;
                     }
                 }
             }
-            public ZY(ZY c){
+            public XY(XY c){
                 super(c);
             }
         }
+        /**
+         * Construct a circle in the Y-Z plane centered at (0,0,0)
+         */
+        public static class YZ
+            extends Circle
+        {
+            public YZ(double r){
+                super(r);
+
+                final double ds = (PI_M2 / (double)this.countVertices);
+
+                double a = 0.0;
+
+                if (r != 1.0){
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,0.0,(r*Math.cos(a)),(r*Math.sin(a)));
+
+                        a += ds;
+                    }
+                }
+                else {
+
+                    for (int idx = 0, count = this.countVertices; idx < count; idx++){
+
+                        this.setVertex(idx,0.0,(Math.cos(a)),(Math.sin(a)));
+
+                        a += ds;
+                    }
+                }
+            }
+            public YZ(YZ c){
+                super(c);
+            }
+        }
+        /**
+         * Construct a circle in the Z-X plane centered at (0,0,0)
+         */
         public static class ZX
             extends Circle
         {
-            /**
-             * Construct a circle in the Z-X plane centered at (0,0,0)
-             */
             public ZX(double r){
-                super(Type.LineLoop,(r*2.0));
+                super(r);
 
                 final double ds = (PI_M2 / (double)this.countVertices);
 
@@ -135,43 +164,12 @@ public abstract class Geom
             }
         }
 
-        /**
-         * Construct a circle in the X-Y plane centered at (0,0,0)
-         */
-        public Circle(double r){
+
+        protected Circle(double r){
             super(Type.LineLoop,(r*2.0));
-
-            final double ds = (PI_M2 / (double)this.countVertices);
-
-            double a = 0.0;
-
-            if (r != 1.0){
-
-                for (int idx = 0, count = this.countVertices; idx < count; idx++){
-
-                    this.setVertex(idx,(r*Math.cos(a)),(r*Math.sin(a)),0.0);
-
-                    a += ds;
-                }
-            }
-            else {
-
-                for (int idx = 0, count = this.countVertices; idx < count; idx++){
-
-                    this.setVertex(idx,Math.cos(a),Math.sin(a),0.0);
-
-                    a += ds;
-                }
-            }
         }
-        public Circle(Circle c){
+        protected Circle(Circle c){
             super(c);
-        }
-        protected Circle(Type t, int c){
-            super(t,c);
-        }
-        protected Circle(Type t, double c){
-            super(t,c);
         }
     }
 

@@ -54,13 +54,13 @@ public abstract class VertexArrayProfile
                 throw new IllegalArgumentException();
         }
     }
-    public static class ZY
+    public static class YZ
         extends VertexArrayProfile
     {
-        public ZY(VertexArray va, double x){
+        public YZ(VertexArray va, double x){
             this(va,x,EPSILON);
         }
-        public ZY(VertexArray va, double px, double pe){
+        public YZ(VertexArray va, double px, double pe){
             super();
             if (va.hasFaces()){
 

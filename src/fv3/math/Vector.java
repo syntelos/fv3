@@ -152,7 +152,7 @@ public class Vector
      */
     public enum Direction2 {
 
-        DX, DY, DZ, DXY, DXZ, DZY;
+        DX, DY, DZ, DXY, DXZ, DYZ;
 
         public final static double E = 1e-2;
 
@@ -174,9 +174,9 @@ public class Vector
 
                 return DXZ;
 
-            else if (0.0 == DE((anZ - anY),E))
+            else if (0.0 == DE((anY - anZ),E))
 
-                return DZY;
+                return DYZ;
 
             else if (anX > anY){
 

@@ -20,7 +20,7 @@ package fv3.csg;
 
 /**
  * Create a cylinder from radius and depth with the circular faces
- * parallel to XY, ZY or ZX and the solid centered at (0,0,0).
+ * parallel to XY, YZ or ZX and the solid centered at (0,0,0).
  */
 public abstract class Cylinder
     extends Convex
@@ -34,12 +34,12 @@ public abstract class Cylinder
         public XY(double r, double d, double e){
             super(r,d,e);
 
-            double[] cv = CV(r,e);
+            final double[] cv = CV(r,e);
 
-            double dd2 = (d/2.0);
+            final double dd2 = (d/2.0);
 
-            double z0 = -dd2;
-            double z1 = +dd2;
+            final double z0 = -dd2;
+            final double z1 = +dd2;
 
             final int count = cv.length;
 
@@ -85,43 +85,63 @@ public abstract class Cylinder
             super(c);
         }
     }
-    public static class ZY
+    public static class YZ
         extends Cylinder
     {
-        public ZY(double r, double d){
+        public YZ(double r, double d){
             this(r,d,Error.Default);
         }
-        public ZY(double r, double d, double e){
+        public YZ(double r, double d, double e){
             super(r,d,e);
 
-            double[] cv = CV(r,e);
+            final double[] cv = CV(r,e);
 
-            double dd2 = (d/2.0);
+            final double dd2 = (d/2.0);
 
-            double x0 = -dd2;
-            double x1 = +dd2;
+            final double x0 = -dd2;
+            final double x1 = +dd2;
 
-            for (int cc = 0, count = cv.length; ; ){
+            final int count = cv.length;
 
-                double z0 = cv[cc++];
+            for (int cc = 0; cc < count; ){
+
                 double y0 = cv[cc++];
+                double z0 = cv[cc++];
+                double z1, y1;
 
                 if (cc < count){
-                    double z1 = cv[cc];
-                    double y1 = cv[cc+1];
-
+                    y1 = cv[cc];
+                    z1 = cv[cc+1];
                 }
                 else {
-
-                    double z1 = cv[0];
-                    double y1 = cv[1];
-
-
-                    break;
+                    y1 = cv[0];
+                    z1 = cv[1];
                 }
+
+                /*
+                 * Triangle fan disk (X+)
+                 */
+                this.add(x1,  0.0, 0.0,
+                         x1,   y0,  z0,
+                         x1,   y1,  z1);
+                /*
+                 * Quad triangle pair
+                 */
+                this.add(x1, y0, z0,
+                         x0, y0, z0,
+                         x0, y1, z1);
+                this.add(x1, y0, z0,
+                         x0, y1, z1,
+                         x1, y1, z1);
+                /*
+                 * Triangle fan disk (X-)
+                 */
+                this.add(x0,  0.0, 0.0,
+                         x0,   y1,  z1,
+                         x0,   y0,  z0);
             }
         }
-        public ZY(ZY c){
+        public YZ(YZ c){
             super(c);
         }
     }
@@ -134,30 +154,51 @@ public abstract class Cylinder
         public ZX(double r, double d, double e){
             super(r,d,e);
 
-            double[] cv = CV(r,e);
+            final double[] cv = CV(r,e);
 
-            double dd2 = (d/2.0);
+            final double dd2 = (d/2.0);
 
-            double y0 = -dd2;
-            double y1 = +dd2;
+            final double y0 = -dd2;
+            final double y1 = +dd2;
 
-            for (int cc = 0, count = cv.length; ; ){
+            final int count = cv.length;
+
+            for (int cc = 0; cc < count; ){
 
                 double z0 = cv[cc++];
                 double x0 = cv[cc++];
+                double z1, x1;
 
                 if (cc < count){
-                    double z1 = cv[cc];
-                    double x1 = cv[cc+1];
-
+                    z1 = cv[cc];
+                    x1 = cv[cc+1];
                 }
                 else {
-                    double z1 = cv[0];
-                    double x1 = cv[1];
-
-
-                    break;
+                    z1 = cv[0];
+                    x1 = cv[1];
                 }
+
+                /*
+                 * Triangle fan disk (Y+)
+                 */
+                this.add(0.0,  y1, 0.0,
+                         x0,   y1,  z0,
+                         x1,   y1,  z1);
+                /*
+                 * Quad triangle pair
+                 */
+                this.add(x0, y1, z0,
+                         x0, y0, z0,
+                         x1, y0, z1);
+                this.add(x0, y1, z0,
+                         x1, y0, z1,
+                         x1, y1, z1);
+                /*
+                 * Triangle fan disk (Y-)
+                 */
+                this.add(0.0,  y0, 0.0,
+                         x1,   y0,  z1,
+                         x0,   y0,  z0);
             }
         }
         public ZX(ZX c){
@@ -199,7 +240,7 @@ public abstract class Cylinder
 
     /**
      * @param r Radius of circle
-     * @param e Error between zero and one (default 0.0001)
+     * @param e Error between zero and one
      * @return Circle vertices for R in (domain,range) order
      */
     protected final static double[] CV(double r, double e){

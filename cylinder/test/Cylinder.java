@@ -66,12 +66,12 @@ public class Cylinder
     }
 
     public enum CylinderType {
-        XY, ZY, ZX;
+        XY, YZ, ZX;
     }
 
 
     public Cylinder(){
-        this(CylinderType.XY);
+        this(CylinderType.YZ);
     }
     public Cylinder(CylinderType type){
         super();
@@ -88,11 +88,11 @@ public class Cylinder
             case XY:
                 cylinder.add(new fv3.csg.Cylinder.XY(10,10).compile());
                 break;
+            case YZ:
+                cylinder.add(new fv3.csg.Cylinder.YZ(10,10).compile());
+                break;
             case ZX:
                 cylinder.add(new fv3.csg.Cylinder.ZX(10,10).compile());
-                break;
-            case ZY:
-                cylinder.add(new fv3.csg.Cylinder.ZY(10,10).compile());
                 break;
             default:
                 throw new IllegalStateException();
