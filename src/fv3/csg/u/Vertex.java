@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.csg;
+package fv3.csg.u;
 
 import fv3.math.Vector;
 
@@ -24,7 +24,7 @@ import fv3.math.Vector;
  */
 public class Vertex
     extends java.lang.Object
-    implements fv3.csg.Notation,
+    implements fv3.csg.u.Notation,
                java.lang.Comparable<Vertex>,
                java.lang.Cloneable
 {
@@ -33,7 +33,7 @@ public class Vertex
 
     public final int hashCode;
 
-    protected State.Vertex status = State.Vertex.Unknown;
+    public State.Vertex status = State.Vertex.Unknown;
 
     private Face[] membership;
 

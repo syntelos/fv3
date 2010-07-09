@@ -65,15 +65,9 @@ public class Cylinder
         }
     }
 
-    public enum CylinderType {
-        XY, YZ, ZX;
-    }
 
 
     public Cylinder(){
-        this(CylinderType.YZ);
-    }
-    public Cylinder(CylinderType type){
         super();
         this.setBgColor(Color.White);
 
@@ -84,19 +78,12 @@ public class Cylinder
             cylinder.add(new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             cylinder.add(new ShadeModel(GL2.GL_FLAT));
             cylinder.add(new Enable(GL2.GL_DEPTH_TEST));
-            switch(type){
-            case XY:
-                cylinder.add(new fv3.csg.Cylinder.XY(10,10).compile());
-                break;
-            case YZ:
-                cylinder.add(new fv3.csg.Cylinder.YZ(10,10).compile());
-                break;
-            case ZX:
-                cylinder.add(new fv3.csg.Cylinder.ZX(10,10).compile());
-                break;
-            default:
-                throw new IllegalStateException();
-            }
+
+            Solid s = new fv3.csg.Cylinder.XY(10,10,1)
+                .difference(new fv3.csg.Cylinder.XY(5,12,1));
+
+            cylinder.add(s.compile());
+
         }
         this.add(cylinder);
 

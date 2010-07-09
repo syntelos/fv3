@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.csg;
+package fv3.csg.u;
 
 /**
  * Based on the work of Danilo Balby Silva Castanheira in <a
@@ -26,7 +26,7 @@ package fv3.csg;
  */
 public final class Bound 
     extends java.lang.Object
-    implements fv3.csg.Notation,
+    implements fv3.csg.u.Notation,
                fv3.Bounds
 {
 	public final double maxX, midX, minX;

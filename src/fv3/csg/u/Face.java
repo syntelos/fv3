@@ -15,17 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.csg;
+package fv3.csg.u;
+
+import fv3.csg.Solid;
 
 import fv3.math.Matrix;
 import fv3.math.Vector;
 
 /**
- * Triangular face used by {@link Solid}.
+ * Triangular face used by {@link fv3.csg.Solid}.
  */
 public final class Face
     extends java.lang.Object
-    implements fv3.csg.Notation,
+    implements fv3.csg.u.Notation,
                java.lang.Comparable<Face>,
                java.lang.Cloneable
 {
@@ -152,9 +154,9 @@ public final class Face
      * reversed (i.e. invert normal).  All other changes must replace
      * the face in the state of the solid.
      */
-    protected Vertex a, b, c;
+    public Vertex a, b, c;
 
-    protected State.Face status = State.Face.Unknown;
+    public State.Face status = State.Face.Unknown;
 
     private Vector normal, centroid;
 
@@ -163,7 +165,7 @@ public final class Face
     private boolean inverted;
 
 
-    protected Face(Solid s, Vertex a, Vertex b, Vertex c){
+    public Face(Solid s, Vertex a, Vertex b, Vertex c){
         super();
         if (null != s && null != a && null != b && null != c){
             this.a = s.u(a).memberOf(this);
@@ -173,7 +175,7 @@ public final class Face
         else
             throw new IllegalArgumentException();
     }
-    protected Face(Solid s, Vertex a, Vertex b, Vertex c, Vector n){
+    public Face(Solid s, Vertex a, Vertex b, Vertex c, Vector n){
         super();
         if (null != s && null != a && null != b && null != c && null != n){
 
@@ -372,10 +374,41 @@ public final class Face
                 return t;
         }
     }
+    public String toString(){
+        return this.toString("","\n");
+    }
+    public String toString(String pr){
+        return this.toString(pr,"\n");
+    }
+    public String toString(String pr, String in){
+        if (null == pr)
+            pr = "";
+        if (null == in)
+            in = " ";
+
+        StringBuilder string = new StringBuilder();
+
+        string.append(pr);
+        string.append(this.status);
+        string.append(in);
+        string.append(pr);
+        string.append(this.a);
+        string.append(in);
+        string.append(pr);
+        string.append(this.b);
+        string.append(in);
+        string.append(pr);
+        string.append(this.c);
+        string.append(in);
+        string.append(pr);
+        string.append(this.getNormal());
+
+        return string.toString();
+    }
     /**
      * Invert normal direction
      */
-    protected void invertNormal(){
+    public void invertNormal(){
         if (this.inverted)
             throw new IllegalStateException();
         else {
@@ -386,7 +419,7 @@ public final class Face
             this.normal = null;
         }
     }
-    protected double[] getNxyzd(){
+    public double[] getNxyzd(){
 
         Vertex a = this.a;
 
@@ -400,7 +433,7 @@ public final class Face
 
         return new double[]{x,y,z,d};
     }
-    protected boolean simpleClassify(){
+    public boolean simpleClassify(){
         if (this.a.isUnknown() && this.b.isUnknown() && this.c.isUnknown())
             return false;
         else {
@@ -436,13 +469,13 @@ public final class Face
             }
         }
     }
-    protected void rayTraceClassify(Solid object){
+    public void rayTraceClassify(Solid object){
 
 		Vector p0 = new Vector();
 		p0.x((this.a.x + this.b.x + this.c.x)/3.0);
 		p0.y((this.a.y + this.b.y + this.c.y)/3.0);
 		p0.z((this.a.z + this.b.z + this.c.z)/3.0);
-		Line ray = new Line(getNormal(),p0);
+		Segment.Line ray = new Segment.Line(getNormal(),p0);
 
 		Face closestFace = null;
         double closestDistance;

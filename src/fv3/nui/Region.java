@@ -275,8 +275,23 @@ public class Region
         else
             return null;
     }
+    public void clear(){
+
+        this.dropFv3Children();
+    }
     public final Region dropFv3Children(){
-        this.children = null;
+
+        List<fv3.Component> children = this.children;
+        if (null != children){
+            this.children = null;
+            for (fv3.Component child: children){
+                if (child instanceof fv3.Region){
+                    fv3.Region childRegion = (fv3.Region)child;
+                    childRegion.dropFv3Children();
+                }
+                child.destroy();
+            }
+        }
         this.pushMatrix = false;
         return this;
     }

@@ -123,20 +123,28 @@ public abstract class List
         }
     }
     public void destroy(){
-        GL2 gl = GL();
+        try {
+            GL2 gl = GL();
+            if (null != gl){
 
-        for (int cc = 0; cc < this.count; cc++){
+                for (int cc = 0; cc < this.count; cc++){
 
-            int lid = this.lid[cc];
+                    int lid = this.lid[cc];
 
-            if (-1 != lid){
+                    if (-1 != lid){
 
-                this.lid[cc] = -1;
+                        this.lid[cc] = -1;
 
-                gl.glDeleteLists(lid,1);
+                        gl.glDeleteLists(lid,1);
+                    }
+                }
             }
         }
-        super.destroy();
+        catch (Throwable any){
+        }
+        finally {
+            super.destroy();
+        }
     }
     public final int getGlListCount(){
 

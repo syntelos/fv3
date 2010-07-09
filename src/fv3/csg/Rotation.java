@@ -18,6 +18,8 @@
  */
 package fv3.csg;
 
+import fv3.csg.u.Error;
+import fv3.csg.u.Vertex;
 import fv3.math.Matrix;
 import fv3.math.VertexArrayProfile;
 

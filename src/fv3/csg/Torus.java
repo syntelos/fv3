@@ -18,6 +18,7 @@
  */
 package fv3.csg;
 
+import fv3.csg.u.Error;
 import fv3.math.Vector;
 
 /**
@@ -66,7 +67,7 @@ public abstract class Torus
 
 
         public static class Vertex
-            extends fv3.csg.Vertex
+            extends fv3.csg.u.Vertex
         {
 
             protected static Vertex[][] List(Torus t){

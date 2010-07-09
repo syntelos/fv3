@@ -16,7 +16,7 @@
  * along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package fv3.csg;
+package fv3.csg.u;
 
 /**
  * Convert geometric parameters with maximum error into a
@@ -24,7 +24,7 @@ package fv3.csg;
  */
 public class Error
     extends java.lang.Object
-    implements fv3.csg.Notation
+    implements fv3.csg.u.Notation
 {
 
     public final static double Default = 1e-2;
@@ -38,7 +38,7 @@ public class Error
 
         /**
          * @param e Maximum sagitta
-         * @return Generally acceptable value for 'e'
+         * @return Sane value for 'e'
          */
         public final static boolean V(double e){
             return (e == e && Error.Circle.Min <= e && Error.Circle.Max >= e);
@@ -62,12 +62,12 @@ public class Error
          * 
          * @param r Radius
          * @param e Maximum sagitta
-         * @return An even number of circular arc-parts greater
-         * than or equal to four that satisfies requirement E
+         * @return A number of circular arc-parts best satisfying the
+         * requirements
          */
         public final static int N(double r, double e){
 
-            if (0.0 < r && 0.0 < e){
+            if (r == r && 0.0 < r && V(e)){
 
                 double qr0 = 4;
 
@@ -79,7 +79,7 @@ public class Error
 
                         double qr1 = (qr0 - 2.0);
 
-                        while (true){
+                        while (0.0 < qr1){
 
                             int n1 = (int)(r * qr1);
 
@@ -88,9 +88,10 @@ public class Error
                                 return (int)(r * (qr1 + 2.0));
 
                             else {
-                                qr1 -= 2.0;
+                                qr1 -= 1.0;
                             }
                         }
+                        return (int)r;
                     }
                     else {
                         qr0 *= 2;

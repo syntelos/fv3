@@ -18,6 +18,8 @@
  */
 package fv3.csg;
 
+import fv3.csg.u.Error;
+
 /**
  * Create a cylinder from radius and depth with the circular faces
  * parallel to XY, YZ or ZX and the solid centered at (0,0,0).

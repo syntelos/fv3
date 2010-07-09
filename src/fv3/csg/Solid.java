@@ -18,6 +18,10 @@
  */
 package fv3.csg;
 
+import fv3.csg.u.Bound;
+import fv3.csg.u.Face;
+import fv3.csg.u.Segment;
+import fv3.csg.u.Vertex;
 import fv3.math.Matrix;
 import fv3.math.Vector;
 import fv3.math.VertexArray;
@@ -45,7 +49,7 @@ import javax.media.opengl.GL2;
  */
 public class Solid
     extends fv3.math.VertexArray
-    implements fv3.csg.Notation,
+    implements fv3.csg.u.Notation,
                java.lang.Iterable<Face>,
                fv3.Bounds
 {
@@ -53,11 +57,11 @@ public class Solid
         Union, Intersection, Difference;
     }
 
-    protected State state;
+    public State state;
 
-    protected Construct constructOp;
+    public Construct constructOp;
 
-    protected Solid constructA, constructB;
+    public Solid constructA, constructB;
 
     /**
      * @param countVertices Estimated or expected number of vertices
@@ -350,8 +354,8 @@ public class Solid
         this.state.add(face.clone(this));
         return this;
     }
-    protected final Vertex u(Vertex a){
-        fv3.csg.Vertex b = this.state.vertices.get(a);
+    public final Vertex u(Vertex a){
+        Vertex b = this.state.vertices.get(a);
         if (null == b){
             this.state.vertices.put(a,a);
             return a;
@@ -405,14 +409,24 @@ public class Solid
         default:
             throw new IllegalStateException();
         }
-        for (Face face: this.state){
-            if (face.is(a) || face.is(b))
-                re.addC0(op,face);
+
+        for (Face thisFace: this){
+
+            if (thisFace.is(a)
+                || thisFace.is(b))
+            {
+                re.addC0(op,thisFace);
+            }
         }
-        for (Face face: that.state){
-            if (face.is(c))
-                re.addC1(op,face);
+
+        for (Face thatFace: that){
+
+            if (thatFace.is(c)){
+
+                re.addC1(op,thatFace);
+            }
         }
+
         re.constructOp = op;
         re.constructA = this;
         re.constructB = that;
@@ -460,31 +474,31 @@ public class Solid
 
                         if (thisFace.getBound().overlap(thatFace.getBound())){
 
-                            double dThisA = thisFace.a.distance(thatFace);
-                            double dThisB = thisFace.b.distance(thatFace);
-                            double dThisC = thisFace.c.distance(thatFace);
+                            double DthisA = thisFace.a.distance(thatFace);
+                            double DthisB = thisFace.b.distance(thatFace);
+                            double DthisC = thisFace.c.distance(thatFace);
 
-							int sThisA = (dThisA > EPS ? 1 :(dThisA < -EPS ? -1 : 0)); 
-							int sThisB = (dThisB > EPS ? 1 :(dThisB < -EPS ? -1 : 0));
-							int sThisC = (dThisC > EPS ? 1 :(dThisC < -EPS ? -1 : 0));
+							int SthisA = (DthisA > EPS ? 1 :(DthisA < -EPS ? -1 : 0)); 
+							int SthisB = (DthisB > EPS ? 1 :(DthisB < -EPS ? -1 : 0));
+							int SthisC = (DthisC > EPS ? 1 :(DthisC < -EPS ? -1 : 0));
 
-                            if (!(sThisA == sThisB && sThisB == sThisC)){
+                            if (!(SthisA == SthisB && SthisB == SthisC)){
 
-                                double dThatA = thatFace.a.distance(thisFace);
-                                double dThatB = thatFace.b.distance(thisFace);
-                                double dThatC = thatFace.c.distance(thisFace);
+                                double DthatA = thatFace.a.distance(thisFace);
+                                double DthatB = thatFace.b.distance(thisFace);
+                                double DthatC = thatFace.c.distance(thisFace);
 
-                                int sThatA = (dThatA > EPS ? 1 :(dThatA < -EPS ? -1 : 0)); 
-                                int sThatB = (dThatB > EPS ? 1 :(dThatB < -EPS ? -1 : 0));
-                                int sThatC = (dThatC > EPS ? 1 :(dThatC < -EPS ? -1 : 0));
+                                int SthatA = (DthatA > EPS ? 1 :(DthatA < -EPS ? -1 : 0)); 
+                                int SthatB = (DthatB > EPS ? 1 :(DthatB < -EPS ? -1 : 0));
+                                int SthatC = (DthatC > EPS ? 1 :(DthatC < -EPS ? -1 : 0));
 
-                                if (!(sThatA == sThatB && sThatB == sThatC)){
+                                if (!(SthatA == SthatB && SthatB == SthatC)){
 
-                                    Line line = new Line(thisFace, thatFace);
+                                    Segment.Line line = new Segment.Line(thisFace, thatFace);
 
-                                    Segment thisSeg = new Segment(line, thisFace, sThisA, sThisB, sThisC);
+                                    Segment thisSeg = new Segment(line, thisFace, SthisA, SthisB, SthisC);
 
-                                    Segment thatSeg = new Segment(line, thatFace, sThatA, sThatB, sThatC);
+                                    Segment thatSeg = new Segment(line, thatFace, SthatA, SthatB, SthatC);
 
 									if (thisSeg.intersect(thatSeg)){
 
@@ -552,11 +566,13 @@ public class Solid
 
 			int splitEdge;
 
-			if ((startVertex == thisFace.a && endVertex == thisFace.b) || (startVertex == thisFace.b && endVertex == thisFace.a))
+			if ((startVertex == thisFace.a && endVertex == thisFace.b)
+                || (startVertex == thisFace.b && endVertex == thisFace.a))
 
 				splitEdge = 1;
 
-			else if ((startVertex == thisFace.b && endVertex == thisFace.c) || (startVertex == thisFace.c && endVertex == thisFace.b))
+			else if ((startVertex == thisFace.b && endVertex == thisFace.c)
+                     || (startVertex == thisFace.c && endVertex == thisFace.b))
 
 				splitEdge = 2; 
 			else
@@ -637,23 +653,28 @@ public class Solid
                     int linedVertex;
                     Vector linedVertexPos;
                     {
-                        double dot1, dot2, dot3;
                         Vector vertexVector;
 
-                        vertexVector = new Vector(endPos.x()-thisFace.a.x, endPos.y()-thisFace.a.y, endPos.z()-thisFace.a.z)
+                        vertexVector = new Vector(endPos.x()-thisFace.a.x,
+                                                  endPos.y()-thisFace.a.y,
+                                                  endPos.z()-thisFace.a.z)
                             .normalize();
 
-                        dot1 = Math.abs(segmentVector.dot(vertexVector));
+                        double dot1 = Math.abs(segmentVector.dot(vertexVector));
 
-                        vertexVector = new Vector(endPos.x()-thisFace.b.x, endPos.y()-thisFace.b.y, endPos.z()-thisFace.b.z)
+                        vertexVector = new Vector(endPos.x()-thisFace.b.x, 
+                                                  endPos.y()-thisFace.b.y,
+                                                  endPos.z()-thisFace.b.z)
                             .normalize();
 
-                        dot2 = Math.abs(segmentVector.dot(vertexVector));
+                        double dot2 = Math.abs(segmentVector.dot(vertexVector));
 
-                        vertexVector = new Vector(endPos.x()-thisFace.c.x, endPos.y()-thisFace.c.y, endPos.z()-thisFace.c.z)
+                        vertexVector = new Vector(endPos.x()-thisFace.c.x,
+                                                  endPos.y()-thisFace.c.y,
+                                                  endPos.z()-thisFace.c.z)
                             .normalize();
 
-                        dot3 = Math.abs(segmentVector.dot(vertexVector));
+                        double dot3 = Math.abs(segmentVector.dot(vertexVector));
 
                         if (dot1 > dot2 && dot1 > dot3){
                             linedVertex = 1;
@@ -773,38 +794,46 @@ public class Solid
 			this.add(thisFace.b, thisFace.c, vertex);
 		}
 	}
-	private void splitFaceThree(Face thisFace, Vector newPos1, Vector newPos2, Vertex startVertex, Vertex endVertex){
-
+	private void splitFaceThree(Face thisFace, Vector newPos1, Vector newPos2, 
+                                Vertex startVertex, Vertex endVertex)
+    {
         thisFace.dropFrom(this);
 		
 		Vertex vertex1 = new Vertex(newPos1, State.Vertex.Boundary);
 		Vertex vertex2 = new Vertex(newPos2, State.Vertex.Boundary);
+
+        final boolean StartA = startVertex.equals(thisFace.a);
+        final boolean StartB = startVertex.equals(thisFace.b);
+        final boolean StartC = startVertex.equals(thisFace.c);
+        final boolean EndA = endVertex.equals(thisFace.a);
+        final boolean EndB = endVertex.equals(thisFace.b);
+        final boolean EndC = endVertex.equals(thisFace.c);
 						
-		if (startVertex.equals(thisFace.a) && endVertex.equals(thisFace.b)){
+		if (StartA && EndB){
 
 			this.add(thisFace.a, vertex1, vertex2);
 			this.add(thisFace.a, vertex2, thisFace.c);
 			this.add(vertex1, thisFace.b, vertex2);
 		}
-		else if (startVertex.equals(thisFace.b) && endVertex.equals(thisFace.a)){
+		else if (StartB && EndA){
 
 			this.add(thisFace.a, vertex2, vertex1);
 			this.add(thisFace.a, vertex1, thisFace.c);
 			this.add(vertex2, thisFace.b, vertex1);
 		}
-		else if (startVertex.equals(thisFace.b) && endVertex.equals(thisFace.c)){
+		else if (StartB && EndC){
 
 			this.add(thisFace.b, vertex1, vertex2);
 			this.add(thisFace.b, vertex2, thisFace.a);
 			this.add(vertex1, thisFace.c, vertex2);
 		}
-		else if (startVertex.equals(thisFace.c) && endVertex.equals(thisFace.b)){
+		else if (StartC && EndB){
 
 			this.add(thisFace.b, vertex2, vertex1);
 			this.add(thisFace.b, vertex1, thisFace.a);
 			this.add(vertex2, thisFace.c, vertex1);
 		}
-		else if (startVertex.equals(thisFace.c) && endVertex.equals(thisFace.a)){
+		else if (StartC && EndA){
 
 			this.add(thisFace.c, vertex1, vertex2);
 			this.add(thisFace.c, vertex2, thisFace.b);

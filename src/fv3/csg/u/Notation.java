@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.csg;
+package fv3.csg.u;
 
 import lxl.List;
 import lxl.Map;
@@ -25,11 +25,11 @@ public interface Notation
 {
     /**
      * Overloaded name "State" serves two roles: state of solid
-     * datastructure and state of components' namespace.
+     * datastructure and state of components namespace.
      */
     public final static class State
-        extends lxl.ArrayList<fv3.csg.Face>
-        implements java.util.Comparator<fv3.csg.Face>
+        extends lxl.ArrayList<fv3.csg.u.Face>
+        implements java.util.Comparator<fv3.csg.u.Face>
     {
 
         public enum Vertex {
@@ -74,17 +74,17 @@ public interface Notation
         }
 
 
-        protected Map<fv3.csg.Vertex,fv3.csg.Vertex> vertices;
+        public Map<fv3.csg.u.Vertex,fv3.csg.u.Vertex> vertices;
 
-        protected Bound bound;
+        private Bound bound;
 
-        protected State prev;
+        private State prev;
 
 
         public State(int v){
             super();
             super.setComparator(this);
-            this.vertices = new Map<fv3.csg.Vertex,fv3.csg.Vertex>(v);
+            this.vertices = new Map<fv3.csg.u.Vertex,fv3.csg.u.Vertex>(v);
         }
 
 
@@ -126,7 +126,7 @@ public interface Notation
         public boolean equals(Object that){
             return (this == that);
         }
-        public int compare(fv3.csg.Face a, fv3.csg.Face b){
+        public int compare(fv3.csg.u.Face a, fv3.csg.u.Face b){
             return a.compareTo(b);
         }
     }

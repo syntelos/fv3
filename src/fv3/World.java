@@ -281,7 +281,9 @@ public class World
      * Unload current components.
      */
     public void clear(){
-        throw new UnsupportedOperationException("To be done");
+
+
+        super.clear();
     }
     /**
      * This function loads a JNLP descriptor using a {@link
