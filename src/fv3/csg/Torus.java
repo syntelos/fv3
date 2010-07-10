@@ -19,6 +19,7 @@
 package fv3.csg;
 
 import fv3.csg.u.Error;
+import fv3.csg.u.Face;
 import fv3.math.Vector;
 
 /**
@@ -37,7 +38,7 @@ public abstract class Torus
             this(iR,oR,Error.Default);
         }
         public XY(double iR, double oR, double e){
-            super(iR,oR,e);
+            super(N,iR,oR,e);
 
             Vertex[][] t = XY.Vertex.List(this);
 
@@ -56,13 +57,15 @@ public abstract class Torus
                     Vertex qc = t[rv][cv];
                     Vertex qd = t[ru][cv];
 
-                    this.add(qa,qb,qd);
-                    this.add(qb,qc,qd);
+                    this.add(new Face(this, new Face.Name(this,(ru*cu),String.format("(%d,%d),(%d,%d),(%d,%d)",ru,cu,rv,cu,ru,cv)),
+                                      qa, qb, qd));
+                    this.add(new Face(this, new Face.Name(this,(ru*cu),String.format("(%d,%d),(%d,%d),(%d,%d)",rv,cu,rv,cv,ru,cv)),
+                                      qb, qc, qd));
                 }
             }
         }
         public XY(XY t){
-            super(t);
+            super(N,t);
         }
 
 
@@ -119,6 +122,7 @@ public abstract class Torus
                 super((cos_ra*oR_P_cosCa_M_iR),(sin_ra*oR_P_cosCa_M_iR),(sin_ca*iR));
             }
         }
+        protected final static String N = "Torus.XY";
     }
 
 
@@ -129,8 +133,8 @@ public abstract class Torus
     protected final double cs,rs;
 
 
-    protected Torus(double innerR, double outerR, double e){
-        super(0);
+    protected Torus(String n, double innerR, double outerR, double e){
+        super(n,0);
         if (innerR == innerR && 0.0 < innerR){
             if (outerR == outerR && 0.0 < outerR){
                 if (outerR > innerR){
@@ -165,8 +169,8 @@ public abstract class Torus
         else
             throw new IllegalArgumentException(String.format("Invalid radius %g",innerR));
     }
-    protected Torus(Torus t){
-        super(t);
+    protected Torus(String n, Torus t){
+        super(n,t);
         this.innerRadius = t.innerRadius;
         this.outerRadius = t.outerRadius;
         this.error = t.error;
@@ -175,6 +179,5 @@ public abstract class Torus
         this.cs = t.cs;
         this.rs = t.rs;
     }
-
 
 }

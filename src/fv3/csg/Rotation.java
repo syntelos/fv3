@@ -19,6 +19,7 @@
 package fv3.csg;
 
 import fv3.csg.u.Error;
+import fv3.csg.u.Face;
 import fv3.csg.u.Vertex;
 import fv3.math.Matrix;
 import fv3.math.VertexArrayProfile;
@@ -52,7 +53,7 @@ public abstract class Rotation
             this(r,e,s,pz,EPSILON);
         }
         public Z(double r, double e, Convex s, double pz, double pe){
-            super(r,e);
+            super(N,r,e);
             if (null != s){
                 VertexArrayProfile sp = s.profileXY(pz,pe);
 
@@ -75,8 +76,10 @@ public abstract class Rotation
                         Vertex qc = t[rv][cv];
                         Vertex qd = t[ru][cv];
 
-                        this.add(qa,qb,qd);
-                        this.add(qb,qc,qd);
+                        this.add(new Face(this, new Face.Name(this,(ru*cu),String.format("(%d,%d),(%d,%d),(%d,%d)",ru,cu,rv,cu,ru,cv)),
+                                          qa, qb, qd));
+                        this.add(new Face(this, new Face.Name(this,(ru*cu),String.format("(%d,%d),(%d,%d),(%d,%d)",rv,cu,rv,cv,ru,cv)),
+                                          qb, qc, qd));
                     }
                 }
             }
@@ -106,6 +109,7 @@ public abstract class Rotation
             }
             return re;
         }
+        protected final static String N = "Rotation.Z";
     }
 
 
@@ -114,8 +118,8 @@ public abstract class Rotation
     protected final int rn;
     protected final double rs;
 
-    protected Rotation(double r, double e){
-        super(0);
+    protected Rotation(String n, double r, double e){
+        super(n,0);
         if (r == r && 0.0 < r){
             this.radius = r;
             if (e == e && 0.0 < e){

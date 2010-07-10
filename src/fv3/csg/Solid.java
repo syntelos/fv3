@@ -20,6 +20,7 @@ package fv3.csg;
 
 import fv3.csg.u.Bound;
 import fv3.csg.u.Face;
+import fv3.csg.u.Mesh;
 import fv3.csg.u.Segment;
 import fv3.csg.u.Vertex;
 import fv3.math.Matrix;
@@ -50,6 +51,7 @@ import javax.media.opengl.GL2;
 public class Solid
     extends fv3.math.VertexArray
     implements fv3.csg.u.Notation,
+               fv3.csg.u.Name.Named,
                java.lang.Iterable<Face>,
                fv3.Bounds
 {
@@ -57,7 +59,25 @@ public class Solid
         Union, Intersection, Difference;
     }
 
-    public State state;
+    public final static class Name 
+        extends fv3.csg.u.Name
+    {
+        public Name(String desc){
+            super(Kind.Solid,desc);
+        }
+        protected Name(Name n, String desc2){
+            super(n,desc2);
+        }
+
+        public Name copy(String desc2){
+            return new Name(this,desc2);
+        }
+    }
+
+
+    public Mesh state;
+
+    public final Name name;
 
     public Construct constructOp;
 
@@ -66,96 +86,45 @@ public class Solid
     /**
      * @param countVertices Estimated or expected number of vertices
      */
-    public Solid(int countVertices){
-        super(Type.Triangles,countVertices);
+    public Solid(String name, int cv){
+        super(Type.Triangles,cv);
 
-        this.state = new State(countVertices);
+        this.state = new Mesh(cv);
+
+        this.name = new Name(name);
 
         this.visible = false;
     }
-    public Solid(VertexArray array){
+    public Solid(String name, VertexArray array){
         super(Type.Triangles,array);
 
-        this.state = new State(this.countVertices);
+        this.state = new Mesh(this.countVertices);
+
+        this.name = new Name(name);
 
         for (int face = 0, count = this.countFaces; face < count; face++){
 
-            this.add(this.getFace(face));
+            this.add(new Face(this, new Face.Name(this,face,"VA"),
+                              this.getFace(face)));
         }
     }
+    private Solid(Construct op, Solid a, Solid b){
+        this(String.format("%s of (%s) and (%s))",op,a.getName(),b.getName()),a.countVertices());
+
+        this.constructOp = op;
+        this.constructA = a;
+        this.constructB = b;
+    }
 
 
     /**
-     * Add a new triangular face in three vertices.  Face vertices are
-     * ordered clock wise looking at the "back" of the face, and
-     * counter clock wise looking at the "front" of the face.
+     * Initial build "add" is overridden by {@link Geom} for sorting
+     * face vertex order in three space.
      */
-    public final Solid add(Vertex a, Vertex b, Vertex c){
-        return this.addN(new Face(this,a,b,c));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices and an
-     * approximate normal.
-     */
-    public final Solid add(Vertex a, Vertex b, Vertex c, Vector n){
-        return this.addN(new Face(this,a,b,c,n));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices
-     */
-    public final Solid add(double[] a, double[] b, double[] c){
-        return this.addN(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c)));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices and an
-     * approximate normal.
-     */
-    public final Solid add(double[] a, double[] b, double[] c, double[] n){
-        return this.addN(new Face(this,new Vertex(a),new Vertex(b),new Vertex(c),new Vector(n)));
-    }
-    /**
-     * Add a new triangular face from three sets of (X,Y,Z) vertices
-     */
-    public final Solid add(double[] face){
-        return this.addN(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6)));
-    }
-    /**
-     * Add a new triangular face from three sets of (X,Y,Z) vertices
-     * and an approximate normal.
-     */
-    public final Solid add(double[] face, double[] normal){
-        return this.addN(new Face(this,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6),new Vector(normal)));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices
-     */
-    public final Solid add(double ax, double ay, double az, 
-                           double bx, double by, double bz, 
-                           double cx, double cy, double cz)
-    {
-        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz)));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices and an
-     * approximate normal.
-     */
-    public final Solid add(double ax, double ay, double az, 
-                           double bx, double by, double bz, 
-                           double cx, double cy, double cz,
-                           double nx, double ny, double nz)
-    {
-        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz)));
-    }
-    /**
-     * Add a new triangular face in three (X,Y,Z) vertices and an
-     * approximate normal.
-     */
-    public final Solid add(double ax, double ay, double az, 
-                           double bx, double by, double bz, 
-                           double cx, double cy, double cz,
-                           Vector n)
-    {
-        return this.addN(new Face(this,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),n));
+    public Solid add(Face face){
+
+        this.state.add(face);
+        return this;
     }
     public final Solid add(VertexArray array){
 
@@ -175,49 +144,37 @@ public class Solid
             double y2 = triangles[index++];
             double z2 = triangles[index++];
 
-            this.add(new Vertex(x0,y0,z0),new Vertex(x1,y1,z1),new Vertex(x2,y2,z2));
+            this.add(new Face(this, new Face.Name(this,((index/3)-1),"VA"),
+                              x0,y0,z0,x1,y1,z1,x2,y2,z2));
         }
         return this;
+    }
+    public Name getName(){
+        return this.name;
     }
     /**
      * Construct a new solid as the union of "this" and "that".  This
      * union is the (minimal) sum of this and that.
      */
     public final Solid union(Solid that){
-        this.init(that);
-        try {
-            return this.compose(Construct.Union,that);
-        }
-        finally {
-            this.reinit(that);
-        }
+
+        return this.compose(Construct.Union,that);
     }
     /**
      * Construct a new solid as the intersection of "this" and "that".
      * The intersection is the remainder of this minus that.
      */
     public final Solid intersection(Solid that){
-        this.init(that);
-        try {
-            return this.compose(Construct.Intersection,that);
-        }
-        finally {
-            this.reinit(that);
-        }
+
+        return this.compose(Construct.Intersection,that);
     }
     /**
      * Construct a new solid as the difference of "this" and "that".
      * The difference is this minus that.
      */
     public final Solid difference(Solid that){
-        this.init(that);
-        try {
-            that.invertInsideFaces();
-            return this.compose(Construct.Difference,that);
-        }
-        finally {
-            this.reinit(that);
-        }
+
+        return this.compose(Construct.Difference,that);
     }
     public final Solid transform(Matrix m){
 
@@ -332,15 +289,6 @@ public class Solid
         return this.state.iterator();
     }
     /**
-     * Initial build "add" is overridden by {@link Geom} for sorting
-     * face vertex order in three space.
-     */
-    protected Solid addN(Face face){
-
-        this.state.add(face);
-        return this;
-    }
-    /**
      * Construction "add" is literal, unlike "builder add" which may
      * have builder convenience semantics.
      */
@@ -364,6 +312,12 @@ public class Solid
             return b;
     }
     private void init(Solid that){
+        for (Face thisFace: this){
+            thisFace.init();
+        }
+        for (Face thatFace: that){
+            thatFace.init();
+        }
         this.push();
         that.push();
 		this.splitFaces(that);
@@ -374,12 +328,6 @@ public class Solid
     private void reinit(Solid that){
         this.pop();
         that.pop();
-        for (Face thisFace: this){
-            thisFace.init();
-        }
-        for (Face thatFace: that){
-            thatFace.init();
-        }
     }
     private void push(){
         this.state = this.state.push();
@@ -388,49 +336,81 @@ public class Solid
         this.state = this.state.pop();
     }
     private Solid compose(Construct op, Solid that){
-        Solid re = new Solid(this.countVertices());
-        State.Face a, b, c;
-        switch (op){
-        case Union:
-            a = State.Face.Outside;
-            b = State.Face.Same;
-            c = State.Face.Outside;
-            break;
-        case Intersection:
-            a = State.Face.Inside;
-            b = State.Face.Same;
-            c = State.Face.Inside;
-            break;
-        case Difference:
-            a = State.Face.Outside;
-            b = State.Face.Opposite;
-            c = State.Face.Inside;
-            break;
-        default:
-            throw new IllegalStateException();
-        }
+        try {
+            this.init(that);
 
-        for (Face thisFace: this){
+            Solid re = new Solid(op,this,that);
 
-            if (thisFace.is(a)
-                || thisFace.is(b))
-            {
-                re.addC0(op,thisFace);
+            switch (op){
+
+            case Union:
+
+                for (Face thisFace: this){
+
+                    if (thisFace.is(State.Face.Outside)
+                        || thisFace.is(State.Face.Same))
+                        {
+                            re.addC0(op,thisFace);
+                        }
+                }
+
+                for (Face thatFace: that){
+
+                    if (thatFace.is(State.Face.Outside)){
+
+                        re.addC1(op,thatFace);
+                    }
+                }
+                return re;
+
+            case Intersection:
+
+                for (Face thisFace: this){
+
+                    if (thisFace.is(State.Face.Inside)
+                        || thisFace.is(State.Face.Same))
+                        {
+                            re.addC0(op,thisFace);
+                        }
+                }
+
+                for (Face thatFace: that){
+
+                    if (thatFace.is(State.Face.Inside)){
+
+                        re.addC1(op,thatFace);
+                    }
+                }
+                return re;
+
+            case Difference:
+
+                that.invertInsideFaces();
+
+                for (Face thisFace: this){
+
+                    if (thisFace.is(State.Face.Outside)
+                        || thisFace.is(State.Face.Opposite))
+                        {
+                            re.addC0(op,thisFace);
+                        }
+                }
+
+                for (Face thatFace: that){
+
+                    if (thatFace.is(State.Face.Inside)){
+
+                        re.addC1(op,thatFace);
+                    }
+                }
+                return re;
+            default:
+                throw new IllegalStateException();
             }
         }
-
-        for (Face thatFace: that){
-
-            if (thatFace.is(c)){
-
-                re.addC1(op,thatFace);
-            }
+        finally {
+            this.reinit(that);
         }
-
-        re.constructOp = op;
-        re.constructA = this;
-        re.constructB = that;
-        return re;
     }
     private void classifyFaces(Solid that){
 
@@ -440,17 +420,7 @@ public class Solid
 
                 face.rayTraceClassify(that);
 
-				if (State.Vertex.Unknown == face.a.status) 
-
-					face.a.status = State.Face.ToVertex(face.status);
-
-				if (State.Vertex.Unknown== face.b.status) 
-
-					face.b.status = State.Face.ToVertex(face.status);
-
-				if (State.Vertex.Unknown == face.c.status) 
-
-					face.c.status = State.Face.ToVertex(face.status);
+                face.mark();
             }
         }
     }
@@ -466,39 +436,41 @@ public class Solid
 
         if (this.getBound().overlap(thatBound)){
 
-            for (Face thisFace: this.state){
+            for (Face thisFace: this){
 
                 if (thisFace.getBound().overlap(thatBound)){
 
-                    for (Face thatFace: that.state){
+                    for (Face thatFace: that){
 
                         if (thisFace.getBound().overlap(thatFace.getBound())){
 
-                            double DthisA = thisFace.a.distance(thatFace);
-                            double DthisB = thisFace.b.distance(thatFace);
-                            double DthisC = thisFace.c.distance(thatFace);
+                            final double DthisA = thisFace.a.distance(thatFace);
+                            final double DthisB = thisFace.b.distance(thatFace);
+                            final double DthisC = thisFace.c.distance(thatFace);
 
-							int SthisA = (DthisA > EPS ? 1 :(DthisA < -EPS ? -1 : 0)); 
-							int SthisB = (DthisB > EPS ? 1 :(DthisB < -EPS ? -1 : 0));
-							int SthisC = (DthisC > EPS ? 1 :(DthisC < -EPS ? -1 : 0));
+							final int SthisA = (DthisA > EPS ? 1 :(DthisA < -EPS ? -1 : 0)); 
+							final int SthisB = (DthisB > EPS ? 1 :(DthisB < -EPS ? -1 : 0));
+							final int SthisC = (DthisC > EPS ? 1 :(DthisC < -EPS ? -1 : 0));
 
                             if (!(SthisA == SthisB && SthisB == SthisC)){
 
-                                double DthatA = thatFace.a.distance(thisFace);
-                                double DthatB = thatFace.b.distance(thisFace);
-                                double DthatC = thatFace.c.distance(thisFace);
+                                final double DthatA = thatFace.a.distance(thisFace);
+                                final double DthatB = thatFace.b.distance(thisFace);
+                                final double DthatC = thatFace.c.distance(thisFace);
 
-                                int SthatA = (DthatA > EPS ? 1 :(DthatA < -EPS ? -1 : 0)); 
-                                int SthatB = (DthatB > EPS ? 1 :(DthatB < -EPS ? -1 : 0));
-                                int SthatC = (DthatC > EPS ? 1 :(DthatC < -EPS ? -1 : 0));
+                                final int SthatA = (DthatA > EPS ? 1 :(DthatA < -EPS ? -1 : 0)); 
+                                final int SthatB = (DthatB > EPS ? 1 :(DthatB < -EPS ? -1 : 0));
+                                final int SthatC = (DthatC > EPS ? 1 :(DthatC < -EPS ? -1 : 0));
 
                                 if (!(SthatA == SthatB && SthatB == SthatC)){
 
-                                    Segment.Line line = new Segment.Line(thisFace, thatFace);
+                                    final Segment.Line line = new Segment.Line(thisFace, thatFace);
 
-                                    Segment thisSeg = new Segment(line, thisFace, SthisA, SthisB, SthisC);
+                                    final Segment thisSeg = new Segment(line, thisFace, 
+                                                                        SthisA, SthisB, SthisC);
 
-                                    Segment thatSeg = new Segment(line, thatFace, SthatA, SthatB, SthatC);
+                                    final Segment thatSeg = new Segment(line, thatFace, 
+                                                                        SthatA, SthatB, SthatC);
 
 									if (thisSeg.intersect(thatSeg)){
 
@@ -581,15 +553,15 @@ public class Solid
 			
 			if (Segment.Type.Vertex == startType){
 
-				this.splitFaceTwo(thisFace, endPos, splitEdge);
+				this.splitFace2I(thisFace, endPos, splitEdge);
 			}
 			else if (Segment.Type.Vertex == endType){
 
-				this.splitFaceTwo(thisFace, startPos, splitEdge);
+				this.splitFace2I(thisFace, startPos, splitEdge);
 			}
 			else if (startDist == endDist){
 
-				this.splitFaceTwo(thisFace, endPos, splitEdge);
+				this.splitFace2I(thisFace, endPos, splitEdge);
             }
 			else {
 
@@ -597,45 +569,45 @@ public class Solid
                     (startVertex == thisFace.b && endVertex == thisFace.c) ||
                     (startVertex == thisFace.c && endVertex == thisFace.a))
 				{
-					this.splitFaceThree(thisFace, startPos, endPos, splitEdge);
+					this.splitFace3I(thisFace, startPos, endPos, splitEdge);
 				}
 				else
-					this.splitFaceThree(thisFace, endPos, startPos, splitEdge);
+					this.splitFace3I(thisFace, endPos, startPos, splitEdge);
 			}
 		}
 		else if (Segment.Type.Vertex == startType){
 
             if (Segment.Type.Edge == endType)
 
-                this.splitFaceTwo(thisFace, endPos, endVertex);
+                this.splitFace2V(thisFace, endPos, endVertex);
 
             else if (Segment.Type.Face == endType)
 
-                this.splitFaceThree(thisFace, endPos, startVertex);
+                this.splitFace3V(thisFace, endPos, startVertex);
         }
 		else if (Segment.Type.Edge == startType){
 
             if ( Segment.Type.Vertex == endType)
 
-                this.splitFaceTwo(thisFace, startPos, startVertex);
+                this.splitFace2V(thisFace, startPos, startVertex);
 
             else if (Segment.Type.Edge == endType)
 
-                this.splitFaceThree(thisFace, startPos, endPos, startVertex, endVertex);
+                this.splitFace3L(thisFace, startPos, endPos, startVertex, endVertex);
 
             else if (Segment.Type.Face == endType)
 
-                this.splitFaceFour(thisFace, startPos, endPos, startVertex);
+                this.splitFace4V(thisFace, startPos, endPos, startVertex);
         }
 		else if (Segment.Type.Face == startType){
 
             if (Segment.Type.Vertex == endType)
 
-                this.splitFaceThree(thisFace, startPos, endVertex);
+                this.splitFace3V(thisFace, startPos, endVertex);
 
             else if (Segment.Type.Edge == endType)
 
-                this.splitFaceFour(thisFace, endPos, startPos, endVertex);
+                this.splitFace4V(thisFace, endPos, startPos, endVertex);
 
             else if (Segment.Type.Face == endType){
 
@@ -647,7 +619,7 @@ public class Solid
                     EPS > Math.abs(segmentVector.y()) &&
                     EPS > Math.abs(segmentVector.z()))
                 {
-                    this.splitFaceThree(thisFace, startPos);
+                    this.splitFace3(thisFace, startPos);
                 }
                 else {
                     int linedVertex;
@@ -692,14 +664,14 @@ public class Solid
 
                     if (linedVertexPos.distance(startPos) > linedVertexPos.distance(endPos))
 
-                        this.splitFaceFive(thisFace, startPos, endPos, linedVertex);
+                        this.splitFace5I(thisFace, startPos, endPos, linedVertex);
                     else
-                        this.splitFaceFive(thisFace, endPos, startPos, linedVertex);
+                        this.splitFace5I(thisFace, endPos, startPos, linedVertex);
                 }
             }
 		}
     }
-	private void splitFaceTwo(Face thisFace, Vector newPos, int splitEdge){
+	private void splitFace2I(Face thisFace, Vector newPos, int splitEdge){
 
         thisFace.dropFrom(this);
 		
@@ -707,22 +679,22 @@ public class Solid
 
         switch (splitEdge){
         case 1:
-			this.add(thisFace.a, vertex, thisFace.c);
-			this.add(vertex, thisFace.b, thisFace.c);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), thisFace.a, vertex, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), vertex, thisFace.b, thisFace.c));
             break;
         case 2:
-			this.add(thisFace.b, vertex, thisFace.a);
-			this.add(vertex, thisFace.c, thisFace.a);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), thisFace.b, vertex, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), vertex, thisFace.c, thisFace.a));
             break;
         case 3:
-			this.add(thisFace.c, vertex, thisFace.b);
-			this.add(vertex, thisFace.a, thisFace.b);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), thisFace.c, vertex, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace2I"), vertex, thisFace.a, thisFace.b));
             break;
         default:
             throw new IllegalArgumentException(String.valueOf(splitEdge));
 		}
 	}	
-	private void splitFaceTwo(Face thisFace, Vector newPos, Vertex endVertex){
+	private void splitFace2V(Face thisFace, Vector newPos, Vertex endVertex){
 
         thisFace.dropFrom(this);
 		
@@ -730,20 +702,20 @@ public class Solid
 					
 		if (endVertex.equals(thisFace.a)){
 
-			this.add(thisFace.a, vertex, thisFace.c);
-			this.add(vertex, thisFace.b, thisFace.c);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2V"), thisFace.a, vertex, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace2V"), vertex, thisFace.b, thisFace.c));
 		}
 		else if (endVertex.equals(thisFace.b)){
 
-			this.add(thisFace.b, vertex, thisFace.a);
-            this.add(vertex, thisFace.c, thisFace.a);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2V"), thisFace.b, vertex, thisFace.a));
+            this.add(new Face(this, thisFace.name.copy("SplitFace2V"), vertex, thisFace.c, thisFace.a));
 		}
 		else {
-			this.add(thisFace.c, vertex, thisFace.b);
-			this.add(vertex, thisFace.a, thisFace.b);
+			this.add(new Face(this, thisFace.name.copy("SplitFace2V"), thisFace.c, vertex, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace2V"), vertex, thisFace.a, thisFace.b));
 		}
 	}
-	private void splitFaceThree(Face thisFace, Vector newPos1, Vector newPos2, int splitEdge){
+	private void splitFace3I(Face thisFace, Vector newPos1, Vector newPos2, int splitEdge){
 
         thisFace.dropFrom(this);
 		
@@ -752,25 +724,25 @@ public class Solid
 				
         switch (splitEdge){
         case 1:
-			this.add(thisFace.a, vertex1, thisFace.c);
-			this.add(vertex1, vertex2, thisFace.c);
-			this.add(vertex2, thisFace.b, thisFace.c);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), thisFace.a, vertex1, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex1, vertex2, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex2, thisFace.b, thisFace.c));
             break;
         case 2:
-			this.add(thisFace.b, vertex1, thisFace.a);
-			this.add(vertex1, vertex2, thisFace.a);
-			this.add(vertex2, thisFace.c, thisFace.a);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), thisFace.b, vertex1, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex1, vertex2, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex2, thisFace.c, thisFace.a));
             break;
         case 3:
-			this.add(thisFace.c, vertex1, thisFace.b);
-			this.add(vertex1, vertex2, thisFace.b);
-			this.add(vertex2, thisFace.a, thisFace.b);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), thisFace.c, vertex1, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex1, vertex2, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3I"), vertex2, thisFace.a, thisFace.b));
             break;
         default:
             throw new IllegalArgumentException(String.valueOf(splitEdge));
 		}
 	}
-	private void splitFaceThree(Face thisFace, Vector newPos, Vertex endVertex){
+	private void splitFace3V(Face thisFace, Vector newPos, Vertex endVertex){
 
         thisFace.dropFrom(this);
 		
@@ -778,24 +750,24 @@ public class Solid
 						
 		if (endVertex.equals(thisFace.a)){
 
-			this.add(thisFace.a, thisFace.b, vertex);
-			this.add(thisFace.b, thisFace.c, vertex);
-			this.add(thisFace.c, thisFace.a, vertex);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.a, thisFace.b, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.b, thisFace.c, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.c, thisFace.a, vertex));
 		}
 		else if (endVertex.equals(thisFace.b)){
 
-			this.add(thisFace.b, thisFace.c, vertex);
-			this.add(thisFace.c, thisFace.a, vertex);
-			this.add(thisFace.a, thisFace.b, vertex);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.b, thisFace.c, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.c, thisFace.a, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.a, thisFace.b, vertex));
 		}
 		else {
-			this.add(thisFace.c, thisFace.a, vertex);
-			this.add(thisFace.a, thisFace.b, vertex);
-			this.add(thisFace.b, thisFace.c, vertex);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.c, thisFace.a, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.a, thisFace.b, vertex));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3V"), thisFace.b, thisFace.c, vertex));
 		}
 	}
-	private void splitFaceThree(Face thisFace, Vector newPos1, Vector newPos2, 
-                                Vertex startVertex, Vertex endVertex)
+	private void splitFace3L(Face thisFace, Vector newPos1, Vector newPos2, 
+                             Vertex startVertex, Vertex endVertex)
     {
         thisFace.dropFrom(this);
 		
@@ -811,51 +783,51 @@ public class Solid
 						
 		if (StartA && EndB){
 
-			this.add(thisFace.a, vertex1, vertex2);
-			this.add(thisFace.a, vertex2, thisFace.c);
-			this.add(vertex1, thisFace.b, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.a, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.a, vertex2, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex1, thisFace.b, vertex2));
 		}
 		else if (StartB && EndA){
 
-			this.add(thisFace.a, vertex2, vertex1);
-			this.add(thisFace.a, vertex1, thisFace.c);
-			this.add(vertex2, thisFace.b, vertex1);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.a, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.a, vertex1, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex2, thisFace.b, vertex1));
 		}
 		else if (StartB && EndC){
 
-			this.add(thisFace.b, vertex1, vertex2);
-			this.add(thisFace.b, vertex2, thisFace.a);
-			this.add(vertex1, thisFace.c, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.b, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.b, vertex2, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex1, thisFace.c, vertex2));
 		}
 		else if (StartC && EndB){
 
-			this.add(thisFace.b, vertex2, vertex1);
-			this.add(thisFace.b, vertex1, thisFace.a);
-			this.add(vertex2, thisFace.c, vertex1);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.b, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.b, vertex1, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex2, thisFace.c, vertex1));
 		}
 		else if (StartC && EndA){
 
-			this.add(thisFace.c, vertex1, vertex2);
-			this.add(thisFace.c, vertex2, thisFace.b);
-			this.add(vertex1, thisFace.a, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.c, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.c, vertex2, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex1, thisFace.a, vertex2));
 		}
 		else {
-			this.add(thisFace.c, vertex2, vertex1);
-			this.add(thisFace.c, vertex1, thisFace.b);
-			this.add(vertex2, thisFace.a, vertex1);
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.c, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), thisFace.c, vertex1, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace3L"), vertex2, thisFace.a, vertex1));
 		}
 	}
-	private void splitFaceThree(Face thisFace, Vector newPos){
+	private void splitFace3(Face thisFace, Vector newPos){
 
         thisFace.dropFrom(this);
 		
 		Vertex vertex = new Vertex(newPos, State.Vertex.Boundary);
 				
-		this.add(thisFace.a, thisFace.b, vertex);
-		this.add(thisFace.b, thisFace.c, vertex);
-		this.add(thisFace.c, thisFace.a, vertex);
+		this.add(new Face(this, thisFace.name.copy("SplitFace3"), thisFace.a, thisFace.b, vertex));
+		this.add(new Face(this, thisFace.name.copy("SplitFace3"), thisFace.b, thisFace.c, vertex));
+		this.add(new Face(this, thisFace.name.copy("SplitFace3"), thisFace.c, thisFace.a, vertex));
 	}
-	private void splitFaceFour(Face thisFace, Vector newPos1, Vector newPos2, Vertex endVertex){
+	private void splitFace4V(Face thisFace, Vector newPos1, Vector newPos2, Vertex endVertex){
 
         thisFace.dropFrom(this);
 		
@@ -864,26 +836,26 @@ public class Solid
 		
 		if (endVertex.equals(thisFace.a)){
 
-			this.add(thisFace.a, vertex1, vertex2);
-			this.add(vertex1, thisFace.b, vertex2);
-			this.add(thisFace.b, thisFace.c, vertex2);
-			this.add(thisFace.c, thisFace.a, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.a, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), vertex1, thisFace.b, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.b, thisFace.c, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.c, thisFace.a, vertex2));
 		}
 		else if (endVertex.equals(thisFace.b)){
 
-			this.add(thisFace.b, vertex1, vertex2);
-			this.add(vertex1, thisFace.c, vertex2);
-			this.add(thisFace.c, thisFace.a, vertex2);
-			this.add(thisFace.a, thisFace.b, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.b, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), vertex1, thisFace.c, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.c, thisFace.a, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.a, thisFace.b, vertex2));
 		}
 		else {
-			this.add(thisFace.c, vertex1, vertex2);
-			this.add(vertex1, thisFace.a, vertex2);
-			this.add(thisFace.a, thisFace.b, vertex2);
-			this.add(thisFace.b, thisFace.c, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.c, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), vertex1, thisFace.a, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.a, thisFace.b, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace4V"), thisFace.b, thisFace.c, vertex2));
 		}
 	}	
-	private void splitFaceFive(Face thisFace, Vector newPos1, Vector newPos2, int linedVertex){
+	private void splitFace5I(Face thisFace, Vector newPos1, Vector newPos2, int linedVertex){
 
         thisFace.dropFrom(this);
 		
@@ -893,28 +865,53 @@ public class Solid
 		switch (linedVertex){
 
         case 1:
-			this.add(thisFace.b, thisFace.c, vertex1);
-			this.add(thisFace.b, vertex1, vertex2);
-			this.add(thisFace.c, vertex2, vertex1);
-			this.add(thisFace.b, vertex2, thisFace.a);
-			this.add(thisFace.c, thisFace.a, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.b, thisFace.c, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.b, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.c, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.b, vertex2, thisFace.a));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.c, thisFace.a, vertex2));
             break;
         case 2:
-			this.add(thisFace.c, thisFace.a, vertex1);
-			this.add(thisFace.c, vertex1, vertex2);
-			this.add(thisFace.a, vertex2, vertex1);
-			this.add(thisFace.c, vertex2, thisFace.b);
-			this.add(thisFace.a, thisFace.b, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.c, thisFace.a, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.c, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.a, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.c, vertex2, thisFace.b));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.a, thisFace.b, vertex2));
             break;
         case 3:
-			this.add(thisFace.a, thisFace.b, vertex1);
-			this.add(thisFace.a, vertex1, vertex2);
-			this.add(thisFace.b, vertex2, vertex1);
-			this.add(thisFace.a, vertex2, thisFace.c);
-			this.add(thisFace.b, thisFace.c, vertex2);
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.a, thisFace.b, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.a, vertex1, vertex2));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.b, vertex2, vertex1));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.a, vertex2, thisFace.c));
+			this.add(new Face(this, thisFace.name.copy("SplitFace5I"), thisFace.b, thisFace.c, vertex2));
             break;
         default:
             throw new IllegalStateException(String.valueOf(linedVertex));
 		}
 	}
+    public String toString(){
+        return this.toString(" ","\n");
+    }
+    public String toString(String pr){
+        return this.toString(pr,"\n");
+    }
+    public String toString(String pr, String in){
+        if (null == pr)
+            pr = "";
+        if (null == in)
+            in = " ";
+
+        StringBuilder string = new StringBuilder();
+
+        string.append(pr);
+        string.append(this.name);
+
+        for (Face face : this){
+
+            string.append(in);
+            string.append(pr);
+            string.append(face);
+        }
+        return string.toString();
+    }
 }

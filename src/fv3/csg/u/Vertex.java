@@ -26,6 +26,7 @@ public class Vertex
     extends java.lang.Object
     implements fv3.csg.u.Notation,
                java.lang.Comparable<Vertex>,
+               java.lang.Iterable<Face>,
                java.lang.Cloneable
 {
 
@@ -36,8 +37,6 @@ public class Vertex
     public State.Vertex status = State.Vertex.Unknown;
 
     private Face[] membership;
-
-    private String string;
 
     private Vector normal;
 
@@ -76,6 +75,9 @@ public class Vertex
     }
 
 
+    public void init(){
+        this.status = State.Vertex.Unknown;
+    }
     public Vector getPosition(){
         return new Vector(this.x,this.y,this.z);
     }
@@ -105,6 +107,9 @@ public class Vertex
     }
     public boolean isUnknown(){
         return (State.Vertex.Unknown == this.status);
+    }
+    public boolean isNotUnknown(){
+        return (State.Vertex.Unknown != this.status);
     }
     public boolean isInside(){
         return (State.Vertex.Inside == this.status);
@@ -137,7 +142,7 @@ public class Vertex
     public Vertex clone(){
         try {
             Vertex clone = (Vertex)super.clone();
-            clone.status = State.Vertex.Unknown;
+            //clone.status = State.Vertex.Unknown;
             clone.membership = null;
             return clone;
         }
@@ -243,16 +248,22 @@ public class Vertex
         a[ofs] = this.z;
         return a;
     }
+    public Vertex mark(State.Vertex state){
+        if (this.isUnknown()){
+            this.status = state;
+            for (Face face: this){
+
+                face.mark(state);
+            }
+        }
+        return this;
+    }
     public int hashCode(){
         return this.hashCode;
     }
     public String toString(){
-        String string = this.string;
-        if (null == string){
-            string = String.format("(%g, %g, %g)",x,y,z);
-            this.string = string;
-        }
-        return string;
+
+        return String.format("(%5.3g, %5.3g, %5.3g, %s)",x,y,z,this.status);
     }
     public boolean equals(Object that){
         if (this == that)
@@ -297,6 +308,9 @@ public class Vertex
         }
         else
             return 1;
+    }
+    public Face.Iterator iterator(){
+        return new Face.Iterator(this.membership);
     }
 
 

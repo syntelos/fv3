@@ -25,12 +25,11 @@ public class NonConvex
     extends Solid
 {
 
-    public NonConvex(int c){
-        super(c);
+    public NonConvex(String n, int c){
+        super(n,c);
     }
-    public NonConvex(NonConvex v){
-        super(v);
+    public NonConvex(String n, NonConvex v){
+        super(n,v);
     }
-
 
 }

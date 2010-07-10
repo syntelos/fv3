@@ -17,19 +17,13 @@
  */
 package fv3.csg.u;
 
-import lxl.List;
-import lxl.Map;
-
 public interface Notation
     extends fv3.math.Notation
 {
     /**
-     * Overloaded name "State" serves two roles: state of solid
-     * datastructure and state of components namespace.
+     * State of components 
      */
-    public final static class State
-        extends lxl.ArrayList<fv3.csg.u.Face>
-        implements java.util.Comparator<fv3.csg.u.Face>
+    public abstract static class State
     {
 
         public enum Vertex {
@@ -51,6 +45,9 @@ public interface Notation
                     throw new IllegalArgumentException(state.toString());
                 }
             }
+            public String toString(){
+                return String.format("%11s",this.name());
+            }
         }
         public enum Face {
             Unknown, Inside, Outside, Same, Opposite;
@@ -71,63 +68,10 @@ public interface Notation
                     throw new IllegalArgumentException(state.toString());
                 }
             }
-        }
-
-
-        public Map<fv3.csg.u.Vertex,fv3.csg.u.Vertex> vertices;
-
-        private Bound bound;
-
-        private State prev;
-
-
-        public State(int v){
-            super();
-            super.setComparator(this);
-            this.vertices = new Map<fv3.csg.u.Vertex,fv3.csg.u.Vertex>(v);
-        }
-
-
-        public int countVertices(){
-            return (3*this.size());
-        }
-        public Bound getBound(){
-            Bound bound = this.bound;
-            if (null == bound){
-                bound = new Bound(this);
-                this.bound = bound;
+            public String toString(){
+                return String.format("%8s",this.name());
             }
-            return bound;
         }
-        public State push(){
-            if (null == this.prev){
-                State clone = (State)super.clone();
-                clone.vertices = this.vertices.clone();
-                clone.prev = this;
-                return clone;
-            }
-            else
-                throw new IllegalStateException();
-        }
-        public State pop(){
-            State prev = this.prev;
-            if (null != prev){
-                super.clear();
-                this.vertices.clear();
-                return prev;
-            }
-            else
-                throw new IllegalStateException();
-        }
-        public void destroy(){
-            super.clear();
-            this.vertices.clear();
-        }
-        public boolean equals(Object that){
-            return (this == that);
-        }
-        public int compare(fv3.csg.u.Face a, fv3.csg.u.Face b){
-            return a.compareTo(b);
-        }
+
     }
 }

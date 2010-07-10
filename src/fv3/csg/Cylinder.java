@@ -19,6 +19,7 @@
 package fv3.csg;
 
 import fv3.csg.u.Error;
+import fv3.csg.u.Face;
 
 /**
  * Create a cylinder from radius and depth with the circular faces
@@ -34,7 +35,7 @@ public abstract class Cylinder
             this(r,d,Error.Default);
         }
         public XY(double r, double d, double e){
-            super(r,d,e);
+            super(String.format(N,r,d),r,d,e);
 
             final double[] cv = CV(r,e);
 
@@ -60,32 +61,32 @@ public abstract class Cylinder
                     y1 = cv[1];
                 }
 
-                /*
-                 * Triangle fan disk (Z+)
-                 */
-                this.add(0.0, 0.0,  z1,
-                         x0,   y0,  z1,
-                         x1,   y1,  z1);
-                /*
-                 * Quad triangle pair
-                 */
-                this.add(x0, y0, z1,
-                         x0, y0, z0,
-                         x1, y1, z0);
-                this.add(x0, y0, z1,
-                         x1, y1, z0,
-                         x1, y1, z1);
-                /*
-                 * Triangle fan disk (Z-)
-                 */
-                this.add(0.0, 0.0,  z0,
-                         x1,   y1,  z0,
-                         x0,   y0,  z0);
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Z+)"),
+                                  0.0, 0.0,  z1,
+                                  x0,   y0,  z1,
+                                  x1,   y1,  z1));
+
+                this.add(new Face(this,new Face.Name(this,cc,"Quad triangle A"),
+                                  x0, y0, z1,
+                                  x0, y0, z0,
+                                  x1, y1, z0));
+                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                                  x0, y0, z1,
+                                  x1, y1, z0,
+                                  x1, y1, z1));
+
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Z-)"),
+                                  0.0, 0.0,  z0,
+                                  x1,   y1,  z0,
+                                  x0,   y0,  z0));
             }
         }
         public XY(XY c){
             super(c);
         }
+
+
+        protected final static String N = "Cylinder.XY(%3.2g,%3.2g)";
     }
     public static class YZ
         extends Cylinder
@@ -94,7 +95,7 @@ public abstract class Cylinder
             this(r,d,Error.Default);
         }
         public YZ(double r, double d, double e){
-            super(r,d,e);
+            super(String.format(N,r,d),r,d,e);
 
             final double[] cv = CV(r,e);
 
@@ -120,32 +121,31 @@ public abstract class Cylinder
                     z1 = cv[1];
                 }
 
-                /*
-                 * Triangle fan disk (X+)
-                 */
-                this.add(x1,  0.0, 0.0,
-                         x1,   y0,  z0,
-                         x1,   y1,  z1);
-                /*
-                 * Quad triangle pair
-                 */
-                this.add(x1, y0, z0,
-                         x0, y0, z0,
-                         x0, y1, z1);
-                this.add(x1, y0, z0,
-                         x0, y1, z1,
-                         x1, y1, z1);
-                /*
-                 * Triangle fan disk (X-)
-                 */
-                this.add(x0,  0.0, 0.0,
-                         x0,   y1,  z1,
-                         x0,   y0,  z0);
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (X+)"),
+                                  x1,  0.0, 0.0,
+                                  x1,   y0,  z0,
+                                  x1,   y1,  z1));
+
+                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle A"),
+                                  x1, y0, z0,
+                                  x0, y0, z0,
+                                  x0, y1, z1));
+                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                                  x1, y0, z0,
+                                  x0, y1, z1,
+                                  x1, y1, z1));
+
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (X-)"),
+                                  x0,  0.0, 0.0,
+                                  x0,   y1,  z1,
+                                  x0,   y0,  z0));
             }
         }
         public YZ(YZ c){
             super(c);
         }
+
+        protected final static String N = "Cylinder.YZ(%3.2g,%3.2g)";
     }
     public static class ZX
         extends Cylinder
@@ -154,7 +154,7 @@ public abstract class Cylinder
             this(r,d,Error.Default);
         }
         public ZX(double r, double d, double e){
-            super(r,d,e);
+            super(String.format(N,r,d),r,d,e);
 
             final double[] cv = CV(r,e);
 
@@ -180,40 +180,39 @@ public abstract class Cylinder
                     x1 = cv[1];
                 }
 
-                /*
-                 * Triangle fan disk (Y+)
-                 */
-                this.add(0.0,  y1, 0.0,
-                         x0,   y1,  z0,
-                         x1,   y1,  z1);
-                /*
-                 * Quad triangle pair
-                 */
-                this.add(x0, y1, z0,
-                         x0, y0, z0,
-                         x1, y0, z1);
-                this.add(x0, y1, z0,
-                         x1, y0, z1,
-                         x1, y1, z1);
-                /*
-                 * Triangle fan disk (Y-)
-                 */
-                this.add(0.0,  y0, 0.0,
-                         x1,   y0,  z1,
-                         x0,   y0,  z0);
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Y+)"),
+                                  0.0,  y1, 0.0,
+                                  x0,   y1,  z0,
+                                  x1,   y1,  z1));
+
+                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle A"),
+                                  x0, y1, z0,
+                                  x0, y0, z0,
+                                  x1, y0, z1));
+                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                                  x0, y1, z0,
+                                  x1, y0, z1,
+                                  x1, y1, z1));
+
+                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Y-)"),
+                                  0.0,  y0, 0.0,
+                                  x1,   y0,  z1,
+                                  x0,   y0,  z0));
             }
         }
         public ZX(ZX c){
             super(c);
         }
+
+        protected final static String N = "Cylinder.ZX(%3.2g,%3.2g)";
     }
 
 
     public final double radius, depth, error;
 
 
-    protected Cylinder(double r, double d, double e){
-        super(0);
+    protected Cylinder(String n, double r, double d, double e){
+        super(n,0);
         if (r == r && 0.0 < r){
             if (d == d && 0.0 < d){
                 if (Error.Circle.V(e)){
@@ -231,7 +230,7 @@ public abstract class Cylinder
             throw new IllegalArgumentException(String.format("Invalid radius %g",r));
     }
     protected Cylinder(Cylinder c){
-        super(c);
+        super(c.name.desc,c);
         this.radius = c.radius;
         this.depth = c.depth;
         this.error = c.error;

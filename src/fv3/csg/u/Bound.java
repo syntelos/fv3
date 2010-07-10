@@ -47,7 +47,7 @@ public final class Bound
         this.midY = (minY + maxY)/2.0;
         this.midZ = (minZ + maxZ)/2.0;
     }
-    public Bound(State solid){
+    public Bound(Mesh solid){
         super();
         double maxX = 0, minX = 0, maxY = 0, minY = 0, maxZ = 0, minZ = 0;
         boolean once = true;

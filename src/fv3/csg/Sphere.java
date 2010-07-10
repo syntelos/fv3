@@ -22,8 +22,8 @@ public class Sphere
     extends Convex
 {
 
-    public Sphere(double r){
-        super(0);
+    public Sphere(String n, double r){
+        super(n,0);
     }
 
 }

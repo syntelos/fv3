@@ -31,11 +31,11 @@ public class Convex
     extends Solid
 {
 
-    public Convex(int c){
-        super(c);
+    public Convex(String n, int c){
+        super(n,c);
     }
-    public Convex(Convex v){
-        super(v);
+    public Convex(String n, Convex v){
+        super(n,v);
     }
 
 }

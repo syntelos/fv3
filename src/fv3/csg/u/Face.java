@@ -28,9 +28,26 @@ import fv3.math.Vector;
 public final class Face
     extends java.lang.Object
     implements fv3.csg.u.Notation,
+               fv3.csg.u.Name.Named,
                java.lang.Comparable<Face>,
                java.lang.Cloneable
 {
+
+    public final static class Name 
+        extends fv3.csg.u.Name
+    {
+        public Name(Solid s, int index, String desc){
+            super(Kind.Face,s,index,desc);
+        }
+        protected Name(Name n, String desc2){
+            super(n,desc2);
+        }
+
+        public Name copy(String desc2){
+            return new Name(this,desc2);
+        }
+    }
+
     public enum LP {
         Up, Down, On, None;
 
@@ -149,6 +166,8 @@ public final class Face
         }
     }
 
+
+    public final Name name;
     /**
      * The only valid change to a face is one that is subsequently
      * reversed (i.e. invert normal).  All other changes must replace
@@ -165,9 +184,45 @@ public final class Face
     private boolean inverted;
 
 
-    public Face(Solid s, Vertex a, Vertex b, Vertex c){
+    public Face(Solid s, Name n, double[] a, double[] b, double[] c){
+        this(s,n,new Vertex(a),new Vertex(b),new Vertex(c));
+    }
+    public Face(Solid s, Name n, double[] a, double[] b, double[] c, double[] nv){
+        this(s,n,new Vertex(a),new Vertex(b),new Vertex(c),new Vector(nv));
+    }
+    public Face(Solid s, Name n, double[] face){
+        this(s,n,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6));
+    }
+    public Face(Solid s, Name n, double[] face, double[] normal){
+        this(s,n,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6),new Vector(normal));
+    }
+    public Face(Solid s, Name n,
+                double ax, double ay, double az, 
+                double bx, double by, double bz, 
+                double cx, double cy, double cz)
+    {
+        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
+    }
+    public Face(Solid s, Name n,
+                double ax, double ay, double az, 
+                double bx, double by, double bz, 
+                double cx, double cy, double cz,
+                double nx, double ny, double nz)
+    {
+        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz));
+    }
+    public Face(Solid s, Name n,
+                double ax, double ay, double az, 
+                double bx, double by, double bz, 
+                double cx, double cy, double cz,
+                Vector nv)
+    {
+        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),nv);
+    }
+    public Face(Solid s, Name n, Vertex a, Vertex b, Vertex c){
         super();
-        if (null != s && null != a && null != b && null != c){
+        if (null != s && null != n && null != a && null != b && null != c){
+            this.name = n;
             this.a = s.u(a).memberOf(this);
             this.b = s.u(b).memberOf(this);
             this.c = s.u(c).memberOf(this);
@@ -175,13 +230,14 @@ public final class Face
         else
             throw new IllegalArgumentException();
     }
-    public Face(Solid s, Vertex a, Vertex b, Vertex c, Vector n){
+    public Face(Solid s, Name n, Vertex a, Vertex b, Vertex c, Vector nv){
         super();
-        if (null != s && null != a && null != b && null != c && null != n){
+        if (null != s && null != n && null != a && null != b && null != c && null != nv){
+            this.name = n;
 
             Vector check = a.getVector().normal(b.getVector(),c.getVector());
             Vector.Direction1 checkD = check.direction1();
-            Vector.Direction1 nD = n.direction1();
+            Vector.Direction1 nD = nv.direction1();
             switch (checkD.colinear(nD)){
 
             case 0:
@@ -205,12 +261,18 @@ public final class Face
 
 
     public void init(){
+
         this.status = State.Face.Unknown;
-        if (this.inverted){
-            this.inverted = false;
-            this.invertNormal();
-            this.inverted = false;
-        }
+
+        if (this.inverted)
+            this.uninvertNormal();
+
+        this.a.init();
+        this.b.init();
+        this.c.init();
+    }
+    public Name getName(){
+        return this.name;
     }
     public Bound getBound(){
         Bound bound = this.bound;
@@ -294,10 +356,10 @@ public final class Face
     public Face clone(Solid s){
         try {
             Face clone = (Face)super.clone();
-            clone.status = State.Face.Unknown;
-            clone.a = s.u(clone.a).memberOf(clone);
-            clone.b = s.u(clone.b).memberOf(clone);
-            clone.c = s.u(clone.c).memberOf(clone);
+            //clone.status = State.Face.Unknown;
+            clone.a = s.u(clone.a.clone()).memberOf(clone);
+            clone.b = s.u(clone.b.clone()).memberOf(clone);
+            clone.c = s.u(clone.c.clone()).memberOf(clone);
             return clone;
         }
         catch (CloneNotSupportedException exc){
@@ -375,33 +437,18 @@ public final class Face
         }
     }
     public String toString(){
-        return this.toString("","\n");
-    }
-    public String toString(String pr){
-        return this.toString(pr,"\n");
-    }
-    public String toString(String pr, String in){
-        if (null == pr)
-            pr = "";
-        if (null == in)
-            in = " ";
 
         StringBuilder string = new StringBuilder();
 
-        string.append(pr);
+        string.append(this.name);
+        string.append(' ');
         string.append(this.status);
-        string.append(in);
-        string.append(pr);
+        string.append(' ');
         string.append(this.a);
-        string.append(in);
-        string.append(pr);
+        string.append(' ');
         string.append(this.b);
-        string.append(in);
-        string.append(pr);
+        string.append(' ');
         string.append(this.c);
-        string.append(in);
-        string.append(pr);
-        string.append(this.getNormal());
 
         return string.toString();
     }
@@ -416,7 +463,22 @@ public final class Face
             Vertex tmp = this.b;
             this.b = this.a;
             this.a = tmp;
+            this.bound = null;
             this.normal = null;
+            this.centroid = null;
+        }
+    }
+    public void uninvertNormal(){
+        if (!this.inverted)
+            throw new IllegalStateException();
+        else {
+            this.inverted = false;
+            Vertex tmp = this.b;
+            this.b = this.a;
+            this.a = tmp;
+            this.bound = null;
+            this.normal = null;
+            this.centroid = null;
         }
     }
     public double[] getNxyzd(){
@@ -437,30 +499,32 @@ public final class Face
         if (this.a.isUnknown() && this.b.isUnknown() && this.c.isUnknown())
             return false;
         else {
-            State.Vertex t = this.a.con(State.Vertex.Inside,State.Vertex.Outside);
+            State.Vertex t;
+
+            t = this.a.con(State.Vertex.Inside,State.Vertex.Outside);
+
             if (null != t){
-                if (State.Vertex.Inside == t)
-                    this.status = State.Face.Inside;
-                else
-                    this.status = State.Face.Outside;
+
+                this.status = State.Vertex.ToFace(t);
+
                 return true;
             }
             else {
                 t = this.b.con(State.Vertex.Inside,State.Vertex.Outside);
+
                 if (null != t){
-                    if (State.Vertex.Inside == t)
-                        this.status = State.Face.Inside;
-                    else
-                        this.status = State.Face.Outside;
+
+                    this.status = State.Vertex.ToFace(t);
+
                     return true;
                 }
                 else {
                     t = this.c.con(State.Vertex.Inside,State.Vertex.Outside);
+
                     if (null != t){
-                        if (State.Vertex.Inside == t)
-                            this.status = State.Face.Inside;
-                        else
-                            this.status = State.Face.Outside;
+
+                        this.status = State.Vertex.ToFace(t);
+
                         return true;
                     }
                     else
@@ -480,7 +544,6 @@ public final class Face
 		Face closestFace = null;
         double closestDistance;
         {
-            double dotProduct, distance; 
             Vector intersectionPoint;
 
             scan:do {
@@ -489,15 +552,15 @@ public final class Face
 
                 for (Face face: object){
 
-                    dotProduct = face.getNormal().dot(ray.getDirection());
-
                     intersectionPoint = ray.computePlaneIntersection(face.getNormal(), face.a.getPosition());
 								
                     if (null != intersectionPoint){
 
-                        distance = ray.computePointToPointDistance(intersectionPoint);
+                        final double distance = ray.computePointToPointDistance(intersectionPoint);
 					
                         if (EPS > Math.abs(distance)){
+
+                            final double dotProduct = face.getNormal().dot(ray.getDirection());
 
                             if (EPS > Math.abs(dotProduct)){
 
@@ -516,14 +579,18 @@ public final class Face
                                 }
                             }
                         }
-                        else if (EPS < Math.abs(dotProduct) && EPS < distance){
+                        else {
+                            final double dotProduct = face.getNormal().dot(ray.getDirection());
 
-                            if (distance < closestDistance){
+                            if (EPS < Math.abs(dotProduct) && EPS < distance){
 
-                                if (face.hasPoint(intersectionPoint)){
+                                if (distance < closestDistance){
 
-                                    closestDistance = distance;
-                                    closestFace = face;
+                                    if (face.hasPoint(intersectionPoint)){
+
+                                        closestDistance = distance;
+                                        closestFace = face;
+                                    }
                                 }
                             }
                         }
@@ -561,6 +628,28 @@ public final class Face
 				this.status = State.Face.Outside;
 		}
 	}
+    public Face mark(){
+
+        if (this.isUnknown())
+            throw new IllegalStateException();
+        else {
+            State.Vertex vs = State.Face.ToVertex(this.status);
+
+            this.a.mark(vs);
+            this.b.mark(vs);
+            this.c.mark(vs);
+
+            return this;
+        }
+    }
+    public Face mark(State.Vertex vs){
+
+        this.a.mark(vs);
+        this.b.mark(vs);
+        this.c.mark(vs);
+
+        return this;
+    }
     private boolean hasPoint( Vector p){
         Vector n = this.getNormal();
 
@@ -618,6 +707,39 @@ public final class Face
             System.arraycopy(list,0,copier,0,len);
             copier[len] = item;
             return copier;
+        }
+    }
+    public static class Iterator
+        extends java.lang.Object
+        implements java.util.Iterator<Face>
+    {
+
+        public final int length;
+
+        private final Face[] list;
+
+        private int index;
+
+        public Iterator(Face[] list){
+            super();
+            if (null == list){
+                this.list = null;
+                this.length = 0;
+            }
+            else {
+                this.list = list.clone();
+                this.length = this.list.length;
+            }
+        }
+
+        public boolean hasNext(){
+            return (this.index < this.length);
+        }
+        public Face next(){
+            return this.list[this.index++];
+        }
+        public void remove(){
+            throw new UnsupportedOperationException();
         }
     }
 }

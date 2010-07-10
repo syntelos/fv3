@@ -22,8 +22,8 @@ public class Cube
     extends Convex
 {
 
-    public Cube(double w, double h, double d){
-        super(0);
+    public Cube(String n, double w, double h, double d){
+        super(n,0);
     }
 
 }

@@ -162,9 +162,9 @@ public final class Segment
         }
         public void perturbDirection(){
             final Random R = new Random();
-            final double px = EPS2*R.nextDouble();
-            final double py = EPS2*R.nextDouble();
-            final double pz = EPS2*R.nextDouble();
+            final double px = EPS_M2*R.nextDouble();
+            final double py = EPS_M2*R.nextDouble();
+            final double pz = EPS_M2*R.nextDouble();
 
             this.direction.add( px, py, pz);
         }
