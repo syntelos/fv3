@@ -168,6 +168,8 @@ public final class Face
 
 
     public final Name name;
+
+    public final int id;
     /**
      * The only valid change to a face is one that is subsequently
      * reversed (i.e. invert normal).  All other changes must replace
@@ -182,6 +184,8 @@ public final class Face
     private Bound bound;
 
     private boolean inverted;
+
+    private double d;
 
 
     public Face(Solid s, Name n, double[] a, double[] b, double[] c){
@@ -219,10 +223,15 @@ public final class Face
     {
         this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),nv);
     }
+    public Face(Solid s, Name n, Vertex[] face){
+        this(s,n,face[0],face[1],face[2]);
+    }
     public Face(Solid s, Name n, Vertex a, Vertex b, Vertex c){
         super();
         if (null != s && null != n && null != a && null != b && null != c){
             this.name = n;
+            this.id = n.id;
+
             this.a = s.u(a).memberOf(this);
             this.b = s.u(b).memberOf(this);
             this.c = s.u(c).memberOf(this);
@@ -234,6 +243,7 @@ public final class Face
         super();
         if (null != s && null != n && null != a && null != b && null != c && null != nv){
             this.name = n;
+            this.id = n.id;
 
             Vector check = a.getVector().normal(b.getVector(),c.getVector());
             Vector.Direction1 checkD = check.direction1();
@@ -436,6 +446,34 @@ public final class Face
                 return t;
         }
     }
+    public int compareTo(Vertex[] face){
+        if (null == face || 3 != face.length)
+            return 0;
+        else {
+            int t = this.a.compareTo(face[0]);
+            if (0 == t){
+                t = this.b.compareTo(face[1]);
+                if (0 == t)
+                    return this.c.compareTo(face[2]);
+                else
+                    return t;
+            }
+            else
+                return t;
+        }
+    }
+    public boolean equals(Object that){
+        if (this == that)
+            return true;
+        else if (that instanceof Face)
+            return (0 == this.compareTo( (Face)that));
+        else
+            return false;
+    }
+    public boolean equals(Vertex[] face){
+
+        return (0 == this.compareTo(face));
+    }
     public String toString(){
 
         StringBuilder string = new StringBuilder();
@@ -485,11 +523,11 @@ public final class Face
 
         Vertex a = this.a;
 
-        Vector n = this.getNormal();
+        double[] n = this.normal();
 
-		double x = n.getX();
-		double y = n.getY();
-		double z = n.getZ();
+		double x = n[X];
+		double y = n[Y];
+		double z = n[Z];
 
 		double d = -(x*a.x + x*a.y + z*a.z);
 

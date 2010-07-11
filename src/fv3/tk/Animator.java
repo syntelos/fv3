@@ -202,6 +202,22 @@ public final class Animator
         SwapInterval = swapi;
     }
     /**
+     * Window decoration optionally defined by system property
+     * <code>"fv3.tk.Animator.Undecorated"</code>.
+     * 
+     * Default value: accept underlying JOGL/NEWT default value.
+     */
+    public final static boolean Undecorated;
+    static {
+        boolean traceb = false;
+        String config = System.getProperty("fv3.tk.Animator.Undecorated");
+        if (null != config){
+            traceb = ("true".equals(config));
+            System.err.println(String.format("%s: Set fv3.tk.Animator.Undecorated(%b)",Thread.currentThread().getName(),traceb));
+        }
+        Undecorated = traceb;
+    }
+    /**
      * GL tracing optionally defined by system property
      * <code>"fv3.tk.Animator.GLTrace"</code>.
      * 
@@ -318,9 +334,9 @@ public final class Animator
 
     private Fv3Screen fv3s;
 
-    private final boolean undecorated = true;
+    private volatile boolean undecorated = Animator.Undecorated;
 
-    private volatile boolean halting, running = true;
+    private volatile boolean halting, running;
 
     private volatile GLWindow glWindow;
 
@@ -346,6 +362,17 @@ public final class Animator
     }
 
 
+    public boolean isUndecorated(){
+        return this.undecorated;
+    }
+    public Animator setUndecorated(boolean undecorated){
+        if (!this.running){
+            this.undecorated = undecorated;
+            return this;
+        }
+        else
+            throw new IllegalStateException("Running");
+    }
     /**
      * Uniform display time.  This time is set to the system clock
      * before each entry into the animation cycle (input and
@@ -391,6 +418,7 @@ public final class Animator
         }
     }
     public void run(){
+        this.running = true;
         this.animatorInit();
         try {
             long lastM = System.currentTimeMillis(), deltaM, currentM;
@@ -573,6 +601,7 @@ public final class Animator
     public void windowMoved(WindowEvent e){
     }
     public void windowDestroyNotify(WindowEvent e){
+        this.halt();
     }
     public void windowGainedFocus(WindowEvent e){
         this.requestFocus();

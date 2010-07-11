@@ -46,6 +46,8 @@ public abstract class Cylinder
 
             final int count = cv.length;
 
+            int fx = 0;
+
             for (int cc = 0; cc < count; ){
 
                 double x0 = cv[cc++];
@@ -61,21 +63,21 @@ public abstract class Cylinder
                     y1 = cv[1];
                 }
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Z+)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (Z+)"),
                                   0.0, 0.0,  z1,
                                   x0,   y0,  z1,
                                   x1,   y1,  z1));
 
-                this.add(new Face(this,new Face.Name(this,cc,"Quad triangle A"),
+                this.add(new Face(this,new Face.Name(this,(fx++),"Quad triangle A"),
                                   x0, y0, z1,
                                   x0, y0, z0,
                                   x1, y1, z0));
-                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Quad triangle B"),
                                   x0, y0, z1,
                                   x1, y1, z0,
                                   x1, y1, z1));
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Z-)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (Z-)"),
                                   0.0, 0.0,  z0,
                                   x1,   y1,  z0,
                                   x0,   y0,  z0));
@@ -106,6 +108,8 @@ public abstract class Cylinder
 
             final int count = cv.length;
 
+            int fx = 0;
+
             for (int cc = 0; cc < count; ){
 
                 double y0 = cv[cc++];
@@ -121,21 +125,21 @@ public abstract class Cylinder
                     z1 = cv[1];
                 }
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (X+)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (X+)"),
                                   x1,  0.0, 0.0,
                                   x1,   y0,  z0,
                                   x1,   y1,  z1));
 
-                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle A"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Quad triangle A"),
                                   x1, y0, z0,
                                   x0, y0, z0,
                                   x0, y1, z1));
-                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Quad triangle B"),
                                   x1, y0, z0,
                                   x0, y1, z1,
                                   x1, y1, z1));
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (X-)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (X-)"),
                                   x0,  0.0, 0.0,
                                   x0,   y1,  z1,
                                   x0,   y0,  z0));
@@ -165,6 +169,8 @@ public abstract class Cylinder
 
             final int count = cv.length;
 
+            int fx = 0;
+
             for (int cc = 0; cc < count; ){
 
                 double z0 = cv[cc++];
@@ -180,21 +186,21 @@ public abstract class Cylinder
                     x1 = cv[1];
                 }
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Y+)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (Y+)"),
                                   0.0,  y1, 0.0,
                                   x0,   y1,  z0,
                                   x1,   y1,  z1));
 
-                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle A"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Quad triangle A"),
                                   x0, y1, z0,
                                   x0, y0, z0,
                                   x1, y0, z1));
-                this.add(new Face(this, new Face.Name(this,cc,"Quad triangle B"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Quad triangle B"),
                                   x0, y1, z0,
                                   x1, y0, z1,
                                   x1, y1, z1));
 
-                this.add(new Face(this, new Face.Name(this,cc,"Triangle fan disk (Y-)"),
+                this.add(new Face(this, new Face.Name(this,(fx++),"Triangle fan disk (Y-)"),
                                   0.0,  y0, 0.0,
                                   x1,   y0,  z1,
                                   x0,   y0,  z0));

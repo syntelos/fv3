@@ -36,14 +36,14 @@ public abstract class Abstract
     implements fv3.math.Notation
 {
 
-    public final static boolean IsZero(double value){
-        return (EPSILON > Math.abs(value));
+    public final static boolean IZ(double v){
+        return (EPS > Math.abs(v));
     }
-    public final static double Z(double value){
-        if (EPSILON > Math.abs(value))
+    public final static double Z(double v){
+        if (EPS > Math.abs(v))
             return 0.0;
         else
-            return value;
+            return v;
     }
     public final static float Zf(double value){
         float vf = (float)value;

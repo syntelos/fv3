@@ -46,17 +46,17 @@ public class Vertex
     }
     public Vertex(double x, double y, double z){
         super();
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.x = Z(x);
+        this.y = Z(y);
+        this.z = Z(z);
         {
-            long hashX = Double.doubleToLongBits(x);
+            long hashX = Double.doubleToLongBits(this.x);
             hashX ^= (hashX>>>32);
 
-            long hashY = Double.doubleToLongBits(y);
+            long hashY = Double.doubleToLongBits(this.y);
             hashY ^= (hashY>>>32);
 
-            long hashZ = Double.doubleToLongBits(z);
+            long hashZ = Double.doubleToLongBits(this.z);
             hashZ ^= (hashZ>>>32);
 
             long LhashCode = (hashX^hashY^hashZ);
@@ -269,10 +269,9 @@ public class Vertex
         if (this == that)
             return true;
 
-        else if (that instanceof Vertex){
-            Vertex thatV = (Vertex)that;
-            return (this.x == thatV.x && this.y == thatV.y && this.z == thatV.z);
-        }
+        else if (that instanceof Vertex)
+
+            return this.equals( (Vertex)that);
         else
             return false;
     }
@@ -282,7 +281,7 @@ public class Vertex
 
         else if (null != that){
 
-            return (this.x == that.x && this.y == that.y && this.z == that.z);
+            return (0 == this.compareTo(that));
         }
         else
             return false;
@@ -292,13 +291,13 @@ public class Vertex
             return 0;
         else if (this.x < that.x)
             return -1;
-        else if (this.x == that.x){
+        else if (EEQ(this.x,that.x)){
             if (this.y < that.y)
                 return -1;
-            else if (this.y == that.y){
+            else if (EEQ(this.y,that.y)){
                 if (this.z < that.z)
                     return -1;
-                else if (this.z == that.z)
+                else if (EEQ(this.z,that.z))
                     return 0;
                 else
                     return 1;
@@ -340,4 +339,17 @@ public class Vertex
             return copier;
         }
     }
+    public final static double Z(double v){
+        if (EPS > Math.abs(v))
+            return 0.0;
+        else
+            return v;
+    }
+    public final static boolean EEQ(double a, double b){
+        if (EPS > Math.abs(a - b))
+            return true;
+        else
+            return false;
+    }
+
 }

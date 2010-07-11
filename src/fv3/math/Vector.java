@@ -419,7 +419,13 @@ public class Vector
         return new Vector(c);
     }
     public double distance(Vector b){
-        return Math.sqrt( Math.pow((this.v[X]-b.v[X]),2)+Math.pow((this.v[Y]-b.v[Y]),2)+Math.pow((this.v[Z]-b.v[Z]),2));
+        final double[] this_v = this.v;
+        final double[] that_v = b.v;
+        final double dx = (this_v[X]-that_v[X]);
+        final double dy = (this_v[Y]-that_v[Y]);
+        final double dz = (this_v[Z]-that_v[Z]);
+
+        return Math.sqrt( (dx*dx) + (dy*dy) + (dz*dz));
     }
     public Magnitude1 magnitude1(){
         return Magnitude1.For(this.v);

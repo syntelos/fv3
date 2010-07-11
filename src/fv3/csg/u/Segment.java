@@ -275,8 +275,19 @@ public final class Segment
 	public Vector getEndPosition(){
 		return this.endPos;
 	}
-	public boolean intersect(Segment segment){
-		return (!(this.endDist < segment.startDist+EPS || segment.endDist < this.startDist+EPS));
+	public boolean intersect(Segment that){
+
+        final double thisStartDist = (this.startDist+EPS);
+        final double thatStartDist = (that.startDist+EPS);
+
+        final double thisEndDist = this.endDist;
+        final double thatEndDist = that.endDist;
+
+		if (thisEndDist < thatStartDist || thatEndDist < thisStartDist)
+
+            return false;
+        else
+            return true;
 	}
 	private boolean vertex(Vertex vertex){
 

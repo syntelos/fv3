@@ -8,9 +8,10 @@ import fv3.math.Color;
 import fv3.math.VertexArray;
 import fv3.model.Disable;
 import fv3.model.Enable;
-import fv3.model.Material ;
+import fv3.model.Material;
 import fv3.model.Model;
-import fv3.model.ShadeModel ;
+import fv3.model.PolygonMode;
+import fv3.model.ShadeModel;
 import fv3.nui.Light;
 import fv3.tk.Animator;
 
@@ -47,7 +48,7 @@ public class Cylinder
                         Model model = (Model)cylinder.get(1);
                         Solid s;
 
-                        s = (Solid)model.get(3);
+                        s = (Solid)model.get(4);
                         System.out.println();
                         System.out.println(s.toString("\t"));
                     }
@@ -77,6 +78,7 @@ public class Cylinder
         {
             cylinder.add(new Material(GL2.GL_FRONT, GL2.GL_AMBIENT_AND_DIFFUSE, Color.Blue));
             cylinder.add(new ShadeModel(GL2.GL_FLAT));
+            cylinder.add(new PolygonMode.Line(GL2.GL_FRONT_AND_BACK));
             cylinder.add(new Enable(GL2.GL_DEPTH_TEST));
 
             Solid s = new fv3.csg.Cylinder.XY(10,10,1)
