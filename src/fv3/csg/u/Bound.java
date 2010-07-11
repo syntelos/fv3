@@ -20,9 +20,10 @@ package fv3.csg.u;
 
 /**
  * Based on the work of Danilo Balby Silva Castanheira in <a
- * href="http://unbboolean.sf.net/">J3DBool</a> following <a
- * href="http://www.cs.brown.edu/~jfh/papers/Laidlaw-CSG-1986/main.htm">"Constructive
- * Solid Geometry for Polyhedral Objects"</a>.
+ * href="http://unbboolean.sf.net/">J3DBool</a>.
+ *
+ * @author Danilo Balby Silva Castanheira
+ * @author John Pritchard
  */
 public final class Bound 
     extends java.lang.Object

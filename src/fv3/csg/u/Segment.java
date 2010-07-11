@@ -22,6 +22,13 @@ import fv3.math.Vector;
 
 import java.util.Random;
 
+/**
+ * Based on the work of Danilo Balby Silva Castanheira in <a
+ * href="http://unbboolean.sf.net/">J3DBool</a>.
+ *
+ * @author Danilo Balby Silva Castanheira
+ * @author John Pritchard
+ */
 public final class Segment
     extends Object
     implements Notation
