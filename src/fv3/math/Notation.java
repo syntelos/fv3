@@ -30,6 +30,8 @@ public interface Notation
     public final static double EPSILON = (1e-8);
     public final static double EPS = EPSILON;
     public final static double EPS_M2 = (EPSILON*2.0);
+    public final static double EPS_D2 = (EPSILON/2.0);
+    public final static double EPS_1D2 = (1.0 - EPS_D2);
 
     public final static double PI = Math.PI;
     public final static double PI_D2 = (PI / 2.0);

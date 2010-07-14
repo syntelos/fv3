@@ -61,4 +61,13 @@ public abstract class A
             bf.init();
         }
     }
+    protected static void InvertInsideFaces(Solid a){
+
+        for (Face face: a){
+
+            if (face.isInside())
+
+                face.invertNormal();
+        }
+    }
 }

@@ -26,7 +26,8 @@ package fv3.math;
  */
 public class Vector
     extends Abstract
-    implements java.lang.Cloneable
+    implements java.lang.Comparable<Vector>,
+               java.lang.Cloneable
 {
     /**
      * Principal magnitude classes.
@@ -270,49 +271,49 @@ public class Vector
     public final Vector add(Vector v){
         double[] a = this.v;
         double[] b = v.v;
-        a[X] = a[X] + b[X];
-        a[Y] = a[Y] + b[Y];
-        a[Z] = a[Z] + b[Z];
+        a[X] = Z(a[X] + b[X]);
+        a[Y] = Z(a[Y] + b[Y]);
+        a[Z] = Z(a[Z] + b[Z]);
         return this;
     }
     public final Vector add(double[] b){
         double[] a = this.v;
 
-        a[X] = a[X] + b[X];
-        a[Y] = a[Y] + b[Y];
-        a[Z] = a[Z] + b[Z];
+        a[X] = Z(a[X] + b[X]);
+        a[Y] = Z(a[Y] + b[Y]);
+        a[Z] = Z(a[Z] + b[Z]);
         return this;
     }
     public final Vector add(double dx, double dy, double dz){
         double[] a = this.v;
-        a[X] = a[X] + dx;
-        a[Y] = a[Y] + dy;
-        a[Z] = a[Z] + dz;
+        a[X] = Z(a[X] + dx);
+        a[Y] = Z(a[Y] + dy);
+        a[Z] = Z(a[Z] + dz);
         return this;
     }
     public final Vector sub(Vector v){
         double[] a = this.v;
         double[] b = v.v;
-        a[X] = a[X] - b[X];
-        a[Y] = a[Y] - b[Y];
-        a[Z] = a[Z] - b[Z];
+        a[X] = Z(a[X] - b[X]);
+        a[Y] = Z(a[Y] - b[Y]);
+        a[Z] = Z(a[Z] - b[Z]);
         return this;
     }
     public final Vector mul(double s){
         if (1.0 != s){
             double[] a = this.v;
-            a[X] = a[X] * s;
-            a[Y] = a[Y] * s;
-            a[Z] = a[Z] * s;
+            a[X] = Z(a[X] * s);
+            a[Y] = Z(a[Y] * s);
+            a[Z] = Z(a[Z] * s);
         }
         return this;
     }
     public final Vector div(double s){
         if (1.0 != s){
             double[] a = this.v;
-            a[X] = a[X] / s;
-            a[Y] = a[Y] / s;
-            a[Z] = a[Z] / s;
+            a[X] = Z(a[X] / s);
+            a[Y] = Z(a[Y] / s);
+            a[Z] = Z(a[Z] / s);
         }
         return this;
     }
@@ -320,7 +321,7 @@ public class Vector
         double[] a = this.v;
         double[] b = v.v;
 
-        return (a[X]*b[X] + a[Y]*b[Y] + a[Z]*b[Z]);
+        return Z(a[X]*b[X] + a[Y]*b[Y] + a[Z]*b[Z]);
     }
     public final double length(){
         return Math.sqrt(this.dot(this));
@@ -330,9 +331,9 @@ public class Vector
         double[] a = c.clone();
         double[] b = v.v;
 
-        c[X] = a[Y] * b[Z] - a[Z] * b[Y];
-        c[Y] = a[Z] * b[X] - a[X] * b[Z];
-        c[Z] = a[X] * b[Y] - a[Y] * b[X];
+        c[X] = Z(a[Y] * b[Z] - a[Z] * b[Y]);
+        c[Y] = Z(a[Z] * b[X] - a[X] * b[Z]);
+        c[Z] = Z(a[X] * b[Y] - a[Y] * b[X]);
         return this;
     }
     public final Vector normalize(){
@@ -357,9 +358,9 @@ public class Vector
         }
         else {
             double m = 1.0 / length;
-            c[X] *= m;
-            c[Y] *= m;
-            c[Z] *= m;
+            c[X] = Z1(c[X] * m);
+            c[Y] = Z1(c[Y] * m);
+            c[Z] = Z1(c[Z] * m);
         }
         return this;
     }
@@ -418,6 +419,17 @@ public class Vector
         }
         return new Vector(c);
     }
+    public Vector mid(Vector v){
+
+        double[] a = this.v;
+        double[] b = v.v;
+
+        a[X] = Z((a[X] + b[X]) / 2.0);
+        a[Y] = Z((a[Y] + b[Y]) / 2.0);
+        a[Z] = Z((a[Z] + b[Z]) / 2.0);
+
+        return this;
+    }
     public double distance(Vector b){
         final double[] this_v = this.v;
         final double[] that_v = b.v;
@@ -435,6 +447,15 @@ public class Vector
     }
     public Direction2 direction2(){
         return Direction2.For(this.v);
+    }
+    /**
+     * @return For this and that unit vectors, this and that are in line
+     */
+    public boolean colinear(Vector that){
+
+        return (EEQ(Math.abs(this.v[X]),Math.abs(that.v[X]))
+                && EEQ(Math.abs(this.v[Y]),Math.abs(that.v[Y]))
+                && EEQ(Math.abs(this.v[Z]),Math.abs(that.v[Z])));
     }
     public final double[] array(){
         return this.v;
@@ -488,6 +509,83 @@ public class Vector
     public String toString(){
         double[] v = this.v;
         return String.format("%30.26f %30.26f %30.26f", v[X], v[Y], v[Z]);
+    }
+    public boolean equals(Object that){
+        if (this == that)
+            return true;
+
+        else if (that instanceof Vector)
+
+            return this.equals( (Vector)that);
+        else
+            return false;
+    }
+    public boolean equals(Vector that){
+        if (this == that)
+            return true;
+
+        else if (null != that){
+
+            return (0 == this.compareTo(that));
+        }
+        else
+            return false;
+    }
+    public int compareTo(Vector that){
+        if (this == that)
+            return 0;
+        else {
+            /*
+             * Classify according to the largest difference
+             */
+            final double[] thisV = this.v;
+            final double[] thatV = that.v;
+
+            final double dx = Z(thisV[X]-thatV[X]);
+            final double dy = Z(thisV[Y]-thatV[Y]);
+            final double dz = Z(thisV[Z]-thatV[Z]);
+            final double adx = Math.abs(dx);
+            final double ady = Math.abs(dy);
+            final double adz = Math.abs(dz);
+
+            if (adx > ady){
+                if (adz > adx){
+
+                    if (0.0 < dz)
+                        return 1;
+                    else
+                        return -1;
+                }
+                else {
+                    if (0.0 < dx)
+                        return 1;
+                    else
+                        return -1;
+                }
+            }
+            else if (ady > adz){
+
+                if (0.0 < dy)
+                    return 1;
+                else
+                    return -1;
+            }
+            else if (adz > adx){
+
+                if (0.0 < dz)
+                    return 1;
+                else
+                    return -1;
+            }
+            else if (0.0 == dx)
+                return 0;
+            else {
+                if (0.0 < dx)
+                    return 1;
+                else
+                    return -1;
+            }
+        }
     }
 
 

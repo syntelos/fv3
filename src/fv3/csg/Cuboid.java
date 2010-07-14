@@ -18,11 +18,11 @@
  */
 package fv3.csg;
 
-public class Cube
+public class Cuboid
     extends Convex
 {
 
-    public Cube(String n, double w, double h, double d){
+    public Cuboid(String n, double w, double h, double d){
         super(n,0);
     }
 

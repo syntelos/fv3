@@ -1,5 +1,5 @@
 /*
- * Fv3 CSG
+ * fv3 CSG
  * Copyright (C) 2010  John Pritchard, jdp@syntelos.org
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17,18 +17,35 @@
  */
 package fv3.csg.u;
 
+/** 
+ * Common terms
+ * @see fv3.math.Notation
+ */
 public interface Notation
     extends fv3.math.Notation
 {
     /**
-     * State of components 
+     * @see fv3.csg.u.AL
+     * @see fv3.csg.u.AH
      */
     public abstract static class State
     {
 
         public enum Vertex {
-            Unknown, Inside, Outside, Boundary, Superfluous;
+            Unknown, Inside, Outside, Boundary;
 
+            public boolean isInsideOrOutside(){
+                switch (this){
+                case Inside:
+                case Outside:
+                    return true;
+                default:
+                    return false;
+                }
+            }
+            public String toString(){
+                return String.format("%11s",this.name());
+            }
             public final static State.Face ToFace(State.Vertex state){
                 switch (state){
                 case Unknown:
@@ -39,19 +56,38 @@ public interface Notation
                     return State.Face.Outside;
                 case Boundary:
                     return State.Face.Same;
-                case Superfluous:
-                    return State.Face.Opposite;
                 default:
-                    throw new IllegalArgumentException(state.toString());
+                    throw new IllegalArgumentException(state.name());
                 }
             }
-            public String toString(){
-                return String.format("%11s",this.name());
+            public final static State.Vertex Classify(int s){
+                switch (s){
+                case -1:
+                    return Vertex.Inside;
+                case 0:
+                    return Vertex.Boundary;
+                case 1:
+                    return Vertex.Outside;
+                default:
+                    throw new IllegalArgumentException(String.valueOf(s));
+                }
             }
         }
         public enum Face {
             Unknown, Inside, Outside, Same, Opposite;
 
+            public boolean isInsideOrOutside(){
+                switch (this){
+                case Inside:
+                case Outside:
+                    return true;
+                default:
+                    return false;
+                }
+            }
+            public String toString(){
+                return String.format("%8s",this.name());
+            }
             public final static State.Vertex ToVertex(State.Face state){
                 switch (state){
                 case Unknown:
@@ -63,13 +99,9 @@ public interface Notation
                 case Same:
                     return State.Vertex.Boundary;
                 case Opposite:
-                    return State.Vertex.Superfluous;
                 default:
-                    throw new IllegalArgumentException(state.toString());
+                    throw new IllegalArgumentException(state.name());
                 }
-            }
-            public String toString(){
-                return String.format("%8s",this.name());
             }
         }
 

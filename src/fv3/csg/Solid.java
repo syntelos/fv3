@@ -69,13 +69,13 @@ public class Solid
     }
 
 
-    public Mesh state;
+    private Mesh mesh;
 
     public final Name name;
 
-    public Construct constructOp;
+    public final Construct constructOp;
 
-    public Solid constructA, constructB;
+    public final Solid constructA, constructB;
 
     /**
      * @param countVertices Estimated or expected number of vertices
@@ -83,16 +83,19 @@ public class Solid
     public Solid(String name, int cv){
         super(Type.Triangles,cv);
 
-        this.state = new Mesh(cv);
+        this.mesh = new Mesh(cv);
 
         this.name = new Name(name);
 
         this.visible = false;
+        this.constructOp = null;
+        this.constructA = null;
+        this.constructB = null;
     }
     public Solid(String name, VertexArray array){
         super(Type.Triangles,array);
 
-        this.state = new Mesh(this.countVertices);
+        this.mesh = new Mesh(this.countVertices);
 
         this.name = new Name(name);
 
@@ -101,14 +104,22 @@ public class Solid
             this.add(new Face(this, new Face.Name(this,face,"VA"),
                               this.getFace(face)));
         }
+        this.constructOp = null;
+        this.constructA = null;
+        this.constructB = null;
     }
     /**
      * Used by CSG algorithms.
      * @see fv3.csg.u.A
      */
     public Solid(Construct op, Solid a, Solid b){
-        this(String.format("%s of (%s) and (%s))",op,a.getName(),b.getName()),a.countVertices());
+        super(Type.Triangles,a.countVertices());
 
+        this.mesh = new Mesh(a.countVertices);
+
+        this.name = new Name(String.format("%s of (%s) and (%s))",op,a.getName(),b.getName()));
+
+        this.visible = false;
         this.constructOp = op;
         this.constructA = a;
         this.constructB = b;
@@ -121,7 +132,7 @@ public class Solid
      */
     public Solid add(Face face){
 
-        this.state.add(face);
+        this.mesh.add(face);
         return this;
     }
     public final Solid add(VertexArray array){
@@ -156,7 +167,7 @@ public class Solid
      */
     public final Solid union(Solid that){
 
-        A a = new fv3.csg.u.AL(Construct.Union,this,that);
+        A a = new fv3.csg.u.AH(Construct.Union,this,that);
         try {
             return a.r;
         }
@@ -170,7 +181,7 @@ public class Solid
      */
     public final Solid intersection(Solid that){
 
-        A a = new fv3.csg.u.AL(Construct.Intersection,this,that);
+        A a = new fv3.csg.u.AH(Construct.Intersection,this,that);
         try {
             return a.r;
         }
@@ -184,7 +195,7 @@ public class Solid
      */
     public final Solid difference(Solid that){
 
-        A a = new fv3.csg.u.AL(Construct.Difference,this,that);
+        A a = new fv3.csg.u.AH(Construct.Difference,this,that);
         try {
             return a.r;
         }
@@ -216,11 +227,11 @@ public class Solid
      */
     public final Solid compile(){
 
-        super.countVertices(this.state.countVertices());
+        super.countVertices(this.mesh.countVertices());
 
         int nc = 0, vc = 0;
 
-        for (Face face: this.state){
+        for (Face face: this.mesh){
 
             this.setVertices(vc, face.vertices(), 0, 3);
             vc += 3;
@@ -237,11 +248,11 @@ public class Solid
     }
     public final Solid compile(Matrix m){
         if (null != m){
-            super.countVertices(this.state.countVertices());
+            super.countVertices(this.mesh.countVertices());
 
             int nc = 0, vc = 0;
 
-            for (Face face: this.state){
+            for (Face face: this.mesh){
 
                 Vector a = m.transform(face.a.getVector());
                 Vector b = m.transform(face.b.getVector());
@@ -265,7 +276,7 @@ public class Solid
             return this.compile();
     }
     public final Bound getBound(){
-        return this.state.getBound();
+        return this.mesh.getBound();
     }
     public final double getBoundsMinX(){
         return this.getBound().getBoundsMinX();
@@ -295,41 +306,67 @@ public class Solid
         return this.getBound().getBoundsMaxZ();
     }
     public final int countVertices(){
-        return this.state.countVertices();
+        return this.mesh.countVertices();
     }
     public void destroy(){
-
-        this.state.destroy();
+        try {
+            for (Face face: this)
+                face.destroy(this);
+        }
+        finally {
+            this.mesh.destroy();
+        }
     }
     public final java.util.Iterator<Face> iterator(){
-        return this.state.iterator();
+        return this.mesh.iterator();
     }
     /**
      * Construction "add" performs clone
      */
     public Solid addC(Construct op, Face face){
 
-        this.state.add(face.clone(this));
+        this.mesh.add(face.clone(this));
         return this;
     }
     /**
      * Face unique vertex
      */
     public final Vertex u(Vertex a){
-        Vertex b = this.state.vertices.get(a);
-        if (null == b){
-            this.state.vertices.put(a,a);
-            return a;
+
+        return this.mesh.u(a);
+    }
+    public final Solid remove(Vertex a){
+
+        this.mesh.remove(a);
+
+        a.destroy();
+
+        return this;
+    }
+    public final Solid remove(Face f){
+
+        this.mesh.remove(f);
+
+        f.destroy(this);
+
+        return this;
+    }
+    public final Solid replace(Face old, Face[] with){
+
+        if (null != with){
+
+            this.mesh.replace(old, with);
+
+            old.destroy(this);
         }
-        else
-            return b;
+        return this;
     }
     public Solid push(){
-        this.state = this.state.push();
+        this.mesh = this.mesh.push();
         return this;
     }
     public Solid pop(){
-        this.state = this.state.pop();
+        this.mesh = this.mesh.pop();
         return this;
     }
     public String toString(){

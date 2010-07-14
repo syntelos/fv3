@@ -20,6 +20,13 @@ package fv3.csg.u;
 
 import fv3.csg.Solid;
 
+/**
+ * Separation of face splitting production from consumption to avoid
+ * over editing the face set in the case of "collisions" (producing a
+ * "split" identical to the subject).
+ * @see AL
+ * @author John Pritchard
+ */
 public class SplitFace
     extends java.lang.Object
     implements fv3.csg.u.Notation

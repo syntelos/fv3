@@ -1,5 +1,5 @@
 /*
- * Fv3 CSG
+ * fv3
  * Copyright (C) 2010  John Pritchard, jdp@syntelos.org
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import fv3.math.Vector;
 
 /**
  * 
+ * @author John Pritchard
  */
 public class Vertex
     extends java.lang.Object
@@ -41,6 +42,9 @@ public class Vertex
     private Vector normal;
 
 
+    public Vertex(Vector v){
+        this(v.array());
+    }
     public Vertex(double[] array){
         this(array[X],array[Y],array[Z]);
     }
@@ -95,6 +99,16 @@ public class Vertex
 
 		return (x*this.x + y*this.y + z*this.z + d);
     }
+    public int sdistance(Face face){
+
+        final double d = this.distance(face);
+        if (d > EPS)
+            return 1;
+        else if (d < -EPS)
+            return -1;
+        else
+            return 0;
+    }
     public boolean is(State.Vertex s){
         return (s == this.status);
     }
@@ -142,8 +156,14 @@ public class Vertex
     public Vertex clone(){
         try {
             Vertex clone = (Vertex)super.clone();
+
             //clone.status = State.Vertex.Unknown;
+            /*
+             * Vertex cloning needs to be part of a process of
+             * rebuilding vertex face membership lists 
+             */
             clone.membership = null;
+
             return clone;
         }
         catch (CloneNotSupportedException exc){
@@ -239,6 +259,14 @@ public class Vertex
         }
         return n;
     }
+    public Vertex midpoint(Vertex b){
+
+        final double x = Z((this.x + b.x) / 2.0);
+        final double y = Z((this.y + b.y) / 2.0);
+        final double z = Z((this.z + b.z) / 2.0);
+
+        return new Vertex(x,y,z);
+    }
     public double[] copy(){
         return new double[]{x,y,z};
     }
@@ -248,12 +276,31 @@ public class Vertex
         a[ofs] = this.z;
         return a;
     }
-    public Vertex mark(State.Vertex state){
+    public Vertex markAL(State.Vertex state){
+
         if (this.isUnknown()){
+
             this.status = state;
+
             for (Face face: this){
 
-                face.mark(state);
+                face.markAL(state);
+            }
+        }
+        return this;
+    }
+    public Vertex classify(State.Vertex s){
+
+        if (this.isUnknown()){
+
+            this.status = s;
+
+            if (s.isInsideOrOutside()){
+
+                for (Face face: this){
+
+                    face.classify(s);
+                }
             }
         }
         return this;
@@ -289,24 +336,55 @@ public class Vertex
     public int compareTo(Vertex that){
         if (this == that)
             return 0;
-        else if (this.x < that.x)
-            return -1;
-        else if (EEQ(this.x,that.x)){
-            if (this.y < that.y)
-                return -1;
-            else if (EEQ(this.y,that.y)){
-                if (this.z < that.z)
-                    return -1;
-                else if (EEQ(this.z,that.z))
-                    return 0;
-                else
-                    return 1;
+        else {
+            /*
+             * Classify according to the largest difference
+             */
+            final double dx = Z(this.x-that.x);
+            final double dy = Z(this.y-that.y);
+            final double dz = Z(this.z-that.z);
+            final double adx = Math.abs(dx);
+            final double ady = Math.abs(dy);
+            final double adz = Math.abs(dz);
+
+            if (adx > ady){
+                if (adz > adx){
+
+                    if (0.0 < dz)
+                        return 1;
+                    else
+                        return -1;
+                }
+                else {
+                    if (0.0 < dx)
+                        return 1;
+                    else
+                        return -1;
+                }
             }
-            else
-                return 1;
+            else if (ady > adz){
+
+                if (0.0 < dy)
+                    return 1;
+                else
+                    return -1;
+            }
+            else if (adz > adx){
+
+                if (0.0 < dz)
+                    return 1;
+                else
+                    return -1;
+            }
+            else if (0.0 == dx)
+                return 0;
+            else {
+                if (0.0 < dx)
+                    return 1;
+                else
+                    return -1;
+            }
         }
-        else
-            return 1;
     }
     public Face.Iterator iterator(){
         return new Face.Iterator(this.membership);
@@ -352,4 +430,42 @@ public class Vertex
             return false;
     }
 
+    public static class Iterator
+        extends java.lang.Object
+        implements java.util.Iterator<Vertex>
+    {
+
+        public final int length;
+
+        private final Vertex[] list;
+
+        private int index;
+
+        public Iterator(Vertex[] list){
+            super();
+            if (null == list){
+                this.list = null;
+                this.length = 0;
+            }
+            else {
+                this.list = list.clone();
+                this.length = this.list.length;
+            }
+        }
+        public Iterator(Vertex a, Vertex b, Vertex c){
+            super();
+            this.list = new Vertex[]{a,b,c};
+            this.length = 3;
+        }
+
+        public boolean hasNext(){
+            return (this.index < this.length);
+        }
+        public Vertex next(){
+            return this.list[this.index++];
+        }
+        public void remove(){
+            throw new UnsupportedOperationException();
+        }
+    }
 }

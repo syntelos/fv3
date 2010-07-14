@@ -19,7 +19,7 @@
 package fv3.csg.u;
 
 import lxl.List;
-import lxl.Map;
+import lxl.Set;
 
 /**
  * 
@@ -30,7 +30,7 @@ public final class Mesh
 {
 
 
-    public Map<Vertex,Vertex> vertices;
+    private Set<Vertex> vertices;
 
     private Bound bound;
 
@@ -40,10 +40,42 @@ public final class Mesh
     public Mesh(int v){
         super();
         super.setComparator(this);
-        this.vertices = new Map<Vertex,Vertex>(v);
+        this.vertices = new Set<Vertex>(v>>1);
     }
 
 
+    public Mesh replace(Face old, Face[] list){
+        if (null != old && null != list){
+            int idx = this.indexOf(old);
+            if (-1 != idx){
+
+                this.set(idx++,list[0]);
+
+                for (int cc = 1, count = list.length; cc < count; cc++){
+
+                    this.insert(list[cc],idx++);
+                }
+                return this;
+            }
+            else
+                throw new IllegalStateException();
+        }
+        else
+            throw new IllegalArgumentException();
+    }
+    public final Vertex u(Vertex a){
+        int idx = this.vertices.indexOf(a);
+        if (-1 == idx){
+            this.vertices.add(a);
+            return a;
+        }
+        else
+            return this.vertices.get(idx);
+    }
+    public final Mesh remove(Vertex a){
+        this.vertices.remove(a);
+        return this;
+    }
     public int countVertices(){
         return (3*this.size());
     }

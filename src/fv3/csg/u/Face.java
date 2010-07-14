@@ -1,5 +1,5 @@
 /*
- * Fv3 CSG
+ * fv3 CSG
  * Copyright (C) 2010  John Pritchard, jdp@syntelos.org
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,9 @@ import fv3.csg.Solid;
 
 import fv3.math.Matrix;
 import fv3.math.Vector;
+import static fv3.math.Vector.Magnitude1.*;
+
+import lxl.Set;
 
 /**
  * Triangular face used by {@link fv3.csg.Solid}.
@@ -30,6 +33,7 @@ public final class Face
     implements fv3.csg.u.Notation,
                fv3.csg.u.Name.Named,
                java.lang.Comparable<Face>,
+               java.lang.Iterable<Vertex>,
                java.lang.Cloneable
 {
 
@@ -47,7 +51,453 @@ public final class Face
             return new Name(this,desc2);
         }
     }
+    /**
+     * An interior edge joins faces with equivalent normals -- as in
+     * the case of two triangles forming a rectangle, or the elements
+     * of a triangle fan forming a disc.
+     */
+    public enum Edge {
+        Interior, Exterior;
 
+
+        public final static void Classify(Solid solid){
+
+            for (Face face: solid){
+
+                for (Vertex v: face){
+
+                    for (Face join: v){
+                        try {
+                            Face.Shared shared = face.shared(join);
+
+                            Vector faceN = face.getNormal();
+                            Vector joinN = join.getNormal();
+
+                            shared.edge(faceN.equals(joinN));
+                        }
+                        catch (IllegalArgumentException noedge){
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public final static void Classify(Solid solid){
+
+        for (Face face: solid){
+
+            if (!face.classify()){
+                System.err.println("Failed to classify: "+face);
+            }
+        }
+    }
+    /**
+     * This class may be replaced by a function if not expanded in
+     * need.
+     * 
+     * Vertices and edge shared from A to B.  Sharing is symmetric:
+     * Shared(a,b) == (Shared(b,a).  Sharing is assymmetric in
+     * notation only.
+     */
+    public final static class Shared 
+        extends java.lang.Object
+        implements java.lang.Comparable<Shared>
+    {
+        /**
+         * Shared edge in terms of the first face.
+         * 
+         * Each shared vertex (In Face A) is (In Face B).  For
+         * example, "V.AA" means vertex "A" in the first face is
+         * identical to vertex "A" in the second face.
+         */
+        public enum E {
+            AABB, AABC, AACB, AACC, ABBA, ABBC, ABCA, ABCC, ACBA, ACBB, ACCB, ACCA, 
+                BACB, BACC, BBCA, BBCC, BCCA, BCCB;
+        }
+
+
+        public final Face a, b;
+
+        public final E edge;
+
+        public final int hashCode;
+
+        /**
+         * Construct vertices and edge in A shared with B.  (Principal
+         * A, Argument B).
+         * 
+         * @exception java.lang.IllegalArgumentException Shared edge not found.
+         */
+        public Shared(Face a, Face b)
+            throws java.lang.IllegalArgumentException
+        {
+            super();
+            this.a = a;
+            this.b = b;
+            this.hashCode = (a.hashCode()^b.hashCode());
+            /*
+             * This approach will run faster than testing vertex
+             * membership
+             */
+            if (a.a == b.a){
+
+                if (a.b == b.b)
+                    this.edge = E.AABB;
+
+                else if (a.b == b.c)
+                    this.edge = E.AABC;
+
+                else if (a.c == b.b)
+                    this.edge = E.AACB;
+
+                else if (a.c == b.c)
+                    this.edge = E.AACC;
+
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else if (a.a == b.b){
+
+                if (a.b == b.a)
+                    this.edge = E.ABBA;
+
+                else if (a.b == b.c)
+                    this.edge = E.ABBC;
+
+                else if (a.c == b.a)
+                    this.edge = E.ABCA;
+
+                else if (a.c == b.c)
+                    this.edge = E.ABCC;
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else if (a.a == b.c){
+
+                if (a.b == b.a)
+                    this.edge = E.ACBA;
+
+                else if (a.b == b.b)
+                    this.edge = E.ACBB;
+
+                else if (a.c == b.b)
+                    this.edge = E.ACCB;
+
+                else if (a.c == b.a)
+                    this.edge = E.ACCA;
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else if (a.b == b.a){
+
+                if (a.c == b.b)
+                    this.edge = E.BACB;
+
+                else if (a.c == b.c)
+                    this.edge = E.BACC;
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else if (a.b == b.b){
+
+                if (a.c == b.a)
+                    this.edge = E.BBCA;
+
+                else if (a.c == b.c)
+                    this.edge = E.BBCC;
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else if (a.b == b.c){
+
+                if (a.c == b.a)
+                    this.edge = E.BCCA;
+
+                else if (a.c == b.b)
+                    this.edge = E.BCCB;
+                else 
+                    throw new IllegalArgumentException();
+            }
+            else 
+                throw new IllegalArgumentException();
+        }
+
+
+        public Shared edge(boolean interior){
+            switch (this.edge){
+            case AABB:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case AABC:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this;
+            case AACB:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case AACC:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this;
+            case ABBA:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case ABBC:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            case ABCA:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case ABCC:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            case ACBA:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this;
+            case ACBB:
+                if (interior){
+                    this.a.ab = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ab = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            case ACCB:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            case ACCA:
+                if (interior){
+                    this.a.ca = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.ca = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this; 
+            case BACB:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case BACC:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this;
+            case BBCA:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.ab = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.ab = Face.Edge.Exterior;
+                }
+                return this;
+            case BBCC:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            case BCCA:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.ca = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.ca = Face.Edge.Exterior;
+                }
+                return this;
+            case BCCB:
+                if (interior){
+                    this.a.bc = Face.Edge.Interior;
+                    this.b.bc = Face.Edge.Interior;
+                }
+                else {
+                    this.a.bc = Face.Edge.Exterior;
+                    this.b.bc = Face.Edge.Exterior;
+                }
+                return this;
+            default:
+                throw new IllegalStateException();
+            }
+        }
+        public int hashCode(){
+            return this.hashCode;
+        }
+        public boolean equals(Object that){
+            if (this == that)
+                return true;
+            else if (that instanceof Shared)
+                return this.equals((Shared)that);
+            else
+                return false;
+        }
+        public boolean equals(Shared that){
+            if (this == that)
+                return true;
+            else {
+                return ((this.a.equals(that.a)
+                         && this.b.equals(that.b))
+                        ||
+                        (this.a.equals(that.b)
+                         && this.b.equals(that.a)));
+            }
+        }
+        public int compareTo(Shared that){
+
+            if (this.a.equals(that.a)){
+
+                if (this.b.equals(that.b))
+
+                    return 0;
+                else
+                    return this.b.compareTo(that.b);
+            }
+            else if (this.a.equals(that.b)){
+
+                if (this.b.equals(that.a))
+
+                    return 0;
+                else
+                    return this.b.compareTo(that.a);
+            }
+            else if (this.b.equals(that.b))
+
+                return this.a.compareTo(that.a);
+
+            else if (this.b.equals(that.a))
+
+                return this.a.compareTo(that.b);
+            else
+                return this.a.compareTo(that.a);
+        }
+    }
+    public final static class Replacement
+        extends java.lang.Object
+    {
+
+        public final Face old;
+        public final Face[] with;
+
+        public Replacement(Face old, Face[] with){
+            super();
+            if (null != old && null != with){
+                this.old = old;
+                this.with = with;
+            }
+            else
+                throw new IllegalArgumentException();
+        }
+
+
+        public void apply(Solid s){
+            s.replace(this.old,this.with);
+        }
+
+
+        public final static Replacement[] Add(Replacement[] list, Replacement item){
+            if (null == item)
+                return list;
+            else if (null == list)
+                return new Replacement[]{item};
+            else {
+                int len = list.length;
+                Replacement[] copier = new Replacement[len+1];
+                System.arraycopy(list,0,copier,0,len);
+                copier[len] = item;
+                return copier;
+            }
+        }
+
+    }
     public enum LP {
         Up, Down, On, None;
 
@@ -169,13 +619,15 @@ public final class Face
 
     public final Name name;
 
-    public final int id;
+    public final int id, hashCode;
     /**
      * The only valid change to a face is one that is subsequently
      * reversed (i.e. invert normal).  All other changes must replace
      * the face in the state of the solid.
      */
     public Vertex a, b, c;
+
+    public Edge ab, bc, ca;
 
     public State.Face status = State.Face.Unknown;
 
@@ -185,7 +637,13 @@ public final class Face
 
     private boolean inverted;
 
+    private AH.Segment[] membership;
+
     private double d;
+
+    private final Set<Face.Shared> shared = new Set<Face.Shared>();
+
+    private boolean alive = true;
 
 
     public Face(Solid s, Name n, double[] a, double[] b, double[] c){
@@ -235,6 +693,8 @@ public final class Face
             this.a = s.u(a).memberOf(this);
             this.b = s.u(b).memberOf(this);
             this.c = s.u(c).memberOf(this);
+
+            this.hashCode = this.a.hashCode()^this.b.hashCode()^this.c.hashCode();
         }
         else
             throw new IllegalArgumentException();
@@ -264,6 +724,7 @@ public final class Face
             default:
                 throw new IllegalStateException("Direction of argument normal ("+nD+") is incongruous with direction of face normal ("+checkD+")");
             }
+            this.hashCode = this.a.hashCode()^this.b.hashCode()^this.c.hashCode();
         }
         else
             throw new IllegalArgumentException();
@@ -280,6 +741,8 @@ public final class Face
         this.a.init();
         this.b.init();
         this.c.init();
+
+        this.membership = null;
     }
     public Name getName(){
         return this.name;
@@ -311,6 +774,9 @@ public final class Face
     }
     public boolean isUnknown(){
         return (State.Face.Unknown == this.status);
+    }
+    public boolean isNotUnknown(){
+        return (State.Face.Unknown != this.status);
     }
     public boolean isInside(){
         return (State.Face.Inside == this.status);
@@ -344,10 +810,22 @@ public final class Face
         this.status = State.Face.Opposite;
         return this;
     }
-    public void destroy(){
-        this.a.destroy();
-        this.b.destroy();
-        this.c.destroy();
+    public boolean alive(){
+        return this.alive;
+    }
+    public void destroy(Solid s){
+        this.alive = false;
+        this.membership = null;
+        this.shared.clear();
+
+        if (this.a.dropMember(this))
+            s.remove(this.a);
+
+        if (this.b.dropMember(this))
+            s.remove(this.b);
+
+        if (this.c.dropMember(this))
+            s.remove(this.c);
     }
     public Face transform(Solid s, Matrix m){
 
@@ -366,10 +844,16 @@ public final class Face
     public Face clone(Solid s){
         try {
             Face clone = (Face)super.clone();
+
             //clone.status = State.Face.Unknown;
+
             clone.a = s.u(clone.a.clone()).memberOf(clone);
             clone.b = s.u(clone.b.clone()).memberOf(clone);
             clone.c = s.u(clone.c.clone()).memberOf(clone);
+
+            if (null != this.membership)
+                clone.membership = this.membership.clone();
+
             return clone;
         }
         catch (CloneNotSupportedException exc){
@@ -377,32 +861,25 @@ public final class Face
         }
     }
     public Face dropFrom(Solid s){
+
+        this.alive = false;
         try {
-            s.state.remove(this);
+            s.remove(this);
         }
         catch (java.util.NoSuchElementException ignore){
         }
-        if (this.a.dropMember(this))
-            s.state.vertices.remove(this.a);
-
-        if (this.b.dropMember(this))
-            s.state.vertices.remove(this.b);
-
-        if (this.c.dropMember(this))
-            s.state.vertices.remove(this.c);
-
         return this;
     }
     public Face deconstruct(Solid s){
 
         if (this.a.dropMember(this))
-            s.state.vertices.remove(this.a);
+            s.remove(this.a);
 
         if (this.b.dropMember(this))
-            s.state.vertices.remove(this.b);
+            s.remove(this.b);
 
         if (this.c.dropMember(this))
-            s.state.vertices.remove(this.c);
+            s.remove(this.c);
 
         return this;
     }
@@ -411,10 +888,22 @@ public final class Face
         Vector n = this.normal;
 
         if (null == n){
+            final Vertex a = this.a;
+            final Vertex b = this.b;
+            final Vertex c = this.c;
 
-            n = this.a.getVector().normal(this.b.getVector(),this.c.getVector());
+            n = a.getVector().normal(b.getVector(),c.getVector());
 		
             this.normal = n;
+            {
+                final double[] na = n.array();
+
+                final double x = na[X];
+                final double y = na[Y];
+                final double z = na[Z];
+
+                this.d = -(x*a.x + x*a.y + z*a.z);
+            }
         }
         return n;
 	}
@@ -430,6 +919,91 @@ public final class Face
         }
         return c;
 	}
+    public Face.Shared shared(Face join){
+
+        Face.Shared fs = new Face.Shared(this,join);
+
+        int index = this.shared.indexOf(fs);
+        if (-1 != index)
+            return this.shared.get(index);
+        else {
+            this.shared.add(fs);
+            return fs;
+        }
+    }
+    public boolean isMemberOf(AH.Segment segment){
+        return (-1 != AH.Segment.IndexOf(this.membership,segment));
+    }
+    public boolean isNotMemberOf(AH.Segment segment){
+        return (-1 == AH.Segment.IndexOf(this.membership,segment));
+    }
+    public Face memberOf(AH.Segment segment){
+        if (null != segment && this.isNotMemberOf(segment)){
+            this.membership = AH.Segment.Add(this.membership,segment);
+            if (1 < this.membership.length)
+                java.util.Arrays.sort(this.membership);
+        }
+        return this;
+    }
+    public int countMembership(){
+        final AH.Segment[] m = this.membership;
+        if (null == m)
+            return 0;
+        else 
+            return m.length;
+    }
+    public int indexOfMember(AH.Segment item){
+        return AH.Segment.IndexOf(this.membership,item);
+    }
+    public AH.Segment getMember(int idx){
+
+        return this.membership[idx];
+    }
+    public boolean hasMembership(){
+        return (null != this.membership);
+    }
+    public boolean hasNotMembership(){
+        return (null == this.membership);
+    }
+    public boolean dropMember(AH.Segment segment){
+        final AH.Segment[] m = this.membership;
+        if (null == m)
+            return true;
+        else {
+            int index = AH.Segment.IndexOf(m,segment);
+            if (-1 != index){
+                this.membership = AH.Segment.Remove(m,index);
+                return true;
+            }
+            else
+                return false;
+        }
+    }
+    public AH.Segment[] segmentsCopy(){
+        final AH.Segment[] m = this.membership;
+        if (null != m)
+            return m.clone();
+        else
+            return null;
+    }
+    public AH.Segment.Endpoint[] segmentsEndpointsFor(Face f){
+        AH.Segment.Endpoint[] list = null;
+        for (AH.Segment se: this.segments()){
+            AH.Segment.Endpoint[] eps = se.endpointsFor(f);
+            list = AH.Segment.Endpoint.Add(list,eps[0]);
+            list = AH.Segment.Endpoint.Add(list,eps[1]);
+        }
+        return list;
+    }
+    public AH.Segment.Iterator segments(){
+        return new AH.Segment.Iterator(this.membership);
+    }
+    public AH.Segment.Iterator segmentsExcluding(AH.Segment exclude){
+        return new AH.Segment.Iterator(this.membership,exclude);
+    }
+    public AH.Segment.Iterator segmentsExcluding(AH.Segment[] exclude){
+        return new AH.Segment.Iterator(this.membership,exclude);
+    }
     public int compareTo(Face that){
         if (this == that)
             return 0;
@@ -461,6 +1035,9 @@ public final class Face
             else
                 return t;
         }
+    }
+    public int hashCode(){
+        return this.hashCode;
     }
     public boolean equals(Object that){
         if (this == that)
@@ -504,6 +1081,9 @@ public final class Face
             this.bound = null;
             this.normal = null;
             this.centroid = null;
+            this.ab = null;
+            this.bc = null;
+            this.ca = null;
         }
     }
     public void uninvertNormal(){
@@ -517,22 +1097,23 @@ public final class Face
             this.bound = null;
             this.normal = null;
             this.centroid = null;
+            this.ab = null;
+            this.bc = null;
+            this.ca = null;
         }
     }
+    /**
+     */
     public double[] getNxyzd(){
-
-        Vertex a = this.a;
 
         double[] n = this.normal();
 
-		double x = n[X];
-		double y = n[Y];
-		double z = n[Z];
-
-		double d = -(x*a.x + x*a.y + z*a.z);
-
-        return new double[]{x,y,z,d};
+        return new double[]{n[X],n[Y],n[Z],this.d};
     }
+    /**
+     * @see AL
+     * @author Danilo Balby Silva Castanheira
+     */
     public boolean simpleClassify(){
         if (this.a.isUnknown() && this.b.isUnknown() && this.c.isUnknown())
             return false;
@@ -571,13 +1152,17 @@ public final class Face
             }
         }
     }
+    /**
+     * @see AL
+     * @author Danilo Balby Silva Castanheira
+     */
     public void rayTraceClassify(Solid object){
 
 		Vector p0 = new Vector();
 		p0.x((this.a.x + this.b.x + this.c.x)/3.0);
 		p0.y((this.a.y + this.b.y + this.c.y)/3.0);
 		p0.z((this.a.z + this.b.z + this.c.z)/3.0);
-		Segment.Line ray = new Segment.Line(getNormal(),p0);
+		AL.Segment.Line ray = new AL.Segment.Line(getNormal(),p0);
 
 		Face closestFace = null;
         double closestDistance;
@@ -666,27 +1251,143 @@ public final class Face
 				this.status = State.Face.Outside;
 		}
 	}
-    public Face mark(){
+    /**
+     * @see AL
+     */
+    public Face markAL(){
 
         if (this.isUnknown())
             throw new IllegalStateException();
         else {
             State.Vertex vs = State.Face.ToVertex(this.status);
 
-            this.a.mark(vs);
-            this.b.mark(vs);
-            this.c.mark(vs);
+            this.a.markAL(vs);
+            this.b.markAL(vs);
+            this.c.markAL(vs);
 
             return this;
         }
     }
-    public Face mark(State.Vertex vs){
+    /**
+     * @see AL
+     */
+    public Face markAL(State.Vertex vs){
 
-        this.a.mark(vs);
-        this.b.mark(vs);
-        this.c.mark(vs);
+        this.a.markAL(vs);
+        this.b.markAL(vs);
+        this.c.markAL(vs);
 
         return this;
+    }
+    /**
+     * Called in triangulation on new faces.
+     * @see AH
+     */
+    public Face classify(Vertex m){
+
+        this.status = State.Vertex.ToFace(m.status);
+
+        if (this.a.isUnknown())
+            this.a.status = State.Vertex.Boundary;
+        if (this.b.isUnknown())
+            this.b.status = State.Vertex.Boundary;
+        if (this.c.isUnknown())
+            this.c.status = State.Vertex.Boundary;
+
+        return this;
+    }
+    /**
+     * Called after intersection, before triangulation.
+     * @see AH
+     */
+    public Face classify(State.Vertex vs){
+
+        if (this.hasNotMembership()){
+
+            this.status = State.Vertex.ToFace(vs);
+
+            this.a.classify(vs);
+            this.b.classify(vs);
+            this.c.classify(vs);
+        }
+        return this;
+    }
+    /**
+     * @see AH
+     */
+    public boolean classify(){
+        if (this.isNotUnknown())
+            return true;
+        else if (this.a.isUnknown() && this.b.isUnknown() && this.c.isUnknown())
+            return false;
+        else {
+            State.Vertex t;
+
+            t = this.a.con(State.Vertex.Inside,State.Vertex.Outside);
+
+            if (null != t){
+
+                this.classify(t);
+
+                return true;
+            }
+            else {
+                t = this.b.con(State.Vertex.Inside,State.Vertex.Outside);
+
+                if (null != t){
+
+                    this.classify(t);
+
+                    return true;
+                }
+                else {
+                    t = this.c.con(State.Vertex.Inside,State.Vertex.Outside);
+
+                    if (null != t){
+
+                        this.classify(t);
+
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+            }
+        }
+    }
+    public Vertex.Iterator iterator(){
+
+        return new Vertex.Iterator(this.a,this.b,this.c);
+    }
+    public boolean coplanar(Vertex v){
+        return this.coplanar(v.getVector());
+    }
+    /**
+     * @param v Point may be in plane of face.  (Pass a vector clone
+     * for free use)
+     */
+    public boolean coplanar(Vector v){
+        double d = (this.getNormal().dot(v.sub(this.a.getVector())));
+        return (EPS > Math.abs(d));
+    }
+    /**
+     * @return An approximation to the area for comparison
+     */
+    public double area(){
+
+        switch(this.getNormal().magnitude1()){
+        case MX:
+            return (((a.y*b.z)-(b.y*a.z))+((b.y*c.z)-(c.y*b.z)))/2.0;
+
+        case MY:
+            return (((a.z*b.x)-(b.z*a.x))+((b.z*c.x)-(c.z*b.x)))/2.0;
+
+        case MZ:
+            return (((a.x*b.y)-(b.x*a.y))+((b.x*c.y)-(c.x*b.y)))/2.0;
+
+        default:
+            throw new IllegalStateException();
+        }
     }
     private boolean hasPoint( Vector p){
         Vector n = this.getNormal();
@@ -731,6 +1432,20 @@ public final class Face
             Face[] copier = new Face[len+1];
             System.arraycopy(list,0,copier,0,len);
             copier[len] = item;
+            return copier;
+        }
+    }
+    public final static Face[] Cat(Face[] list1, Face[] list2){
+        if (null == list2)
+            return list1;
+        else if (null == list1)
+            return list2;
+        else {
+            int len1 = list1.length;
+            int len2 = list2.length;
+            Face[] copier = new Face[len1+len2];
+            System.arraycopy(list1,0,copier,0,len1);
+            System.arraycopy(list2,0,copier,len1,len2);
             return copier;
         }
     }

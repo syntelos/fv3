@@ -45,6 +45,24 @@ public abstract class Abstract
         else
             return v;
     }
+    public final static double Z1(double v){
+
+        double av = Math.abs(v);
+
+        if (EPS > av)
+            return 0.0;
+        else {
+            av -= EPS_1D2;
+
+            if (0.0 < av && EPS_D2 > av){
+                if (0.0 > v)
+                    return -1.0;
+                else
+                    return 1.0;
+            }
+        }
+        return v;
+    }
     public final static float Zf(double value){
         float vf = (float)value;
         if (vf == vf){

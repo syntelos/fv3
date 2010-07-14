@@ -1,6 +1,5 @@
 /*
- * Fv3 CSG
- * Copyright (C) 2010  Danilo Balby Silva Castanheira (danbalby@yahoo.com)
+ * fv3
  * Copyright (C) 2010  John Pritchard, jdp@syntelos.org
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -19,10 +18,7 @@
 package fv3.csg.u;
 
 /**
- * Based on the work of Danilo Balby Silva Castanheira in <a
- * href="http://unbboolean.sf.net/">J3DBool</a>.
  *
- * @author Danilo Balby Silva Castanheira
  * @author John Pritchard
  */
 public final class Bound 
@@ -37,12 +33,15 @@ public final class Bound
 
     public Bound(Face face){
         super();
-        this.minX = Math.min(Math.min(face.a.x,face.b.x),face.c.x);
-        this.maxX = Math.max(Math.max(face.a.x,face.b.x),face.c.x);
-        this.minY = Math.min(Math.min(face.a.y,face.b.y),face.c.y);
-        this.maxY = Math.max(Math.max(face.a.y,face.b.y),face.c.y);
-        this.minZ = Math.min(Math.min(face.a.z,face.b.z),face.c.z);
-        this.maxZ = Math.max(Math.max(face.a.z,face.b.z),face.c.z);
+        final Vertex a = face.a;
+        final Vertex b = face.b;
+        final Vertex c = face.c;
+        this.minX = Math.min(Math.min(a.x,b.x),c.x);
+        this.maxX = Math.max(Math.max(a.x,b.x),c.x);
+        this.minY = Math.min(Math.min(a.y,b.y),c.y);
+        this.maxY = Math.max(Math.max(a.y,b.y),c.y);
+        this.minZ = Math.min(Math.min(a.z,b.z),c.z);
+        this.maxZ = Math.max(Math.max(a.z,b.z),c.z);
 
         this.midX = (minX + maxX)/2.0;
         this.midY = (minY + maxY)/2.0;
@@ -87,14 +86,39 @@ public final class Bound
     }
 
 
+    /**
+     * @see AH
+     */
+    public boolean intersect(Bound b){
+        /*
+         * Faster to disprove the intersection than to prove it.
+         */
+		if (( this.minX > b.maxX )||
+            ( this.maxX < b.minX )||
+            ( this.minY > b.maxY )||
+            ( this.maxY < b.minY )||
+            ( this.minZ > b.maxZ )||
+            ( this.maxZ < b.minZ ))
+
+            return false;
+        else
+            return true;
+    }
+    /**
+     * @see AL
+     */
 	public boolean overlap(Bound bound){
 
-		return (! (( this.minX > bound.maxX + EPS )||
-                   ( this.maxX < bound.minX - EPS )||
-                   ( this.minY > bound.maxY + EPS )||
-                   ( this.maxY < bound.minY - EPS )||
-                   ( this.minZ > bound.maxZ + EPS )||
-                   ( this.maxZ < bound.minZ - EPS )));
+		if (( this.minX > bound.maxX + EPS )||
+            ( this.maxX < bound.minX - EPS )||
+            ( this.minY > bound.maxY + EPS )||
+            ( this.maxY < bound.minY - EPS )||
+            ( this.minZ > bound.maxZ + EPS )||
+            ( this.maxZ < bound.minZ - EPS ))
+
+            return false;
+        else
+            return true;
 	}
     public double getBoundsMinX(){
         return this.minX;
