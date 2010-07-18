@@ -1393,25 +1393,27 @@ public final class AH
             if (2 == count){
 
                 final Vertex o = p.startEndpointIn1(f);
-
+                /*
+                 * Not boundary point: needs classification
+                 */
                 final Vertex m = b.midpoint(c).classify(c);
 
                 if (outbound){
                     replacements = new Face[]{
                         new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,e,o).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,o,c).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),c,o,m).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,m,o).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,b,m).classify(a,b)
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,o,c).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),c,o,m).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,m,o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,b,m).classify(b)
                     };
                 }
                 else {
                     replacements = new Face[]{
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,o,e).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,c,o).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),c,m,o).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,o,m).classify(a,b),
-                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,m,b).classify(a,b)
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/I)"),a,o,e).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/I)"),a,c,o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/I)"),c,m,o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/I)"),e,o,m).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/I)"),e,m,b).classify(b)
                     };
                 }
             }
@@ -1421,7 +1423,7 @@ public final class AH
                  * Not boundary points: need classification
                  */
                 final Vertex m1 = a.midpoint(e).classify(f.share(a,b).opposite(a,b));
-                final Vertex m2 = b.midpoint(c).classify(f.share(a,b).opposite(a,b));
+                final Vertex m2 = b.midpoint(c).classify(c);
 
                 Vertex o;
 
@@ -1448,13 +1450,13 @@ public final class AH
                     if (outbound){
                         replacements = Face.Cat(replacements, new Face[]{
                                 new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,m1,o2).classify(a,b),
-                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,o2, c).classify(b),
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,o2, c).classify(c),
                             });
                     }
                     else {
                         replacements = Face.Cat(replacements, new Face[]{
-                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,o2,m1).classify(a,b),
-                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1, c,o2).classify(b),
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),o1,o2,m1).classify(a,b),
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),o1, c,o2).classify(c),
                             });
                     }
                 }
@@ -1464,14 +1466,14 @@ public final class AH
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
                             new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),m1, e, o).classify(a,b),
-                            new Face(s,f.name.copy("TriangulateM_VIE(N/O)"), o, e,m2).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/O)"), o, e,m2).classify(c),
                             new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),m2, e, b).classify(b)
                         });
                 }
                 else {
                     replacements = Face.Cat(replacements, new Face[]{
                             new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),m1, o, e).classify(a,b),
-                            new Face(s,f.name.copy("TriangulateM_VIE(N/I)"), o,m2, e).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/I)"), o,m2, e).classify(c),
                             new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),m2, b, e).classify(b)
                         });
                 }
@@ -1480,13 +1482,113 @@ public final class AH
                 new Face.Replacement(f,replacements)
             };
         }
+        /*
+         * New & cloned points have status unknown, then boundary.
+         */
         private final static Face.Replacement[] TriangulateM_VTE(Face f, Solid s, Segment.Path p){
+            Face[] replacements = null;
 
             final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
 
-            return null;
+            final boolean outbound = p.start.isOutbound(p.end);
+
+            final Vertex a = p.start.vertex;
+            final Vertex b = f.next(a);
+            final Vertex c = f.next(b);
+            final Vertex e = p.end.vertex;
+
+            /*
+             * Not boundary points: need classification
+             */
+            final Vertex m1 = a.midpoint(b).classify(b);
+            final Vertex m2 = c.midpoint(a).classify(c);
+
+            if (2 == count){
+
+                final Vertex o = p.startEndpointIn1(f);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), a, o,m2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), a,m1, o).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), o, e,m2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), o,m1, e).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"),m2, e, c).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"),m1, e, b).classify(b)
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), a,m2, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), a, o,m1).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), o,m2, e).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), o, e, m1).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"),m2, c, e).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"),m1, b, e).classify(b)
+                    };
+                }
+            }
+            else {
+                final int term = (count-1);
+
+                Vertex o;
+
+                o = p.startEndpointIn1(f);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), a, o,m2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/O)"), a,m1, o).classify(b)
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), a,m2, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VTE(2/I)"), a, o,m1).classify(b)
+                    };
+                }
+
+                for (int sc = 1; sc < term; sc++){
+                    Segment se = p.list[sc];
+                    Vertex o1 = se.endpointIn1(f).vertex;
+                    Vertex o2 = se.endpointIn2(f).vertex;
+
+                    if (outbound){
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),o1,m1,o2).classify(b),
+                                new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),o1,o2,m2).classify(c),
+                            });
+                    }
+                    else {
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_VTE(N/I)"),o1,o2,m1).classify(b),
+                                new Face(s,f.name.copy("TriangulateM_VTE(N/I)"),o1,m2,o2).classify(c),
+                            });
+                    }
+                }
+
+                o = p.termEndpointIn2(f);
+
+                if (outbound){
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m1, o, b).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"), o, b, e).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, o, e).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, e, c).classify(c)
+                        });
+                }
+                else {
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m1, b, o).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"), o, e, b).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, e, o).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, c, e).classify(c)
+                        });
+                }
+            }
+            return new Face.Replacement[]{
+                new Face.Replacement(f,replacements)
+            };
         }
         private final static Face.Replacement[] TriangulateM_VTV(Face f, Solid s, Segment.Path p){
 
