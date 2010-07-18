@@ -22,6 +22,7 @@ import fv3.csg.Solid;
 
 /**
  * CSG algorithm 
+ * @see AH
  */
 public abstract class A 
     extends java.lang.Object
@@ -44,23 +45,27 @@ public abstract class A
         this.r = new Solid(op,a,b);
     }
 
+
+    /**
+     * Restore operands to original states
+     */
     public void destroy(){
+
         this.a.pop();
+
         this.b.pop();
-    }
 
-
-    protected static void InitFaces(Solid a, Solid b){
-
-        for (Face af: a){
+        for (Face af: this.a){
 
             af.init();
         }
-        for (Face bf: b){
+        for (Face bf: this.b){
 
             bf.init();
         }
     }
+
+
     protected static void InvertInsideFaces(Solid a){
 
         for (Face face: a){

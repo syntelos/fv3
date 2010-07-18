@@ -88,16 +88,24 @@ public class Vertex
     public Vector getVector(){
         return new Vector(this.x,this.y,this.z);
     }
+    public double distance(Vertex that){
+
+        final double dx = (this.x - that.x);
+        final double dy = (this.y - that.y);
+        final double dz = (this.z - that.z);
+
+        return Math.sqrt( (dx*dx) + (dy*dy) + (dz*dz));
+    }
     public double distance(Face face){
 
         double[] n = face.getNxyzd();
 
-		double x = n[0];
-		double y = n[1];
-		double z = n[2];
-		double d = n[3];
+		double nx = n[0];
+		double ny = n[1];
+		double nz = n[2];
+		double fd = n[3];
 
-		return (x*this.x + y*this.y + z*this.z + d);
+		return (nx*this.x + ny*this.y + nz*this.z + fd);
     }
     public int sdistance(Face face){
 
@@ -153,11 +161,18 @@ public class Vertex
     public void destroy(){
         this.membership = null;
     }
+    /**
+     * Called in creating CSG product (A.r) and in copying a vertex
+     * from one CSG solid to another.
+     */
     public Vertex clone(){
         try {
             Vertex clone = (Vertex)super.clone();
-
-            //clone.status = State.Vertex.Unknown;
+            /*
+             * Clear status for copying vertex from one CSG operand
+             * to another
+             */
+            clone.status = State.Vertex.Unknown;
             /*
              * Vertex cloning needs to be part of a process of
              * rebuilding vertex face membership lists 
@@ -276,17 +291,13 @@ public class Vertex
         a[ofs] = this.z;
         return a;
     }
-    public Vertex markAL(State.Vertex state){
+    /**
+     * Called in triangulation to classify a new floating vertex
+     * that's not a boundary vertex.
+     */
+    public Vertex classify(Vertex v){
 
-        if (this.isUnknown()){
-
-            this.status = state;
-
-            for (Face face: this){
-
-                face.markAL(state);
-            }
-        }
+        this.status = v.status;
         return this;
     }
     public Vertex classify(State.Vertex s){
@@ -326,63 +337,29 @@ public class Vertex
         if (this == that)
             return true;
 
-        else if (null != that){
+        else if (null != that)
 
-            return (0 == this.compareTo(that));
-        }
+            return this.getVector().equals(that.getVector());
         else
             return false;
     }
+    /**
+     * Path order comparison
+     */
     public int compareTo(Vertex that){
-        if (this == that)
-            return 0;
+        if (null == that)
+            return 1;
         else {
-            /*
-             * Classify according to the largest difference
-             */
-            final double dx = Z(this.x-that.x);
-            final double dy = Z(this.y-that.y);
-            final double dz = Z(this.z-that.z);
-            final double adx = Math.abs(dx);
-            final double ady = Math.abs(dy);
-            final double adz = Math.abs(dz);
-
-            if (adx > ady){
-                if (adz > adx){
-
-                    if (0.0 < dz)
-                        return 1;
-                    else
-                        return -1;
-                }
-                else {
-                    if (0.0 < dx)
-                        return 1;
-                    else
-                        return -1;
-                }
-            }
-            else if (ady > adz){
-
-                if (0.0 < dy)
-                    return 1;
-                else
-                    return -1;
-            }
-            else if (adz > adx){
-
-                if (0.0 < dz)
-                    return 1;
-                else
-                    return -1;
-            }
-            else if (0.0 == dx)
+            Vector a = this.getVector();
+            Vector b = that.getVector();
+            if (a.equals(b))
                 return 0;
             else {
-                if (0.0 < dx)
-                    return 1;
-                else
+                double angle = a.normalize().angle(b.normalize());
+                if (0.0 > angle)
                     return -1;
+                else
+                    return 1;
             }
         }
     }

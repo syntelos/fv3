@@ -25,7 +25,6 @@ public interface Notation
     extends fv3.math.Notation
 {
     /**
-     * @see fv3.csg.u.AL
      * @see fv3.csg.u.AH
      */
     public abstract static class State

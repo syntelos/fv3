@@ -365,6 +365,14 @@ public class Vector
         return this;
     }
     /**
+     * Find the angle between this and the argument.  Both must be
+     * normalized.
+     */
+    public final double angle(Vector that){
+
+        return Math.acos(this.dot(that));
+    }
+    /**
      * Compute a vector normal to the line from this to 'a' and the
      * line from this to 'b'.
      */
@@ -536,7 +544,7 @@ public class Vector
             return 0;
         else {
             /*
-             * Classify according to the largest difference
+             * Classify difference according to magnitude
              */
             final double[] thisV = this.v;
             final double[] thatV = that.v;

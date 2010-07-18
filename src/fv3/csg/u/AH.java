@@ -22,7 +22,7 @@ import fv3.csg.Solid;
 import fv3.math.Vector;
 
 /**
- * Algorithm developed following
+ * CSG algorithm developed following
  * 
  * Laidlaw, Trumbore and Hughes, 1986, "Constructive Solid Geometry
  * for Polyhedral Objects"</a>, and
@@ -31,10 +31,65 @@ import fv3.math.Vector;
  * Triangulated Polyhedra" (an improvement on Laidlaw, Trumbore and
  * Hughes for triangles), and
  * 
- * with adaptations suggested by that paper and the work of Danilo
- * Balby Silva Castanheira in UnBBoolean/J3DBool.
+ * with adaptations suggested by that paper, and with the study and
+ * application of the work of Danilo Balby Silva Castanheira in
+ * UnBBoolean/J3DBool.
  *
+ * <h3>Introduction</h3>
+ * 
+ * Certainly the most complex aspect of the code in these classes is
+ * the symmetry of an intersection segment between two faces from each
+ * of two solids.  
+ * 
+ * The intersection of two faces has two points, with many cases for
+ * their representation.  Combined with symmetry, the reasonable
+ * performance programming model is fairly intensive.
+ * 
+ * Each intersection segment is a member of two faces from each of the
+ * two solids under operation.  The programming notation within the
+ * Segment class is defined in terms of the CSG operand solids ("A"
+ * and "B"), but this convenience is misleading.  The segment is
+ * symmetric, and employed in the triangulation of each face ("A" and
+ * "B") independently throughout the triangulation code.
+ * 
+ * In simple triangulation, TriangulateV or TriangulateE, this
+ * symmetry is described by the grouping of equivalent "A" and "B"
+ * cases.  For example, endpoint vertex kind "AA" and "BA" are grouped
+ * into one case, and endpoint edge kind "AAB" and "BAB" are grouped
+ * into one case.
+ * 
+ * For multi-segment triangulation in the TriangulateM family, the
+ * Segment and Endpoint classes define methods that require a face
+ * argument to relate perspective.
+ * 
+ * <h3>Design</h3>
+ * 
+ * This class is intended to develop one optimal solution set for
+ * intersection and triangulation.  This is reasonable because
+ * (generally) maximizing triangle quality has one solution set, and
+ * maximizing triangle quality serves all purposes when not more
+ * expensive than not maximizing triangle quality.
+ * 
+ * The implementation of triangulation by cases serves triangle
+ * quality and performance.  Triangle quality is a design time subject
+ * evident in the products of the code, not otherwise seen in the code
+ * itself.
+ * 
+ * <h3>Implementation</h3>
+ * 
+ * The code in these classes is intended to perform error checking and
+ * to throw runtime exceptions from the outer layers, and to throw
+ * cast or array or pointer exceptions from the inner (self
+ * referential) layers.  This policy is good for performance and
+ * produces a good indication of severity.
+ * 
+ * The Intersection class constructor catches Illegal Argument
+ * exceptions from the Segment class constructor in order to ignore an
+ * empty intersection segment.  Therefore exceptions created to
+ * indicate error conditions -- in code called from the Segment
+ * constructor -- will throw Illegal State exceptions.  
  *
+ * @see http://docs.google.com/document/pub?id=1uIZzKy_P6XTZMJ0-ciZeToiMkqUNzK5WejArjX0-BgI
  * @see http://unbboolean.sf.net/
  * @see http://www.cs.brown.edu/~jfh/papers/Laidlaw-CSG-1986/main.htm
  * @see doi:10.1.1.34.9374
@@ -55,16 +110,24 @@ public final class AH
      */
     public AH(Solid.Construct op, Solid a, Solid b){
         super(op,a,b);
-
-        InitFaces(a,b);
-
+        /*
+         * Mark the internal and external features of A and B.
+         */
         Face.Edge.Classify(a);
         Face.Edge.Classify(b);
-
+        /*
+         * Determine intersection segments throughout A and B.
+         */
         this.intersections = new AH.Intersections(a,b);
-
+        /*
+         * Classify inside and outside verteces around the boundaries
+         * in A and B.
+         */
         this.intersections.classify();
-
+        /*
+         * Split faces in A and B, replacing old faces with new faces,
+         * and classifying all vertices as inside, outside or boundary.
+         */
         this.intersections.triangulate(a,b);
 
         Face.Classify(a);
@@ -147,7 +210,7 @@ public final class AH
 
 
     /**
-     * Set of segments
+     * Set of intersection segments in solids A and B.
      */
     public final static class Intersections
         extends lxl.Set<Segment>
@@ -223,12 +286,98 @@ public final class AH
         }
     }
     /**
-     * Intersection segment
+     * An intersection segment has endpoints in Face A (from Solid A)
+     * and Face B (from Solid B), and is shared by both.
      */
     public final static class Segment
         extends java.lang.Object
         implements java.lang.Comparable<Segment>
     {
+        /**
+         * Multiple intersection path segments at a Face.
+         */
+        public final static class Path
+            extends java.lang.Object
+        {
+            /**
+             * Intersection path classifications for "Vertex In Edge",
+             * "Vertex To Edge", "Vertex To Vertex", "Edge In Edge", "Edge
+             * To Edge" and their directional (face orientation) inverses.
+             * 
+             * @see http://docs.google.com/document/pub?id=1uIZzKy_P6XTZMJ0-ciZeToiMkqUNzK5WejArjX0-BgI
+             */
+            public enum Kind {
+
+                VIE, VTE, VTV, EIV, ETV, EIE, ETE;
+            }
+
+
+            public final Segment[] list;
+
+            public final int last;
+            /**
+             * Consumers depend on start and end being points being in
+             * Solid A (or new or cloned).
+             */
+            public final Segment.Endpoint start, end;
+
+            public final Segment.Path.Kind kind;
+
+            /**
+             * This doesn't do all of the "bad case" checking that's
+             * done by the intersection phase.
+             * 
+             * @param f Face from Solid "A" or "B"
+             */
+            public Path(Face f){
+                super();
+                /*
+                 * This depends on the member segments in {@link Face} being
+                 * in path order.  See Face.memberOf and Segment.compareTo.
+                 */
+                this.list = f.segments();
+
+                this.last = list.length-1;
+
+                Segment.Endpoint start = list[0].endpointOn1(f), end = list[last].endpointOn1(f);
+
+                this.start = start;
+                this.end = end;
+
+                if (start.isVertex()){
+                    if (end.isVertex())
+                        this.kind = Kind.VTV;
+                    else {
+                        if (start.isInEdge(end))
+                            this.kind = Kind.VIE;
+                        else
+                            this.kind = Kind.VTE;
+                    }
+                }
+                else if (end.isVertex()){
+                    if (end.isInEdge(start))
+                        this.kind = Kind.EIV;
+                    else
+                        this.kind = Kind.ETV;
+                }
+                else {
+                    if (start.isInEdge(end))
+                        this.kind = Kind.EIE;
+                    else
+                        this.kind = Kind.ETE;
+                }
+            }
+
+
+            public Vertex startEndpointIn1(Face f){
+
+                return this.list[0].endpointIn1(f).vertex;
+            }
+            public Vertex termEndpointIn2(Face f){
+
+                return this.list[this.last-1].endpointIn2(f).vertex;
+            }
+        }
         /**
          * 
          */
@@ -240,26 +389,46 @@ public final class AH
              * Segment endpoint source description: Face and Vertex.
              */
             public interface Kind {
-
+                /**
+                 * Identify Face and Vertex in CSG Operand order
+                 */
                 public enum Vertex
                     implements Endpoint.Kind
                 {
                     AA, AB, AC, BA, BB, BC;
 
-                    public final static Vertex ChangeFace(Vertex v){
-                        switch(v){
-                        case AA:
-                            return BA;
-                        case AB:
-                            return BB;
-                        case AC:
-                            return BC;
-                        case BA:
-                            return AA;
-                        case BB:
-                            return AB;
-                        case BC:
-                            return AC;
+                    public boolean isInEdge(Kind.Edge e){
+                        switch (e){
+                        case AAB:
+                            return (AA == this || AB == this);
+                        case ABC:
+                            return (AB == this || AC == this);
+                        case ACA:
+                            return (AA == this || AC == this);
+                        case BAB:
+                            return (BA == this || BB == this);
+                        case BBC:
+                            return (BB == this || BC == this);
+                        case BCA:
+                            return (BA == this || BC == this);
+                        default:
+                            throw new IllegalStateException();
+                        }
+                    }
+                    public boolean isOutbound(Kind.Edge e){
+                        switch (e){
+                        case AAB:
+                            return (AA == this);
+                        case ABC:
+                            return (AB == this);
+                        case ACA:
+                            return (AC == this);
+                        case BAB:
+                            return (BA == this);
+                        case BBC:
+                            return (BB == this);
+                        case BCA:
+                            return (BC == this);
                         default:
                             throw new IllegalStateException();
                         }
@@ -292,30 +461,15 @@ public final class AH
                             return list;
                     }
                 }
+                /**
+                 * Identify Face and Edge in CSG Operand order
+                 */
                 public enum Edge
                     implements Endpoint.Kind
                 {
                     AAB, ABC, ACA, BAB, BBC, BCA;
 
 
-                    public final static Edge ChangeFace(Edge e){
-                        switch(e){
-                        case AAB:
-                            return BAB;
-                        case ABC:
-                            return BBC;
-                        case ACA:
-                            return BCA;
-                        case BAB:
-                            return AAB;
-                        case BBC:
-                            return ABC;
-                        case BCA:
-                            return ACA;
-                        default:
-                            throw new IllegalStateException();
-                        }
-                    }
                     public final static int IndexOf(Endpoint.Kind.Edge[] list, Endpoint.Kind.Edge item){
                         if (null == item || null == list)
                             return -1;
@@ -348,6 +502,7 @@ public final class AH
 
             public final Kind kind;
             public final Vertex vertex;
+            private final Vector normal;
 
 
             public Endpoint(Kind k, Vertex v){
@@ -355,22 +510,7 @@ public final class AH
                 if (null != k && null != v){
                     this.kind = k;
                     this.vertex = v;
-                }
-                else
-                    throw new IllegalStateException();//(error in Segment ctor)
-            }
-            /**
-             * Change face for context change, when Face A is known as
-             * Face B.
-             */
-            public Endpoint(Endpoint e){
-                super();
-                if (null != e){
-                    if (e.isEdge())
-                        this.kind = Endpoint.Kind.Edge.ChangeFace((Endpoint.Kind.Edge)e.kind);
-                    else
-                        this.kind = Endpoint.Kind.Vertex.ChangeFace((Endpoint.Kind.Vertex)e.kind);
-                    this.vertex = e.vertex;
+                    this.normal = v.getVector().normalize();
                 }
                 else
                     throw new IllegalStateException();//(error in Segment ctor)
@@ -378,10 +518,30 @@ public final class AH
 
 
             public boolean isEdge(){
+
                 return (this.kind instanceof Endpoint.Kind.Edge);
             }
             public boolean isVertex(){
+
                 return (this.kind instanceof Endpoint.Kind.Vertex);
+            }
+            public boolean isInEdge(Endpoint that){
+
+                if (this.kind instanceof Endpoint.Kind.Vertex)
+
+                    return ((Endpoint.Kind.Vertex)this.kind).isInEdge((Endpoint.Kind.Edge)that.kind);
+                else 
+                    return (this.kind == that.kind);
+            }
+            /**
+             * @return Vertex to edge is in winding order
+             */
+            public boolean isOutbound(Endpoint that){
+
+                return ((Endpoint.Kind.Vertex)this.kind).isOutbound((Endpoint.Kind.Edge)that.kind);
+            }
+            public Vector getNormal(){
+                return this.normal.clone();
             }
             public int hashCode(){
                 return this.vertex.hashCode();
@@ -398,6 +558,9 @@ public final class AH
                 else
                     return this.vertex.equals(that.vertex);
             }
+            /**
+             * Path order comparison
+             */
             public int compareTo(Endpoint that){
                 if (null == that)
                     return 1;
@@ -432,52 +595,53 @@ public final class AH
                 }
             }
         }
+        /**
+         * Segment kind: member of a multiple segment path,
+         * vertex-edge, edge-vertex, or edge-edge.  These are
+         * semantically equivalent to "vertex to edge" or "edge to
+         * edge" (as exist for a non empty, one segment triangle
+         * bisection), but symbolically differentiated for the
+         * compiler.
+         */
         public enum Kind {
-            VE, EV, EE;
+            M, VE, EV, EE;
 
-            public final static Kind For(Segment.Endpoint a, Segment.Endpoint b){
+            public final static Kind For(Segment.Endpoint e1, Segment.Endpoint e2){
 
-                if (null == a){
+                if (null == e2)
 
-                    if (b.isEdge())
-                        return Kind.EE;
-                    else
-                        throw new IllegalArgumentException();
-                }
-                else if (null == b){
+                    return Kind.M;
 
-                    if (a.isEdge())
-                        return Kind.EE;
-                    else
-                        throw new IllegalArgumentException();
-                }
-                else if (a.isEdge()){
+                else if (e1.isEdge()){
 
-                    if (b.isEdge())
+                    if (e2.isEdge())
                         return Kind.EE;
                     else
                         return Kind.EV;
                 }
-                else 
+                else if (e2.isEdge())
                     return Kind.VE;
+                else
+                    throw new IllegalArgumentException();
             }
         }
 
         public final Face a, b;
 
-        public final Vector direction;
         /**
          * An endpoint may be null in the case of multiple
          * intersection segments in a face.
          */
-        public final Endpoint endpointA1, endpointA2, endpointB1, endpointB2;
+        private final Endpoint endpointA1, endpointA2, endpointB1, endpointB2;
 
-        public final int a_A_b, a_B_b, a_C_b;
-        public final int b_A_a, b_B_a, b_C_a;
+        private final int a_A_b, a_B_b, a_C_b;
+        private final int b_A_a, b_B_a, b_C_a;
 
-        public final Kind kindA, kindB;
-
-        public final int hashCode;
+        private final Kind kindA, kindB;
+        /**
+         * Path sort vector
+         */
+        private final Vector vector;
 
 
         Segment(Face a, Face b, 
@@ -706,8 +870,7 @@ public final class AH
             /*
              * Complete with endpoints in A and B
              */
-            if ((null != endpointA1 || null != endpointA2)
-                && (null != endpointB1 || null != endpointB2)){
+            if (null != endpointA1 || null != endpointB1){
 
                 this.a = a;
                 this.b = b;
@@ -717,28 +880,69 @@ public final class AH
                 this.b_A_a = b_A_a;
                 this.b_B_a = b_B_a; 
                 this.b_C_a = b_C_a;
+
+                /*
+                 * Path ordering of endpoints for path ordering of segments
+                 */
+                if (null != endpointA1 && null != endpointA2){
+                    switch (endpointA1.compareTo(endpointA2)){
+                    case -1:
+                        break;
+                    case 1:
+                        Endpoint tmp = endpointA1;
+                        endpointA1 = endpointA2;
+                        endpointA2 = tmp;
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                    }
+                }
+                if (null != endpointB1 && null != endpointB2){
+                    switch (endpointB1.compareTo(endpointB2)){
+                    case -1:
+                        break;
+                    case 1:
+                        Endpoint tmp = endpointB1;
+                        endpointB1 = endpointB2;
+                        endpointB2 = tmp;
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                    }
+                }
+
+
                 this.kindA = Segment.Kind.For(endpointA1,endpointA2);
                 this.kindB = Segment.Kind.For(endpointB1,endpointB2);
                 this.endpointA1 = endpointA1;
                 this.endpointA2 = endpointA2;
                 this.endpointB1 = endpointB1;
                 this.endpointB2 = endpointB2;
+
                 /*
-                 * Normalize for equivalence testing
+                 * A-B symmetric path order vector
+                 * @see #compareTo
                  */
-                this.direction = a.getNormal().clone().cross(b.getNormal()).normalize();
+                if (null != endpointA1){
 
-                int hashCode = (this.a.hashCode()^this.b.hashCode());
-                if (null != endpointA1)
-                    hashCode ^= endpointA1.hashCode();
-                if (null != endpointA2)
-                    hashCode ^= endpointA2.hashCode();
-                if (null != endpointB1)
-                    hashCode ^= endpointB1.hashCode();
-                if (null != endpointB2)
-                    hashCode ^= endpointB2.hashCode();
+                    if (null != endpointA2){
 
-                this.hashCode = hashCode;
+                        this.vector = endpointA1.getNormal().mid(endpointA2.getNormal());
+                    }
+                    else if (null != endpointB1){
+
+                        this.vector = endpointA1.getNormal().mid(endpointB1.getNormal());
+                    }
+                    else
+                        throw new IllegalArgumentException();
+                }
+                else if (null != endpointB2){
+
+                    this.vector = endpointB1.getNormal().mid(endpointB2.getNormal());
+                }
+                else
+                    throw new IllegalArgumentException();
+
                 /*
                  */
                 a.memberOf(this);
@@ -749,73 +953,34 @@ public final class AH
         }
 
 
-        public boolean isA(Face face){
-            return (face == this.a);
-        }
-        public boolean isB(Face face){
-            return (face == this.b);
-        }
-        public boolean hasEndpoint(Endpoint e){
-            return (null != e
-                    && (e == this.endpointA1 || e == this.endpointA2 
-                        || e == this.endpointB1 || e == this.endpointB2));
-        }
-        public char face(Face face){
-            if (face == this.a)
-                return 'a';
-            else if (face == this.b)
-                return 'b';
-            else
-                return 0;
-        }
-        public boolean hasVertexIn(Face face){
-
-            if (face == this.a){
-                if (null != this.endpointA1 && this.endpointA1.isVertex())
-                    return true;
-                else if (null != this.endpointA2 && this.endpointA2.isVertex())
-                    return true;
-                else
-                    return false;
-            }
-            else if (face == this.b){
-                if (null != this.endpointB1 && this.endpointB1.isVertex())
-                    return true;
-                else if (null != this.endpointB2 && this.endpointB2.isVertex())
-                    return true;
-                else
-                    return false;
-            }
-            else
-                throw new IllegalStateException();
-        }
+        /**
+         * Split faces in solids A and B to accomodate their
+         * intersection.
+         */
         public void triangulate(Solid sa, Solid sb){
             /*
-             * Triangulation strategy
+             * Triangulation strategy open to multiple solution over
+             * internal features
              */
             Face.Replacement[] replacements = null;
             /*
              * Face A
              */
-            Face fa = this.a;
-            if (1 < fa.countMembership()){
-
-                replacements = Segment.TriangulateM(fa,sa);
-            }
-            else {
-                switch (this.kindA){
-                case VE:
-                    replacements = Segment.TriangulateV(fa,sa,this.endpointA1,this.endpointA2);
-                    break;
-                case EV:
-                    replacements = Segment.TriangulateV(fa,sa,this.endpointA2,this.endpointA1);
-                    break;
-                case EE:
-                    replacements = Segment.TriangulateE(fa,sa,this.endpointA1,this.endpointA2);
-                    break;
-                default:
-                    throw new IllegalStateException();
-                }
+            switch (this.kindA){
+            case M:
+                replacements = Segment.TriangulateM(this.a,sa);
+                break;
+            case VE:
+                replacements = Segment.TriangulateV(this.a,sa,this.endpointA1,this.endpointA2);
+                break;
+            case EV:
+                replacements = Segment.TriangulateV(this.a,sa,this.endpointA2,this.endpointA1);
+                break;
+            case EE:
+                replacements = Segment.TriangulateE(this.a,sa,this.endpointA1,this.endpointA2);
+                break;
+            default:
+                throw new IllegalStateException();
             }
             if (null != replacements){
                 for (Face.Replacement frpl: replacements){
@@ -825,25 +990,21 @@ public final class AH
             /*
              * Face B
              */
-            Face fb = this.b;
-            if (1 < fb.countMembership()){
-
-                replacements = Segment.TriangulateM(fb,sb);
-            }
-            else {
-                switch (this.kindB){
-                case VE:
-                    replacements = Segment.TriangulateV(fb,sb,this.endpointB1,this.endpointB2);
-                    break;
-                case EV:
-                    replacements = Segment.TriangulateV(fb,sb,this.endpointB2,this.endpointB1);
-                    break;
-                case EE:
-                    replacements = Segment.TriangulateE(fb,sb,this.endpointB1,this.endpointB2);
-                    break;
-                default:
-                    throw new IllegalStateException();
-                }
+            switch (this.kindB){
+            case M:
+                replacements = Segment.TriangulateM(this.b,sb);
+                break;
+            case VE:
+                replacements = Segment.TriangulateV(this.b,sb,this.endpointB1,this.endpointB2);
+                break;
+            case EV:
+                replacements = Segment.TriangulateV(this.b,sb,this.endpointB2,this.endpointB1);
+                break;
+            case EE:
+                replacements = Segment.TriangulateE(this.b,sb,this.endpointB1,this.endpointB2);
+                break;
+            default:
+                throw new IllegalStateException();
             }
             if (null != replacements){
                 for (Face.Replacement frpl: replacements){
@@ -851,6 +1012,9 @@ public final class AH
                 }
             }
         }
+        /**
+         * Classify verteces in solids A and B.
+         */
         public void classify(){
 
             this.a.a.classify(State.Vertex.Classify(this.a_A_b));
@@ -861,169 +1025,60 @@ public final class AH
             this.b.b.classify(State.Vertex.Classify(this.b_B_a));
             this.b.c.classify(State.Vertex.Classify(this.b_C_a));
         }
-        public boolean colinear(Segment that){
-
-            return this.direction.colinear(that.direction);
-        }
-        public Endpoint[] endpointsFor(Face f){
-            if (f == this.a){
-                return new Endpoint[]{
-                    this.endpointA1,
-                    this.endpointA2
-                };
-            }
-            else if (f == this.b){
-                return new Endpoint[]{
-                    this.endpointB1,
-                    this.endpointB2
-                };
-            }
-            else
-                return null;
-        }
-        public int hashCode(){
-            return this.hashCode;
-        }
-        public boolean equals(Object that){
-            if (this == that)
-                return true;
-            else if (that instanceof Segment)
-                return this.equals( (Segment)that);
-            else
-                return false;
-        }
-        public boolean equals(Segment that){
-            if (this == that)
-                return true;
-            else if (null == that)
-                return false;
-            else if (this.a.equals(that.a) && 
-                     this.b.equals(that.b)){
-
-                if (null != this.endpointA1){
-                    if (null != that.endpointA1){
-                        if (!this.endpointA1.equals(that.endpointA1))
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                else if (null != that.endpointA1)
-                    return false;
-
-                if (null != this.endpointA2){
-                    if (null != that.endpointA2){
-                        if (!this.endpointA2.equals(that.endpointA2))
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                else if (null != that.endpointA2)
-                    return false;
-
-                if (null != this.endpointB1){
-                    if (null != that.endpointB1){
-                        if (!this.endpointB1.equals(that.endpointB1))
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                else if (null != that.endpointB1)
-                    return false;
-
-                if (null != this.endpointB2){
-                    if (null != that.endpointB2){
-                        if (!this.endpointB2.equals(that.endpointB2))
-                            return false;
-                    }
-                    else
-                        return false;
-                }
-                else if (null != that.endpointB2)
-                    return false;
-
-
-                return true;
-            }
-            else
-                return false;
-        }
-        public int compareTo(Segment that){
-            if (this == that)
-                return 0;
-            else {
-                int t;
-                t = this.a.compareTo(that.a);
-                if (0 == t){
-                    t = this.b.compareTo(that.b);
-                    if (0 == t){
-
-                        if (null != this.endpointA1){
-                            if (null != that.endpointA1){
-
-                                t = this.endpointA1.compareTo(that.endpointA1);
-                                if (0 != t)
-                                    return t;
-                            }
-                            else
-                                return 1;
-                        }
-                        else if (null != that.endpointA1)
-                            return -1;
-
-                        if (null != this.endpointA2){
-                            if (null != that.endpointA2){
-
-                                t = this.endpointA2.compareTo(that.endpointA2);
-                                if (0 != t)
-                                    return t;
-                            }
-                            else
-                                return 1;
-                        }
-                        else if (null != that.endpointA2)
-                            return -1;
-
-                        if (null != this.endpointB1){
-                            if (null != that.endpointB1){
-
-                                t = this.endpointB1.compareTo(that.endpointB1);
-                                if (0 != t)
-                                    return t;
-                            }
-                            else
-                                return 1;
-                        }
-                        else if (null != that.endpointB1)
-                            return -1;
-
-                        if (null != this.endpointB2){
-                            if (null != that.endpointB2){
-
-                                t = this.endpointB2.compareTo(that.endpointB2);
-                                if (0 != t)
-                                    return t;
-                            }
-                            else
-                                return 1;
-                        }
-                        else if (null != that.endpointB2)
-                            return -1;
-
-                        return 0;
-                    }
-                    else
-                        return t;
-                }
-                else
-                    return t;
-            }
-        }
-
         /**
-         * 
+         * On the boundary defined by the vertices and edges of the
+         * argument face.
+         * @see AH$Segment$Kind#M
+         * @see AH$Segment$Path
+         */
+        public Endpoint endpointOn1(Face f){
+
+            if (f == this.a)
+
+                return this.endpointA1;
+            else 
+                return this.endpointB1;
+        }
+        public Endpoint endpointOn2(Face f){
+
+            if (f == this.a)
+
+                return this.endpointA2;
+            else 
+                return this.endpointB2;
+        }
+        /**
+         * In the surface defined by the vertices and edges of the
+         * argument face.
+         * @see AH$Segment$Kind#M
+         * @see AH$Segment$Path
+         */
+        public Endpoint endpointIn1(Face f){
+
+            if (f == this.a)
+
+                return this.endpointB1;
+            else 
+                return this.endpointA1;
+        }
+        public Endpoint endpointIn2(Face f){
+
+            if (f == this.a)
+
+                return this.endpointB2;
+            else 
+                return this.endpointA2;
+        }
+        /**
+         * Sort to path order
+         */
+        public int compareTo(Segment that){
+
+            return this.vector.compareTo(that.vector);
+        }
+
+        /*
+         * New & cloned points have status unknown, then boundary.
          */
         private final static Face.Replacement[] TriangulateV(Face f, Solid s, Endpoint e1, Endpoint e2)
         {
@@ -1121,8 +1176,8 @@ public final class AH
             }
             return null;
         }
-        /**
-         * 
+        /*
+         * New & cloned points have status unknown, then boundary.
          */
         private final static Face.Replacement[] TriangulateE(Face f, Solid s, Endpoint e1, Endpoint e2)
         {
@@ -1290,24 +1345,187 @@ public final class AH
             }
             return null;
         }
-        /**
-         * This depends on the member segments in {@link Face} being
-         * in their sort order.
+        /*
+         * New & cloned points have status unknown, then boundary.
          */
         private final static Face.Replacement[] TriangulateM(Face f, Solid s){
             if (f.alive()){
-                /*
-                 * Starting with one approach...  This will not
-                 * exploit internal features (not employing edge
-                 * classes).
-                 */
-                Face[] replacements = null;
 
-                final int count = f.countMembership();
-                final int term = (count-1);
-                final int mid = (count>>1);
+                Segment.Path p = new Segment.Path(f);
 
+                switch (p.kind){
+                case VIE:
+                    return TriangulateM_VIE(f, s, p);
+                case VTE:
+                    return TriangulateM_VTE(f, s, p);
+                case VTV:
+                    return TriangulateM_VTV(f, s, p);
+                case EIV:
+                    return TriangulateM_EIV(f, s, p);
+                case ETV:
+                    return TriangulateM_ETV(f, s, p);
+                case EIE:
+                    return TriangulateM_EIE(f, s, p);
+                case ETE:
+                    return TriangulateM_ETE(f, s, p);
+
+                default:
+                    throw new IllegalStateException();
+                }
             }
+            return null;
+        }
+        /*
+         * New & cloned points have status unknown, then boundary.
+         */
+        private final static Face.Replacement[] TriangulateM_VIE(Face f, Solid s, Segment.Path p){
+            Face[] replacements = null;
+
+            final int count = f.countMembership();
+
+            final boolean outbound = p.start.isOutbound(p.end);
+
+            final Vertex a = p.start.vertex;
+            final Vertex b = f.next(a);
+            final Vertex c = f.next(b);
+            final Vertex e = p.end.vertex;
+
+            if (2 == count){
+
+                final Vertex o = p.startEndpointIn1(f);
+
+                final Vertex m = b.midpoint(c).classify(c);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,e,o).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,o,c).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),c,o,m).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,m,o).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,b,m).classify(a,b)
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,o,e).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),a,c,o).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),c,m,o).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,o,m).classify(a,b),
+                        new Face(s,f.name.copy("TriangulateM_VIE(2/O)"),e,m,b).classify(a,b)
+                    };
+                }
+            }
+            else {
+                final int term = (count-1);
+                /*
+                 * Not boundary points: need classification
+                 */
+                final Vertex m1 = a.midpoint(e).classify(f.share(a,b).opposite(a,b));
+                final Vertex m2 = b.midpoint(c).classify(f.share(a,b).opposite(a,b));
+
+                Vertex o;
+
+                o = p.startEndpointIn1(f);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VIE(N/O)"), a, o, c).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(N/O)"), a,m1, o).classify(c),
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_VIE(N/I)"), a, c, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_VIE(N/I)"), a, o,m1).classify(c),
+                    };
+                }
+
+                for (int sc = 1; sc < term; sc++){
+                    Segment se = p.list[sc];
+                    Vertex o1 = se.endpointIn1(f).vertex;
+                    Vertex o2 = se.endpointIn2(f).vertex;
+
+                    if (outbound){
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,m1,o2).classify(a,b),
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,o2, c).classify(b),
+                            });
+                    }
+                    else {
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1,o2,m1).classify(a,b),
+                                new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),o1, c,o2).classify(b),
+                            });
+                    }
+                }
+
+                o = p.termEndpointIn2(f);
+
+                if (outbound){
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),m1, e, o).classify(a,b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/O)"), o, e,m2).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/O)"),m2, e, b).classify(b)
+                        });
+                }
+                else {
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),m1, o, e).classify(a,b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/I)"), o,m2, e).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VIE(N/I)"),m2, b, e).classify(b)
+                        });
+                }
+            }
+            return new Face.Replacement[]{
+                new Face.Replacement(f,replacements)
+            };
+        }
+        private final static Face.Replacement[] TriangulateM_VTE(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_VTV(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_EIV(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_ETV(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_EIE(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_ETE(Face f, Solid s, Segment.Path p){
+
+            final int count = f.countMembership();
+            final int term = (count-1);
+            final int mid = (count>>1);
+
             return null;
         }
         public final static int IndexOf(Segment[] list, Segment item){

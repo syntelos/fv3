@@ -104,22 +104,6 @@ public final class Bound
         else
             return true;
     }
-    /**
-     * @see AL
-     */
-	public boolean overlap(Bound bound){
-
-		if (( this.minX > bound.maxX + EPS )||
-            ( this.maxX < bound.minX - EPS )||
-            ( this.minY > bound.maxY + EPS )||
-            ( this.maxY < bound.minY - EPS )||
-            ( this.minZ > bound.maxZ + EPS )||
-            ( this.maxZ < bound.minZ - EPS ))
-
-            return false;
-        else
-            return true;
-	}
     public double getBoundsMinX(){
         return this.minX;
     }
