@@ -919,6 +919,36 @@ public final class Face
         }
         return c;
 	}
+    /**
+     * Called on new faces created in triangulation, after edge
+     * classification
+     * @see #classify(Vertex,Vertex)
+     */
+    public Face shared(){
+
+        if (null == this.shared){
+
+            for (Vertex v: this){
+
+                for (Face join: v){
+
+                    if (this != join){
+                        try {
+                            Face.Shared shared = this.shared(join);
+
+                            Vector faceN = this.getNormal();
+                            Vector joinN = join.getNormal();
+
+                            shared.edge(faceN.equals(joinN));
+                        }
+                        catch (IllegalArgumentException noedge){
+                        }
+                    }
+                }
+            }
+        }
+        return this;
+    }
     public Face.Shared shared(Face join){
 
         Face.Shared[] shared = this.shared;
@@ -1212,10 +1242,11 @@ public final class Face
     /**
      * Called in triangulation on new faces.
      * @see AH
+     * @see #shared()
      */
     public Face classify(Vertex u, Vertex v){
 
-        return this.classify(this.share(u,v).opposite(u,v));
+        return this.classify(this.shared().share(u,v).opposite(u,v));
     }
     /**
      * Called after intersection, before triangulation.

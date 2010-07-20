@@ -377,6 +377,30 @@ public final class AH
 
                 return this.list[this.last-1].endpointIn2(f).vertex;
             }
+            public Vertex startEndpointOn1(Face f){
+
+                return this.list[0].endpointOn1(f).vertex;
+            }
+            public Vertex termEndpointOn2(Face f){
+
+                return this.list[this.last-1].endpointOn2(f).vertex;
+            }
+            public Vertex endEndpointIn2(Face f){
+
+                return this.list[this.last].endpointIn2(f).vertex;
+            }
+            public Vertex endEndpointOn2(Face f){
+
+                return this.list[this.last].endpointOn2(f).vertex;
+            }
+            public Vertex startFaceVertexForEdgeIn1(Face f){
+
+                return this.list[0].faceVertexForEdgeIn1(f);
+            }
+            public boolean startIsOutboundFromFaceVertexForEdgeIn1(Face f, Vertex v){
+
+                return this.list[0].isOutboundFromFaceVertexForEdgeIn1(f,v);
+            }
         }
         /**
          * 
@@ -897,6 +921,8 @@ public final class AH
                         throw new IllegalStateException();
                     }
                 }
+                /*
+                 */
                 if (null != endpointB1 && null != endpointB2){
                     switch (endpointB1.compareTo(endpointB2)){
                     case -1:
@@ -920,8 +946,8 @@ public final class AH
                 this.endpointB2 = endpointB2;
 
                 /*
-                 * A-B symmetric path order vector
-                 * @see #compareTo
+                 * A-B symmetric path order vector for
+                 * Segment.compareTo
                  */
                 if (null != endpointA1){
 
@@ -1068,6 +1094,153 @@ public final class AH
                 return this.endpointB2;
             else 
                 return this.endpointA2;
+        }
+        /**
+         * @param f Face in this segment having first endpoint (1) in
+         * edge
+         * 
+         * @return First path order face vertex in edge endpoint for
+         * the argument face
+         */
+        public Vertex faceVertexForEdgeIn1(Face f){
+            if (f == this.a){
+
+                Endpoint edgeIn = this.endpointA1;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case AAB:
+                    if (-1 == f.a.compareTo(f.b))
+                        return f.a;
+                    else
+                        return f.b;
+                case ABC:
+                    if (-1 == f.b.compareTo(f.c))
+                        return f.b;
+                    else
+                        return f.c;
+                case ACA:
+                    if (-1 == f.c.compareTo(f.a))
+                        return f.c;
+                    else
+                        return f.a;
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+            else {
+
+                Endpoint edgeIn = this.endpointB1;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case BAB:
+                    if (-1 == f.a.compareTo(f.b))
+                        return f.a;
+                    else
+                        return f.b;
+                case BBC:
+                    if (-1 == f.b.compareTo(f.c))
+                        return f.b;
+                    else
+                        return f.c;
+                case BCA:
+                    if (-1 == f.c.compareTo(f.a))
+                        return f.c;
+                    else
+                        return f.a;
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+        /**
+         * @param f Face in this segment having second endpoint (2) in
+         * edge
+         * 
+         * @return Second path order face vertex in edge endpoint for
+         * the argument face
+         */
+        public Vertex faceVertexForEdgeIn2(Face f){
+            if (f == this.a){
+
+                Endpoint edgeIn = this.endpointA2;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case AAB:
+                    if (1 == f.a.compareTo(f.b))
+                        return f.a;
+                    else
+                        return f.b;
+                case ABC:
+                    if (1 == f.b.compareTo(f.c))
+                        return f.b;
+                    else
+                        return f.c;
+                case ACA:
+                    if (1 == f.c.compareTo(f.a))
+                        return f.c;
+                    else
+                        return f.a;
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+            else {
+
+                Endpoint edgeIn = this.endpointB2;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case BAB:
+                    if (1 == f.a.compareTo(f.b))
+                        return f.a;
+                    else
+                        return f.b;
+                case BBC:
+                    if (1 == f.b.compareTo(f.c))
+                        return f.b;
+                    else
+                        return f.c;
+                case BCA:
+                    if (1 == f.c.compareTo(f.a))
+                        return f.c;
+                    else
+                        return f.a;
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+        }
+        public boolean isOutboundFromFaceVertexForEdgeIn1(Face f, Vertex v){
+
+            if (f == this.a){
+
+                Endpoint edgeIn = this.endpointA1;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case AAB:
+                    return (v == f.a);
+
+                case ABC:
+                    return (v == f.b);
+
+                case ACA:
+                    return (v == f.c);
+
+                default:
+                    throw new IllegalStateException();
+                }
+            }
+            else {
+
+                Endpoint edgeIn = this.endpointB1;
+                switch ((Endpoint.Kind.Edge)edgeIn.kind){
+                case BAB:
+                    return (v == f.a);
+
+                case BBC:
+                    return (v == f.b);
+
+                case BCA:
+                    return (v == f.c);
+
+                default:
+                    throw new IllegalStateException();
+                }
+            }
         }
         /**
          * Sort to path order
@@ -1482,6 +1655,12 @@ public final class AH
                 new Face.Replacement(f,replacements)
             };
         }
+        private final static Face.Replacement[] TriangulateM_EIV(Face f, Solid s, Segment.Path p){
+            ////////////////////////////////
+            ////////////////////////////////
+            ////////////////////////////////
+            return null;
+        }
         /*
          * New & cloned points have status unknown, then boundary.
          */
@@ -1579,10 +1758,10 @@ public final class AH
                 }
                 else {
                     replacements = Face.Cat(replacements, new Face[]{
-                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m1, b, o).classify(b),
-                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"), o, e, b).classify(b),
-                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, e, o).classify(c),
-                            new Face(s,f.name.copy("TriangulateM_VTE(N/O)"),m2, c, e).classify(c)
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/I)"),m1, b, o).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/I)"), o, e, b).classify(b),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/I)"),m2, e, o).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_VTE(N/I)"),m2, c, e).classify(c)
                         });
                 }
             }
@@ -1590,44 +1769,138 @@ public final class AH
                 new Face.Replacement(f,replacements)
             };
         }
-        private final static Face.Replacement[] TriangulateM_VTV(Face f, Solid s, Segment.Path p){
-
-            final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
-
-            return null;
-        }
-        private final static Face.Replacement[] TriangulateM_EIV(Face f, Solid s, Segment.Path p){
-
-            final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
-
-            return null;
-        }
         private final static Face.Replacement[] TriangulateM_ETV(Face f, Solid s, Segment.Path p){
-
-            final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
-
+            ////////////////////////////////
+            ////////////////////////////////
+            ////////////////////////////////
             return null;
         }
         private final static Face.Replacement[] TriangulateM_EIE(Face f, Solid s, Segment.Path p){
+            Face[] replacements = null;
 
             final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
 
-            return null;
+            final Vertex e1 = p.start.vertex;
+            final Vertex e2 = p.end.vertex;
+            final Vertex a = p.startFaceVertexForEdgeIn1(f);
+            final Vertex b = f.next(a);
+            final Vertex c = f.next(b);
+
+            /*
+             * Not boundary point: needs classification
+             */
+            final Vertex m1 = c.midpoint(a).classify(c);
+            final Vertex m2 = b.midpoint(c).classify(c);
+
+            final boolean outbound = p.startIsOutboundFromFaceVertexForEdgeIn1(f,a);
+
+            if (2 == count){
+
+                final Vertex o = p.startEndpointIn1(f);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"), a,e1,m1).classify(a),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e1, o,m1).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),m1, o, c).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"), c, o,m2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"), o,e2,m2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e2, b,m2).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e1,e2, o).classify(a,b)
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"), a,m1,e1).classify(a),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),e1,m1, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),m1, c, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"), c,m2, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"), o,m2,e2).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),e2,m2, b).classify(b),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),e1, o,e2).classify(a,b)
+                    };
+                }
+            }
+            else {
+                final int term = (count-1);
+                /*
+                 * Not boundary points: need classification
+                 */
+                final Vertex m3 = e1.midpoint(e2).classify(f.share(a,b).opposite(a,b));
+
+                Vertex o;
+
+                o = p.startEndpointIn1(f);
+
+                if (outbound){
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"), a,e1,m1).classify(a),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e1, o,m1).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),m1, o, c).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e1, o,m3).classify(c),
+                    };
+                }
+                else {
+                    replacements = new Face[]{
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"), a,m1,e1).classify(a),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),e1,m1, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/I)"),m1, c, o).classify(c),
+                        new Face(s,f.name.copy("TriangulateM_EIE(2/O)"),e1,m3, o).classify(c),
+                    };
+                }
+
+                for (int sc = 1; sc < term; sc++){
+                    Segment se = p.list[sc];
+                    Vertex o1 = se.endpointIn1(f).vertex;
+                    Vertex o2 = se.endpointIn2(f).vertex;
+
+                    if (outbound){
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_EIE(N/O)"),o1,m3,o2).classify(a,b),
+                                new Face(s,f.name.copy("TriangulateM_EIE(N/O)"),o1,o2, c).classify(c)
+                            });
+                    }
+                    else {
+                        replacements = Face.Cat(replacements, new Face[]{
+                                new Face(s,f.name.copy("TriangulateM_EIE(N/I)"),o1,o2,m3).classify(a,b),
+                                new Face(s,f.name.copy("TriangulateM_EIE(N/I)"),o1, c,o2).classify(c)
+                            });
+                    }
+                }
+
+                o = p.endEndpointOn2(f);
+
+                if (outbound){
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/O)"),m3,e2, o).classify(a,b),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/O)"), o,e2,m2).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/O)"), o,m2, c).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/O)"),e2,m2, b).classify(b)
+                        });
+                }
+                else {
+                    replacements = Face.Cat(replacements, new Face[]{
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/I)"),m3, o,e2).classify(a,b),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/I)"), o,m2,e2).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/I)"), o, c,m2).classify(c),
+                            new Face(s,f.name.copy("TriangulateM_EIE(N/I)"),e2, b,m2).classify(b)
+                        });
+                }
+            }
+            return new Face.Replacement[]{
+                new Face.Replacement(f,replacements)
+            };
         }
         private final static Face.Replacement[] TriangulateM_ETE(Face f, Solid s, Segment.Path p){
-
-            final int count = f.countMembership();
-            final int term = (count-1);
-            final int mid = (count>>1);
-
+            ////////////////////////////////
+            ////////////////////////////////
+            ////////////////////////////////
+            return null;
+        }
+        private final static Face.Replacement[] TriangulateM_VTV(Face f, Solid s, Segment.Path p){
+            ////////////////////////////////
+            ////////////////////////////////
+            ////////////////////////////////
             return null;
         }
         public final static int IndexOf(Segment[] list, Segment item){
