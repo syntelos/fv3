@@ -25,7 +25,7 @@ import lxl.Set;
  * 
  */
 public final class Mesh
-    extends lxl.ArrayList<Face>
+    extends lxl.Set<Face>
     implements java.util.Comparator<Face>
 {
 
