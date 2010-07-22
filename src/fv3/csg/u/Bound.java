@@ -18,7 +18,8 @@
 package fv3.csg.u;
 
 /**
- *
+ * A cuboid bounding region 
+ * 
  * @author John Pritchard
  */
 public final class Bound 

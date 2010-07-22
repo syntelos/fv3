@@ -25,9 +25,9 @@ package fv3.math;
 public interface Notation
 {
     /**
-     * Common Math constants
+     * Common Math constants, epsilon for values 0.0 to 10.0.
      */
-    public final static double EPSILON = (1e-8);
+    public final static double EPSILON = (1e-7);
     public final static double EPS = EPSILON;
     public final static double EPS_M2 = (EPSILON*2.0);
     public final static double EPS_D2 = (EPSILON/2.0);

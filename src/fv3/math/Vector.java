@@ -25,7 +25,7 @@ package fv3.math;
  * @author jdp
  */
 public class Vector
-    extends Abstract
+    extends AbstractDouble
     implements java.lang.Comparable<Vector>,
                java.lang.Cloneable
 {
@@ -340,7 +340,7 @@ public class Vector
         double[] c = this.v;
 
         double length = this.length();
-        if (Math.abs(length) < EPSILON) {
+        if (0.0 == Z(length)) {
             if ((c[X] >= c[Y]) && (c[X] >= c[Z])) {
                 c[X] = 1.0;
                 c[Y] = c[Z] = 0.0;

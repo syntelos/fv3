@@ -78,7 +78,7 @@ package fv3.math;
  * @author jdp
  */
 public class Matrix
-    extends Abstract
+    extends AbstractDouble
 {
 
 

@@ -24,85 +24,44 @@ package fv3.csg.u;
 public interface Notation
     extends fv3.math.Notation
 {
-    /**
-     * @see fv3.csg.u.AH
-     */
-    public abstract static class State
-    {
 
-        public enum Vertex {
-            Unknown, Inside, Outside, Boundary;
+    public enum State {
 
-            public boolean isInsideOrOutside(){
-                switch (this){
-                case Inside:
-                case Outside:
-                    return true;
-                default:
-                    return false;
-                }
-            }
-            public String toString(){
-                return String.format("%11s",this.name());
-            }
-            public final static State.Face ToFace(State.Vertex state){
-                switch (state){
-                case Unknown:
-                    return State.Face.Unknown;
-                case Inside:
-                    return State.Face.Inside;
-                case Outside:
-                    return State.Face.Outside;
-                case Boundary:
-                    return State.Face.Same;
-                default:
-                    throw new IllegalArgumentException(state.name());
-                }
-            }
-            public final static State.Vertex Classify(int s){
-                switch (s){
-                case -1:
-                    return Vertex.Inside;
-                case 0:
-                    return Vertex.Boundary;
-                case 1:
-                    return Vertex.Outside;
-                default:
-                    throw new IllegalArgumentException(String.valueOf(s));
-                }
+        Unknown, Inside, Outside, Boundary;
+
+        public boolean isInsideOrOutside(){
+            switch (this){
+            case Inside:
+            case Outside:
+                return true;
+            default:
+                return false;
             }
         }
-        public enum Face {
-            Unknown, Inside, Outside, Same, Opposite;
-
-            public boolean isInsideOrOutside(){
-                switch (this){
-                case Inside:
-                case Outside:
-                    return true;
-                default:
-                    return false;
-                }
-            }
-            public String toString(){
-                return String.format("%8s",this.name());
-            }
-            public final static State.Vertex ToVertex(State.Face state){
-                switch (state){
-                case Unknown:
-                    return State.Vertex.Unknown;
-                case Inside:
-                    return State.Vertex.Inside;
-                case Outside:
-                    return State.Vertex.Outside;
-                case Same:
-                    return State.Vertex.Boundary;
-                case Opposite:
-                default:
-                    throw new IllegalArgumentException(state.name());
-                }
+        public String toString(){
+            return String.format("%11s",this.name());
+        }
+        public final static State Invert(State state){
+            switch (state){
+            case Inside:
+                return Outside;
+            case Outside:
+                return Inside;
+            default:
+                return Unknown;
             }
         }
-
+        public final static State Classify(int s){
+            switch (s){
+            case -1:
+                return Inside;
+            case 0:
+                return Boundary;
+            case 1:
+                return Outside;
+            default:
+                throw new IllegalArgumentException(String.valueOf(s));
+            }
+        }
     }
 }

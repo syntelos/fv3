@@ -323,7 +323,7 @@ public class Solid
     /**
      * Construction "add" performs clone
      */
-    public Solid addC(Construct op, Face face){
+    public Solid addC(Face face){
 
         this.mesh.add(face.clone(this));
         return this;

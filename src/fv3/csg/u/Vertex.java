@@ -24,7 +24,7 @@ import fv3.math.Vector;
  * @author John Pritchard
  */
 public class Vertex
-    extends java.lang.Object
+    extends fv3.math.Abstract
     implements fv3.csg.u.Notation,
                java.lang.Comparable<Vertex>,
                java.lang.Iterable<Face>,
@@ -35,7 +35,7 @@ public class Vertex
 
     public final int hashCode;
 
-    public State.Vertex status = State.Vertex.Unknown;
+    public State status = State.Unknown;
 
     private Face[] membership;
 
@@ -70,7 +70,7 @@ public class Vertex
     public Vertex(double[] array, int ofs){
         this(array[ofs+X],array[ofs+Y],array[ofs+Z]);
     }
-    public Vertex(Vector pos, State.Vertex status){
+    public Vertex(Vector pos, State status){
         this(pos.array());
         if (null != status)
             this.status = status;
@@ -80,7 +80,7 @@ public class Vertex
 
 
     public void init(){
-        this.status = State.Vertex.Unknown;
+        this.status = State.Unknown;
     }
     public Vector getPosition(){
         return new Vector(this.x,this.y,this.z);
@@ -98,12 +98,12 @@ public class Vertex
     }
     public double distance(Face face){
 
-        double[] n = face.getNxyzd();
+        final double[] n = face.getNxyzd();
 
-		double nx = n[0];
-		double ny = n[1];
-		double nz = n[2];
-		double fd = n[3];
+		final double nx = n[0];
+		final double ny = n[1];
+		final double nz = n[2];
+		final double fd = n[3];
 
 		return (nx*this.x + ny*this.y + nz*this.z + fd);
     }
@@ -117,46 +117,36 @@ public class Vertex
         else
             return 0;
     }
-    public boolean is(State.Vertex s){
+    public State sclass(Face that){
+        return State.Classify(this.sdistance(that));
+    }
+    public boolean is(State s){
         return (s == this.status);
     }
-    public State.Vertex con(State.Vertex... set){
-        for (State.Vertex s: set){
+    public boolean or(State s1, State s2){
+        return (s1 == this.status || s2 == this.status);
+    }
+    public State con(State... set){
+        for (State s: set){
             if (s == this.status)
                 return s;
         }
         return null;
     }
     public boolean isUnknown(){
-        return (State.Vertex.Unknown == this.status);
+        return (State.Unknown == this.status);
     }
     public boolean isNotUnknown(){
-        return (State.Vertex.Unknown != this.status);
+        return (State.Unknown != this.status);
     }
     public boolean isInside(){
-        return (State.Vertex.Inside == this.status);
+        return (State.Inside == this.status);
     }
     public boolean isOutside(){
-        return (State.Vertex.Outside == this.status);
+        return (State.Outside == this.status);
     }
     public boolean isBoundary(){
-        return (State.Vertex.Boundary == this.status);
-    }
-    public Vertex setUnknown(){
-        this.status = State.Vertex.Unknown;
-        return this;
-    }
-    public Vertex setInside(){
-        this.status = State.Vertex.Inside;
-        return this;
-    }
-    public Vertex setOutside(){
-        this.status = State.Vertex.Outside;
-        return this;
-    }
-    public Vertex setBoundary(){
-        this.status = State.Vertex.Boundary;
-        return this;
+        return (State.Boundary == this.status);
     }
     public void destroy(){
         this.membership = null;
@@ -172,7 +162,7 @@ public class Vertex
              * Clear status for copying vertex from one CSG operand
              * to another
              */
-            clone.status = State.Vertex.Unknown;
+            clone.status = State.Unknown;
             /*
              * Vertex cloning needs to be part of a process of
              * rebuilding vertex face membership lists 
@@ -292,25 +282,51 @@ public class Vertex
         return a;
     }
     /**
-     * Called in triangulation to classify a new floating vertex
-     * that's not a boundary vertex.
+     * Initial vertex classification
+     */
+    public Vertex with(Vertex v){
+
+        this.status = v.status;
+
+        return this;
+    }
+    /**
+     * Initial vertex classification
+     */
+    public Vertex boundary(){
+
+        this.status = State.Boundary;
+
+        return this;
+    }
+    /**
+     * Vertex classification propagation
      */
     public Vertex classify(Vertex v){
 
-        this.status = v.status;
-        return this;
+        return this.classify(v.status,true);
     }
-    public Vertex classify(State.Vertex s){
+    /**
+     * Vertex classification propagation
+     */
+    public Vertex classify(State s){
 
-        if (this.isUnknown()){
+        return this.classify(s,true);
+    }
+    /**
+     * Vertex classification propagation
+     */
+    public Vertex classify(State s, boolean fwd){
+
+        if (State.Unknown == this.status){
 
             this.status = s;
 
-            if (s.isInsideOrOutside()){
+            if (State.Boundary != s && null != this.membership){
 
                 for (Face face: this){
 
-                    face.classify(s);
+                    face.classify(this,s,true);
                 }
             }
         }
@@ -393,18 +409,6 @@ public class Vertex
             copier[len] = item;
             return copier;
         }
-    }
-    public final static double Z(double v){
-        if (EPS > Math.abs(v))
-            return 0.0;
-        else
-            return v;
-    }
-    public final static boolean EEQ(double a, double b){
-        if (EPS > Math.abs(a - b))
-            return true;
-        else
-            return false;
     }
 
     public static class Iterator

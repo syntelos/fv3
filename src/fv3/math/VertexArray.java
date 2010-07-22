@@ -35,7 +35,8 @@ import javax.media.opengl.GL2;
  */
 public class VertexArray
     extends Abstract
-    implements fv3.Model.Element,
+    implements fv3.math.Fv3.Double,
+               fv3.Model.Element,
                fv3.Bounds
 {
     public enum Type {

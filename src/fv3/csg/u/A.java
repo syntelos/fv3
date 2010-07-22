@@ -32,6 +32,11 @@ public abstract class A
     public final Solid.Construct op;
 
     public final Solid a, b, r;
+    /**
+     * Intersection sets
+     */
+    protected final lxl.Set<Face> inA = new lxl.Set<Face>();
+    protected final lxl.Set<Face> inB = new lxl.Set<Face>();
 
     /**
      * Subclass performs CSG operation.  Subsequently requires call to
@@ -43,6 +48,53 @@ public abstract class A
         this.a = a.push();
         this.b = b.push();
         this.r = new Solid(op,a,b);
+        {
+            Bound bBound = b.getBound();
+
+            if (a.getBound().intersect(bBound)){
+
+                scan:
+                for (Face aFace: a){
+
+                    if (aFace.getBound().intersect(bBound)){
+
+                        for (Face bFace: b){
+
+                            if (aFace.getBound().intersect(bFace.getBound())){
+
+                                final int a_A_b = aFace.a.sdistance(bFace);
+                                final int a_B_b = aFace.b.sdistance(bFace);
+                                final int a_C_b = aFace.c.sdistance(bFace);
+
+                                if (a_A_b != a_B_b ||
+                                    a_B_b != a_C_b ||
+                                    a_A_b != a_C_b){
+
+                                    final int b_A_a = bFace.a.sdistance(aFace);
+                                    final int b_B_a = bFace.b.sdistance(aFace);
+                                    final int b_C_a = bFace.c.sdistance(aFace);
+
+                                    if (b_A_a != b_B_a ||
+                                        b_B_a != b_C_a ||
+                                        b_A_a != b_C_a){
+                                        try {
+                                            Segment s = new Segment(aFace, bFace,
+                                                                    a_A_b, a_B_b, a_C_b,
+                                                                    b_A_a, b_B_a, b_C_a);
+
+                                            this.inA.add(aFace);
+                                            this.inB.add(bFace);
+                                        }
+                                        catch (IllegalArgumentException ignore){
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -50,6 +102,8 @@ public abstract class A
      * Restore operands to original states
      */
     public void destroy(){
+        this.inA.clear();
+        this.inB.clear();
 
         this.a.pop();
 

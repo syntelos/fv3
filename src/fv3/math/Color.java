@@ -27,22 +27,9 @@ import java.nio.FloatBuffer;
  * @author jdp
  */
 public final class Color
-    extends java.lang.Object
+    extends AbstractFloat
     implements fv3.math.Notation
 {
-
-    public final static float Zf(float vf){
-
-        if (vf == vf){
-            if (EPSILON > Math.abs(vf))
-                return 0.0f;
-            else
-                return vf;
-        }
-        else
-            throw new IllegalArgumentException(String.valueOf(vf));
-    }
-
 
     private final static float[] Init = {0f,0f,0f,1f};
 
@@ -70,8 +57,6 @@ public final class Color
 
 
     private final float[] c = Color.New();
-
-    private volatile FloatBuffer b;
 
 
     public Color(){
@@ -159,14 +144,6 @@ public final class Color
     }
     public float[] array(){
         return this.c;
-    }
-    public FloatBuffer buffer(){
-        FloatBuffer b = this.b;
-        if (null == b){
-            b = FloatBuffer.wrap(this.array());
-            this.b = b;
-        }
-        return b;
     }
     public String toString(){
         float[] c = this.c;

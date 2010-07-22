@@ -69,8 +69,13 @@ public final class Mesh
             this.vertices.add(a);
             return a;
         }
-        else
-            return this.vertices.get(idx);
+        else {
+            Vertex b = this.vertices.get(idx);
+            if (a.isUnknown())
+                return b;
+            else
+                return b.with(a);
+        }
     }
     public final Mesh remove(Vertex a){
         this.vertices.remove(a);

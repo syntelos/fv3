@@ -25,6 +25,18 @@ import java.nio.DoubleBuffer;
  * float buffer reflects the state of the instance.  Second, an
  * instance is the mutable state of a variable.
  * 
+ * <h3>Epsilon scalar radii</h3>
+ * 
+ * Because floating point numeric values are not uniformly distributed
+ * on the real number domain
+ * 
+ * <pre>
+ * V = s * 1.f * 2**(e*-127)
+ * </pre>
+ * 
+ * for sign 's', exponent 'e' and fraction 'f', rounding error checks
+ * must be scaled to the range of the value under test.
+ * 
  * @see AxisAngle
  * @see Color
  * @see Matrix
@@ -35,7 +47,29 @@ public abstract class Abstract
     extends Object
     implements fv3.math.Notation
 {
-
+    /**
+     * Scale argument epsilon.  A valid argument epsilon is larger
+     * (EPS &lt; e &lt; 1.0) than the internally defined FP epsilon.
+     */
+    public final static double E(double v, double e){
+        return (e * Math.max(1.0,Math.abs(v)));
+    }
+    /**
+     * Scale argument epsilon.  A valid argument epsilon is larger
+     * (EPS &lt; e &lt; 1.0) than the internally defined FP epsilon.
+     */
+    public final static double E(double u, double v, double e){
+        return (e * Math.max(1.0,Math.max(Math.abs(u),Math.abs(v))));
+    }
+    /**
+     * Scale FP epsilon
+     */
+    public final static double EPSILON(double v){
+        return (EPSILON * Math.max(1.0,Math.abs(v)));
+    }
+    public final static double EPSILON(double u, double v){
+        return (EPSILON * Math.max(1.0,Math.max(Math.abs(u),Math.abs(v))));
+    }
     public final static boolean IZ(double v){
         return (EPS > Math.abs(v));
     }
@@ -76,23 +110,36 @@ public abstract class Abstract
     }
     public final static boolean EEQ(double a, double b){
 
-        double d = (a - b);
+        final double d = (a - b);
 
         if (Double.isNaN(d))
 
             return false;
         else
-            return (Math.abs(d) <= EPSILON);
+            return (Math.abs(d) <= EPSILON(a,b));
     }
     public final static boolean EEQ(double a, double b, double e){
 
-        return (Math.abs(a - b) <= e);
+        final double d = (a - b);
+
+        return (Math.abs(a - b) <= E(a,b,e));
+    }
+    public final static boolean ELE(double a, double b){
+
+        final double d = (a - b);
+
+        if (Math.abs(d) <= EPSILON(a,b))
+            return true;
+        else if (0.0 > d)
+            return true;
+        else
+            return false;
     }
     public final static boolean ELE(double a, double b, double e){
 
-        double d = (a - b);
+        final double d = (a - b);
 
-        if (Math.abs(d) <= e)
+        if (Math.abs(d) <= E(a,b,e))
             return true;
         else if (0.0 > d)
             return true;
@@ -101,9 +148,20 @@ public abstract class Abstract
     }
     public final static boolean ELT(double a, double b, double e){
 
-        double d = (a - b);
+        final double d = (a - b);
 
-        if (Math.abs(d) <= e)
+        if (Math.abs(d) <= E(a,b,e))
+            return false;
+        else if (0.0 > d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean ELT(double a, double b){
+
+        final double d = (a - b);
+
+        if (Math.abs(d) <= EPSILON(a,b))
             return false;
         else if (0.0 > d)
             return true;
@@ -112,9 +170,20 @@ public abstract class Abstract
     }
     public final static boolean EGE(double a, double b, double e){
 
-        double d = (a - b);
+        final double d = (a - b);
 
-        if (Math.abs(d) <= e)
+        if (Math.abs(d) <= E(a,b,e))
+            return true;
+        else if (0.0 < d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean EGE(double a, double b){
+
+        final double d = (a - b);
+
+        if (Math.abs(d) <= EPSILON(a,b))
             return true;
         else if (0.0 < d)
             return true;
@@ -123,9 +192,20 @@ public abstract class Abstract
     }
     public final static boolean EGT(double a, double b, double e){
 
-        double d = (a - b);
+        final double d = (a - b);
 
-        if (Math.abs(d) <= e)
+        if (Math.abs(d) <= E(a,b,e))
+            return false;
+        else if (0.0 < d)
+            return true;
+        else
+            return false;
+    }
+    public final static boolean EGT(double a, double b){
+
+        final double d = (a - b);
+
+        if (Math.abs(d) <= EPSILON(a,b))
             return false;
         else if (0.0 < d)
             return true;
@@ -230,26 +310,8 @@ public abstract class Abstract
     }
 
 
-    /**
-     * Unique buffer for array assigned to null when subclass array
-     * (ref) changes under cloning.
-     */
-    protected volatile DoubleBuffer b;
-
 
     protected Abstract(){
         super();
-    }
-
-
-    public abstract double[] array();
-
-    public DoubleBuffer buffer(){
-        DoubleBuffer b = this.b;
-        if (null == b){
-            b = DoubleBuffer.wrap(this.array());
-            this.b = b;
-        }
-        return b;
     }
 }
