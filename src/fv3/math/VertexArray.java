@@ -37,7 +37,8 @@ public class VertexArray
     extends Abstract
     implements fv3.math.Fv3.Double,
                fv3.Model.Element,
-               fv3.Bounds
+               fv3.Bounds,
+               java.lang.Cloneable
 {
     public enum Type {
         Points, Lines, LineStrip, LineLoop, Triangles, TriangleStrip, TriangleFan, Quads, QuadStrip, Polygon;
@@ -175,9 +176,26 @@ public class VertexArray
     }
 
 
+    public VertexArray clone(){
+        try {
+            VertexArray clone = (VertexArray)super.clone();
+            clone.vertices = clone.vertices.clone();
+            if (null != this.normals)
+                clone.normals = clone.normals.clone();
+
+            return clone;
+        }
+        catch (java.lang.CloneNotSupportedException exc){
+            throw new InternalError();
+        }
+    }
     public int[] ables(){
 
-        if (this.visible){
+        if (0 == this.countVertices)
+
+            return null;
+
+        else if (this.visible){
 
             switch(this.type){
             case Points:
@@ -211,7 +229,7 @@ public class VertexArray
     }
     public void define(GL2 gl){
 
-        if (this.visible){
+        if (0 < this.countVertices && this.visible){
 
             /*
              * These calls provide data for compilation into the display
@@ -267,6 +285,8 @@ public class VertexArray
      */
     public VertexArray add(VertexArray that){
 
+        this.bounds = null;
+
         switch(this.type){
         case Points:
         case Lines:
@@ -292,6 +312,8 @@ public class VertexArray
     }
     public VertexArray transform(Matrix m){
 
+        this.bounds = null;
+
         double[] vertices = this.vertices;
 
         for (int index = 0, count = vertices.length; index < count; index += 3){
@@ -303,43 +325,63 @@ public class VertexArray
     }
     public VertexArray translate(double dx, double dy, double dz){
 
-        double[] vertices = this.vertices;
+        if (0.0 != dx || 0.0 != dy || 0.0 != dz){
 
-        for (int index = 0, count = vertices.length; index < count; ){
+            this.bounds = null;
 
-            vertices[index++] += dx;
-            vertices[index++] += dy;
-            vertices[index++] += dz;
+            double[] vertices = this.vertices;
+
+            for (int index = 0, count = vertices.length; index < count; ){
+
+                vertices[index++] += dx;
+                vertices[index++] += dy;
+                vertices[index++] += dz;
+            }
         }
         return this;
     }
     public VertexArray translateX(double dx){
 
-        double[] vertices = this.vertices;
+        if (0.0 != dx){
 
-        for (int index = X, count = vertices.length; index < count; index += 3){
+            this.bounds = null;
 
-            vertices[index] += dx;
+            double[] vertices = this.vertices;
+
+            for (int index = X, count = vertices.length; index < count; index += 3){
+
+                vertices[index] += dx;
+            }
         }
         return this;
     }
     public VertexArray translateY(double dy){
 
-        double[] vertices = this.vertices;
+        if (0.0 != dy){
 
-        for (int index = Y, count = vertices.length; index < count; index += 3){
+            this.bounds = null;
 
-            vertices[index] += dy;
+            double[] vertices = this.vertices;
+
+            for (int index = Y, count = vertices.length; index < count; index += 3){
+
+                vertices[index] += dy;
+            }
         }
         return this;
     }
     public VertexArray translateZ(double dz){
 
-        double[] vertices = this.vertices;
+        if (0.0 != dz){
 
-        for (int index = Z, count = vertices.length; index < count; index += 3){
+            this.bounds = null;
 
-            vertices[index] += dz;
+            double[] vertices = this.vertices;
+
+            for (int index = Z, count = vertices.length; index < count; index += 3){
+
+                vertices[index] += dz;
+            }
         }
         return this;
     }
@@ -371,9 +413,13 @@ public class VertexArray
      * @param count Number of vertices
      */
     public final VertexArray countVertices(int count){
-        if (1 > count)
-            throw new IllegalArgumentException(String.valueOf(count));
-
+        if (1 > count){
+            this.bounds = null;
+            this.countVertices = 0;
+            this.vertices = new double[0];
+            this.countFaces = CountFaces(this.type,0);
+            this.normals = null;
+        }
         else {
             if (count != this.countVertices){
                 this.bounds = null;
@@ -400,8 +446,8 @@ public class VertexArray
                 else
                     this.normals = null;
             }
-            return this;
         }
+        return this;
     }
     /**
      * @param index Vertex index
@@ -918,6 +964,180 @@ public class VertexArray
     }
     public double getBoundsMaxZ(){
         return this.getBounds().getBoundsMaxZ();
+    }
+    /**
+     * Translate this filled vertex array to the upper left coordinate
+     * (minX,maxY)
+     */
+    public final VertexArray fit(double minX, double maxY){
+        double tx = (minX - this.getBoundsMinX());
+        double ty = (maxY - this.getBoundsMaxY());
+        this.translate(tx,ty,0.0);
+        return this;
+    }
+    /**
+     * Fit to box with aspect ratio lock
+     */
+    public final VertexArray fit(double minX, double maxX, double minY, double maxY){
+        return this.fit(minX,maxX,minY,maxY,true);
+    }
+    /**
+     * Fit to box
+     */
+    public final VertexArray fit(double minX, double maxX, double minY, double maxY, 
+                                 boolean aspect)
+    {
+        final double bMinX = this.getBoundsMinX();
+        final double bMaxX = this.getBoundsMaxX();
+        final double bMinY = this.getBoundsMinY();
+        final double bMaxY = this.getBoundsMaxY();
+        final double bMinZ = this.getBoundsMinZ();
+        final double bMaxZ = this.getBoundsMaxZ();
+
+        final double tx = (minX - bMinX);
+        final double ty = (maxY - bMaxY);
+
+        final double dbX = (bMaxX - bMinX);
+        final double dbY = (bMaxY - bMinY);
+        double sx, sy;
+        if (0.0 != dbX)
+            sx = (maxX - minX) / dbX;
+        else
+            sx = 1.0;
+
+        if (0.0 != dbY)
+            sy = (maxY - minY) / dbY;
+        else
+            sy = 1.0;
+
+        if (aspect){
+            final double s = Math.min(sx,sy);
+            sx = s;
+            sy = s;
+        }
+        Matrix m = new Matrix();
+        m.translate(tx,ty,0.0);
+        m.scale(sx,sy,1.0);
+        this.transform(m);
+        return this;
+    }
+    /**
+     * Fit to box with aspect ratio lock
+     */
+    public final VertexArray fit(double minX, double maxX, 
+                                 double minY, double maxY, 
+                                 double minZ, double maxZ)
+    {
+        return this.fit(minX,maxX,minY,maxY,minZ,maxZ,true);
+    }
+    /**
+     * Fit to box
+     */
+    public final VertexArray fit(double minX, double maxX, 
+                                 double minY, double maxY, 
+                                 double minZ, double maxZ, 
+                                 boolean aspect)
+    {
+        final double bMinX = this.getBoundsMinX();
+        final double bMaxX = this.getBoundsMaxX();
+        final double bMinY = this.getBoundsMinY();
+        final double bMaxY = this.getBoundsMaxY();
+        final double bMinZ = this.getBoundsMinZ();
+        final double bMaxZ = this.getBoundsMaxZ();
+
+        final double tx = (minX - bMinX);
+        final double ty = (maxY - bMaxY);
+        final double tz = (maxZ - bMinZ);
+
+        final double dbX = (bMaxX - bMinX);
+        final double dbY = (bMaxY - bMinY);
+        final double dbZ = (bMaxZ - bMinZ);
+
+        double sx, sy, sz;
+        if (0.0 != dbX)
+            sx = (maxX - minX) / dbX;
+        else
+            sx = 1.0;
+
+        if (0.0 != dbY)
+            sy = (maxY - minY) / dbY;
+        else
+            sy = 1.0;
+
+        if (0.0 != dbZ)
+            sz = (maxZ - minZ) / dbZ;
+        else
+            sz = 1.0;
+
+        if (aspect){
+            final double s = Math.min(sx,Math.min(sy,sz));
+            sx = s;
+            sy = s;
+            sz = s;
+        }
+        Matrix m = new Matrix();
+        m.translate(tx,ty,tz);
+        m.scale(sx,sy,sz);
+        this.transform(m);
+        return this;
+    }
+    /**
+     * Fit to target point and "scale range".
+     */
+    public final VertexArray fit2(double pX, double pY, double pZ,
+                                  double rX, double rY, double rZ)
+    {
+        return this.fit2(pX,pY,pZ,rX,rY,rZ,true);
+    }
+    /**
+     * Fit to target point and "scale range".
+     */
+    public final VertexArray fit2(double pX, double pY, double pZ,
+                                  double rX, double rY, double rZ,
+                                  boolean aspect)
+    {
+        final double bMinX = this.getBoundsMinX();
+        final double bMaxX = this.getBoundsMaxX();
+        final double bMinY = this.getBoundsMinY();
+        final double bMaxY = this.getBoundsMaxY();
+        final double bMinZ = this.getBoundsMinZ();
+        final double bMaxZ = this.getBoundsMaxZ();
+
+        final double tx = (pX - bMinX);
+        final double ty = (pY - bMaxY);
+        final double tz = (pZ - bMinZ);
+
+        final double dbX = (bMaxX - bMinX);
+        final double dbY = (bMaxY - bMinY);
+        final double dbZ = (bMaxZ - bMinZ);
+
+        double sx, sy, sz;
+        if (0.0 != dbX)
+            sx = rX / dbX;
+        else
+            sx = 1.0;
+
+        if (0.0 != dbY)
+            sy = rY / dbY;
+        else
+            sy = 1.0;
+
+        if (0.0 != dbZ)
+            sz = rZ / dbZ;
+        else
+            sz = 1.0;
+
+        if (aspect){
+            final double s = Math.min(sx,Math.min(sy,sz));
+            sx = s;
+            sy = s;
+            sz = s;
+        }
+        Matrix m = new Matrix();
+        m.translate(tx,ty,tz);
+        m.scale(sx,sy,sz);
+        this.transform(m);
+        return this;
     }
     public VertexArrayProfile profileXY(){
         return new VertexArrayProfile.XY(this,0.0);

@@ -146,7 +146,7 @@ public class Matrix
                 for (k = 0; k < 4; k++){
                     ab += (a[I(k,i)] * b[I(j,k)]);
                 }
-                m[I(j,i)] = Z(ab);
+                m[I(j,i)] = Z1(ab);
             }
         }
         return this;

@@ -27,8 +27,7 @@ import fv3.font.ttf.TTF;
 import javax.media.opengl.GL2;
 
 /**
- * This class may be subclassed with a {@link Font} subclass as for
- * implementing a text editor.
+ * 
  * 
  * @author John Pritchard
  */
@@ -62,7 +61,11 @@ public class TTFGlyph
 
 
     protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
-        super(font);
+        super(Type.Triangles,
+              /*
+               * [TODO] Define TTF GL 
+               */ 0,
+              font);
         this.index = index;
         this.offset = (glyf.offset + offset);
         this.length = (next-offset);
@@ -70,7 +73,11 @@ public class TTFGlyph
     }
 
 
-    public void apply(GL2 gl){
+    public TTFGlyph clone(){
+        TTFGlyph clone = (TTFGlyph)super.clone();
+        if (null != this.compound)
+            clone.compound = clone.compound.clone();
+        return clone;
     }
     public final boolean isSimple(){
         return (null == this.compound);
@@ -483,45 +490,5 @@ public class TTFGlyph
                 this.add(target);
             }
         }
-    }
-
-    public String toString(){
-
-        return String.format("TTFGlyph( %4d, %6s, %3d, %3d)",this.index,CharacterToString(this.character,'\''),this.nPoints,this.nContours);
-    }
-
-    public String toString(String infix){
-        infix += "            ";
-        String prefix = ("TTFGlyph( "+this.index+", '"+CharacterToString(this.character,'\'')+"', ");
-
-        if (null != this.compound){
-            StringBuilder string = new StringBuilder();
-            string.append(prefix);
-            CompoundGlyph[] compound = this.compound;
-            for (int cc = 0, count = compound.length; cc < count; cc++){
-                if (0 != cc)
-                    string.append(infix);
-                string.append(compound[cc].toString());
-            }
-            string.append(")");
-            return string.toString();
-        }
-        else
-            return super.toString(prefix,infix,")");
-    }
-
-    public final static String CharacterToString(char ch, char quote){
-        if (' ' <= ch && '~' >= ch){
-            StringBuilder string = new StringBuilder();
-            string.append(quote);
-            if (quote == ch)
-                string.append('\\');
-
-            string.append(ch);
-            string.append(quote);
-            return string.toString();
-        }
-        else
-            return "0x"+Integer.toHexString(ch).toUpperCase();
     }
 }

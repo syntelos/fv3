@@ -1,7 +1,7 @@
 
 Please refer to their respective copyrights and licenses for more information.
 
-To do so, run
+For TTF fonts, run
 
    java -cp fv3-<version>.jar fv3.font.TTFFont <filename.(ttf|otf)>
 

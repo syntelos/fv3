@@ -38,7 +38,7 @@ import java.nio.charset.UnsupportedCharsetException;
  * 
  * @author John Pritchard
  */
-public class TTFFontReader
+public final class TTFFontReader
     extends FontReader
 {
     private final static long SfntDate1970 = 0x7c25b080;
@@ -48,7 +48,6 @@ public class TTFFontReader
     {
         return TTFFontReader.class.getResourceAsStream("/fonts/"+name+".ttf");
     }
-
 
 
     public TTFFontReader(String name)

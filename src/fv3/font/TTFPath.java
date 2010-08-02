@@ -25,7 +25,7 @@ import fv3.font.ttf.Point;
  * 
  * @author John Pritchard
  */
-public class TTFPath
+public final class TTFPath
     extends Object
     implements Path<TTFFont,TTFGlyph>
 {

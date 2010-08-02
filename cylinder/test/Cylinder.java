@@ -6,6 +6,7 @@ import fv3.Camera;
 import fv3.csg.Solid;
 import fv3.math.Color;
 import fv3.math.VertexArray;
+import fv3.model.Debugger;
 import fv3.model.Disable;
 import fv3.model.Enable;
 import fv3.model.Material;
@@ -59,6 +60,11 @@ public class Cylinder
                 Animator animator = new Animator(cylinder);
                 animator.start();
             }
+        }
+        catch (Debugger deb){
+            deb.printStackTrace();
+            deb.println();
+            deb.show();
         }
         catch (Exception exc){
             exc.printStackTrace();

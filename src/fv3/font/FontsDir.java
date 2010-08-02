@@ -28,21 +28,14 @@ import java.nio.charset.Charset;
  * line.
  */
 public class FontsDir
-    extends Object
+    extends lxl.Set<String>
 {
     public final static Charset UTF8 = Charset.forName("UTF-8");
 
 
-    public final int size;
-
-    public final String[] names;
-
-    public final lxl.Index map;
-
 
     public FontsDir(){
         super();
-        String names[] = null;
         try {
             InputStream in = this.getClass().getResourceAsStream("/fonts/fonts.dir");
             if (null != in){
@@ -50,16 +43,9 @@ public class FontsDir
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in,UTF8));
                     String line;
                     while (null != (line = reader.readLine())){
+                        line = line.trim();
                         if (0 != line.length() && '#' != line.charAt(0)){
-                            if (null == names)
-                                names = new String[]{line};
-                            else {
-                                int len = names.length;
-                                String[] copier = new String[len+1];
-                                System.arraycopy(names,0,copier,0,len);
-                                copier[len] = line;
-                                names = copier;
-                            }
+                            this.add(line);
                         }
                     }
                 }
@@ -71,29 +57,6 @@ public class FontsDir
         catch (java.io.IOException exc){
             exc.printStackTrace();
         }
-        this.names = names;
-        if (null != names){
-            int count = names.length;
-            if (0 < count){
-                this.size = count;
-                this.map = new lxl.Index(count);
-                for (int cc = 0; cc < count; cc++){
-                    this.map.put(names[cc],cc);
-                }
-            }
-            else {
-                this.size = 0;
-                this.map = new lxl.Index(10);
-            }
-        }
-        else {
-            this.size = 0;
-            this.map = new lxl.Index(10);
-        }
     }
 
-
-    public int indexOf(String name){
-        return this.map.get(name);
-    }
 }

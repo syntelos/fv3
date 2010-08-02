@@ -25,9 +25,15 @@ package fv3.font;
  */
 public class FontOptions
     extends Object
+    implements java.lang.Comparable<FontOptions>
 {
 
+    public final static FontOptions Default = new FontOptions();
+
+
     public final double width, height, depth;
+
+    public final int hashCode;
 
 
     public FontOptions(double w, double h, double d){
@@ -36,6 +42,16 @@ public class FontOptions
             this.width = w;
             this.height = h;
             this.depth = d;
+
+            long wh = Double.doubleToLongBits(w);
+            wh ^= (wh>>>32);
+            long hh = Double.doubleToLongBits(h);
+            hh ^= (hh>>>32);
+            long dh = Double.doubleToLongBits(d);
+            dh ^= (dh>>>32);
+
+            long hashCodeL = (wh^hh^dh);
+            this.hashCode = (int)hashCodeL;
         }
         else
             throw new IllegalArgumentException();
@@ -45,5 +61,35 @@ public class FontOptions
     }
     public FontOptions(){
         this(0,0,0);
+    }
+
+
+    public int hashCode(){
+        return this.hashCode;
+    }
+    public boolean equals(Object that){
+        if (this == that)
+            return true;
+        else if (that instanceof FontOptions)
+            return this.equals( (FontOptions)that);
+        else
+            return false;
+    }
+    public boolean equals(FontOptions that){
+        return (this.width == that.width && 
+                this.height == that.height && 
+                this.depth == that.depth);
+    }
+    public int compareTo(FontOptions that){
+        if (this.equals(that))
+            return 0;
+        else if (this.width < that.width)
+            return -1;
+        else if (this.height < that.height)
+            return -1;
+        else if (this.depth < that.depth)
+            return -1;
+        else
+            return 1;
     }
 }

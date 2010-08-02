@@ -33,6 +33,8 @@ import fv3.font.ttf.TTF;
 import fv3.font.ttf.TTCF;
 import fv3.font.ttf.TYP1;
 
+import fv3.math.VertexArray;
+
 
 /**
  * Open Type / True Type Font (OTF/TTF) reader developed from <a
@@ -77,6 +79,21 @@ public class TTFFont
     private String[] desc;
 
 
+    public TTFFont(Font.Key key)
+        throws java.io.IOException
+    {
+        this(key.name,key.opts);
+    }
+    public TTFFont(String name)
+        throws java.io.IOException
+    {
+        this(name,(new TTFFontReader(name)));
+    }
+    public TTFFont(String name, FontOptions opts)
+        throws java.io.IOException
+    {
+        this(name,(new TTFFontReader(name)),opts);
+    }
     public TTFFont(String name, TTFFontReader reader) {
         this(name,reader,(new FontOptions()));
     }
@@ -136,6 +153,9 @@ public class TTFFont
     }
 
 
+    public VertexArray.Type getGlyphVectorType(){
+        return VertexArray.Type.Triangles;
+    }
     public TTFGlyph get(char ch){
         lxl.Index map = this.map;
         if (null != map){
@@ -144,6 +164,9 @@ public class TTFFont
         }
         else
             throw new IllegalStateException("Glyphs not mapped.");
+    }
+    public TTFGlyph clone(char ch){
+        return this.get(ch).clone();
     }
     public int indexOf(char ch){
         lxl.Index map = this.map;
@@ -477,6 +500,9 @@ public class TTFFont
             glyph.character = ch;
             this.map.put(new Character(ch),index);
         }
+    }
+    public double spacing(char previous, char next){
+        return this.getEm();
     }
 
 

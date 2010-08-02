@@ -44,13 +44,6 @@
 
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
-    <copy todir="${bin}/fonts">
-      <fileset dir="fonts">
-        <include name="**/*.ttf" />
-        <include name="**/*.otf" />
-        <include name="**/fonts.dir" />
-      </fileset>
-    </copy>
     <jar jarfile="${target.jar}" basedir="${bin}" >
       <zipfileset src="${toString:lib.fv3.jar.path}" excludes="META-INF/**"/>
       <manifest>

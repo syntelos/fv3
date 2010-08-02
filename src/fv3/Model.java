@@ -53,6 +53,41 @@ public interface Model
          * Define the display list
          */
         public void define(GL2 gl);
+
+
+        public final static class Iterator
+            extends java.lang.Object
+            implements java.util.Iterator<Element>
+        {
+
+            public final int length;
+
+            private final Element[] list;
+
+            private int index;
+
+            public Iterator(Element[] list){
+                super();
+                if (null == list){
+                    this.list = null;
+                    this.length = 0;
+                }
+                else {
+                    this.list = list.clone();
+                    this.length = this.list.length;
+                }
+            }
+
+            public boolean hasNext(){
+                return (this.index < this.length);
+            }
+            public Element next(){
+                return this.list[this.index++];
+            }
+            public void remove(){
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     /**

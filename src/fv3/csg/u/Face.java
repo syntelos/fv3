@@ -18,9 +18,11 @@
 package fv3.csg.u;
 
 import fv3.csg.Solid;
-import static fv3.csg.u.Segment.Kind.*;
+import static fv3.csg.u.Triangulate.Kind.*;
 import fv3.math.Matrix;
 import fv3.math.Vector;
+
+import javax.media.opengl.GL2;
 
 /**
  * Triangular face used by {@link fv3.csg.Solid}.
@@ -46,6 +48,159 @@ public final class Face
 
         public Name copy(String desc2){
             return new Name(this,desc2);
+        }
+    }
+    /**
+     * Barycentric method 
+     * 
+     * An intersection is "on" the face when the intersection vertex
+     * lies on an edge of the face.  An intersection is "in" the face
+     * with the intersection vertex lies within the area of the face
+     * plane bounded by the edges.  The "In" state is exclusive of the
+     * "On" state.
+     * 
+     * @see http://www.blackpawn.com/texts/pointinpoly/default.html
+     */
+    public static class Intersection {
+        /**
+         * Intersection face
+         */
+        public final Face face;
+        /**
+         * Intersection vertex
+         */
+        public final Vertex vertex;
+
+        public final double ca, ba;
+
+        public final boolean in, on, onAB, onBC, onCA;
+
+        public final boolean isA, isB, isC;
+
+
+        /**
+         * The intersection a face and a point.
+         * 
+         * @exception java.lang.IllegalArgumentException Intersection not found.
+         */
+        public Intersection(Face f, Vertex p)
+            throws java.lang.IllegalArgumentException
+        {
+            super();
+            if (null != f && null != p){
+                this.face = f;
+                this.vertex = p;
+                {
+                    final Vector ca = f.c.getVector().sub(f.a.getVector());
+                    final Vector ba = f.b.getVector().sub(f.a.getVector());
+                    final Vector pa = p.getVector().sub(f.a.getVector());
+                    final double dotCACA = ca.dot(ca);
+                    final double dotCABA = ca.dot(ba);
+                    final double dotCAPA = ca.dot(pa);
+                    final double dotBABA = ba.dot(ba);
+                    final double dotBAPA = ba.dot(pa);
+                    final double _den = (dotCACA * dotBABA - dotCABA * dotCABA);
+
+                    this.ca = Z1((dotBABA * dotCAPA - dotCABA * dotBAPA) / _den);
+                    this.ba = Z1((dotCACA * dotBAPA - dotCABA * dotCAPA) / _den);
+                }
+                /*
+                 */
+                if (0.0 > this.ca || 0.0 > this.ba)
+
+                    throw new IllegalArgumentException();
+
+                else if (0.0 == this.ca){
+
+                    if (this.ba <= 1.0){
+                        this.in = false;
+                        this.on = true;
+
+                        this.onAB = true;
+                        this.onBC = false;
+                        this.onCA = false;
+
+                        this.isB = (1.0 == this.ba);
+                        if (this.isB)
+                            this.isA = false;
+                        else
+                            this.isA = (0.0 == this.ba);
+
+                        this.isC = false;
+                    }
+                    else
+                        throw new IllegalArgumentException();
+                }
+                else if (0.0 == this.ba){
+
+                    if (this.ca <= 1.0){
+                        this.in = false;
+                        this.on = true;
+                        this.onAB = false;
+                        this.onBC = false;
+                        this.onCA = true;
+
+                        this.isA = false;
+                        this.isB = false;
+                        this.isC = (1.0 == this.ca);
+                    }
+                    else
+                        throw new IllegalArgumentException();
+                }
+                else {
+                    final double sum = this.ca + this.ba;
+
+                    this.isA = false;
+                    this.isB = false;
+                    this.isC = false;
+
+                    if (EEQ(1.0, sum)){
+                        this.in = false;
+                        this.on = true;
+                        this.onAB = false;
+                        this.onBC = true;
+                        this.onCA = false;
+                    }
+                    else if (sum < 1.0){
+                        this.in = true;
+                        this.on = false;
+                        this.onAB = false;
+                        this.onBC = false;
+                        this.onCA = false;
+                    }
+                    else
+                        throw new IllegalArgumentException();
+                }
+            }
+            else
+                throw new IllegalArgumentException();
+        }
+
+
+
+        public int hashCode(){
+            return this.vertex.hashCode();
+        }
+        public boolean equals(Object that){
+            if (that instanceof Intersection)
+                return this.equals((Intersection)that);
+            else
+                return false;
+        }
+        public boolean equals(Intersection that){
+            if (null == that)
+                return false;
+            else
+                return this.vertex.equals(that.vertex);
+        }
+        /**
+         * Path order comparison
+         */
+        public int compareTo(Intersection that){
+            if (null == that)
+                return 1;
+            else
+                return this.vertex.compareTo(that.vertex);
         }
     }
 
@@ -117,6 +272,9 @@ public final class Face
             this.name = n;
             this.id = n.id;
 
+            assert (!a.equals(b));
+            assert (!b.equals(c));
+
             this.a = s.u(a).memberOf(this);
             this.b = s.u(b).memberOf(this);
             this.c = s.u(c).memberOf(this);
@@ -131,6 +289,9 @@ public final class Face
         if (null != s && null != n && null != a && null != b && null != c && null != nv){
             this.name = n;
             this.id = n.id;
+
+            assert (!a.equals(b));
+            assert (!b.equals(c));
 
             Vector check = a.getVector().normal(b.getVector(),c.getVector());
             Vector.Direction1 checkD = check.direction1();
@@ -179,6 +340,33 @@ public final class Face
             this.bound = bound;
         }
         return bound;
+    }
+    public double getBoundsMinX(){
+        return this.getBound().getBoundsMinX();
+    }
+    public double getBoundsMidX(){
+        return this.getBound().getBoundsMidX();
+    }
+    public double getBoundsMaxX(){
+        return this.getBound().getBoundsMaxX();
+    }
+    public double getBoundsMinY(){
+        return this.getBound().getBoundsMinY();
+    }
+    public double getBoundsMidY(){
+        return this.getBound().getBoundsMidY();
+    }
+    public double getBoundsMaxY(){
+        return this.getBound().getBoundsMaxY();
+    }
+    public double getBoundsMinZ(){
+        return this.getBound().getBoundsMinZ();
+    }
+    public double getBoundsMidZ(){
+        return this.getBound().getBoundsMidZ();
+    }
+    public double getBoundsMaxZ(){
+        return this.getBound().getBoundsMaxZ();
     }
     public double[] vertices(){
 
@@ -380,23 +568,9 @@ public final class Face
         else
             throw new IllegalStateException();
     }
-    /**
-     * Barycentric method 
-     * @see http://www.blackpawn.com/texts/pointinpoly/default.html
-     */
-    public boolean contains(Vertex that_p){
-        final Vector v0 = this.c.getVector().sub(this.a.getVector());
-        final Vector v1 = this.b.getVector().sub(this.a.getVector());
-        final Vector v2 = that_p.getVector().sub(this.a.getVector());
-        final double dot00 = v0.dot(v0);
-        final double dot01 = v0.dot(v1);
-        final double dot02 = v0.dot(v2);
-        final double dot11 = v1.dot(v1);
-        final double dot12 = v1.dot(v2);
-        final double invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-        final double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-        final double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-        return ((u > 0.0) && (v > 0.0) && (u + v < 1.0));
+    public Face.Intersection intersect(Vertex p){
+
+        return new Face.Intersection(this,p);
     }
     public double distance(Vertex that){
 
@@ -475,6 +649,35 @@ public final class Face
     }
     public Segment[] segments(){
         return this.membership;
+    }
+    public fv3.Model.Element[] debugger(){
+        Vector n = this.getNormal();
+
+        fv3.font.Font font = fv3.font.Font.For("futural");
+
+        double rX = (this.getBoundsMaxX()-this.getBoundsMinX())/3.0;
+        double rY = (this.getBoundsMaxY()-this.getBoundsMinY())/3.0;
+        double rZ = (this.getBoundsMaxZ()-this.getBoundsMinZ())/3.0;
+
+
+        fv3.Model.Element[] model = new fv3.Model.Element[]{
+            new fv3.model.Begin(GL2.GL_TRIANGLES),
+            new fv3.model.Normal(n.x(),n.y(),n.z()),
+            new fv3.model.Vertex(this.a.x,this.a.y,this.a.z),
+            new fv3.model.Vertex(this.b.x,this.b.y,this.b.z),
+            new fv3.model.Vertex(this.c.x,this.c.y,this.c.z),
+            new fv3.model.End(),
+            font.clone('A').fit2(this.a.x,this.a.y,this.a.z,rX,rY,rZ),
+            font.clone('B').fit2(this.b.x,this.b.y,this.b.z,rX,rY,rZ),
+            font.clone('C').fit2(this.c.x,this.c.y,this.c.z,rX,rY,rZ)
+        };
+        rX /= 2.0;
+        rY /= 2.0;
+        rZ /= 2.0;
+        for (Segment s: this.membership){
+            model = fv3.model.Object.Add(model,s.debugger(rX,rY,rZ));
+        }
+        return model;
     }
     /**
      * Invert normal direction
@@ -581,18 +784,18 @@ public final class Face
 
         Face[] replacements = null;
 
-        switch (sg.kind(this)){
+        switch (sg.triangulateKind(this)){
         case M:
             replacements = Triangulate.M(this,s);
             break;
         case VE:
-            replacements = Triangulate.V(this,s,sg.endpointA1,sg.endpointA2);
+            replacements = Triangulate.V(this,s,sg.endpoint1(this),sg.endpoint2(this));
             break;
         case EV:
-            replacements = Triangulate.V(this,s,sg.endpointA2,sg.endpointA1);
+            replacements = Triangulate.V(this,s,sg.endpoint2(this),sg.endpoint1(this));
             break;
         case EE:
-            replacements = Triangulate.E(this,s,sg.endpointA1,sg.endpointA2);
+            replacements = Triangulate.E(this,s,sg.endpoint1(this),sg.endpoint2(this));
             break;
         default:
             throw new IllegalStateException();

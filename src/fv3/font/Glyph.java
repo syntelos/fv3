@@ -25,9 +25,10 @@ import javax.media.opengl.GL2;
  * 
  * @author John Pritchard
  */
-public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
-    extends fv3.model.Object
-    implements Iterable<Path>
+public abstract class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
+    extends fv3.math.VertexArray
+    implements fv3.Bounds,
+               Iterable<Path>
 {
 
     protected Font font;
@@ -35,8 +36,8 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
     protected fv3.font.Path[] list;
 
 
-    protected Glyph(Font font){
-        super();
+    protected Glyph(Type type, int count, Font font){
+        super(type,count);
         if (null != font)
             this.font = font;
         else
@@ -44,12 +45,17 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
     }
 
 
-    public void define(GL2 gl){
-        ////////////////////////////////////////
-        ////////////////////////////////////////
-        ////////////////////////////////////////
-        ////////////////////////////////////////
-        ////////////////////////////////////////
+    public boolean isSpace(){
+        return false;
+    }
+    public double getSpaceHorizontal(){
+        return 0.0;
+    }
+    public Glyph clone(){
+        Glyph clone = (Glyph)super.clone();
+        if (null != this.list)
+            clone.list = clone.list.clone();
+        return clone;
     }
     public void destroy(){
         this.font = null;
@@ -122,28 +128,6 @@ public class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
                 this.list = copier;
             }
         }
-    }
-    public String toString(){
-        return this.toString("; ");
-    }
-    public String toString(String infix){
-        return this.toString("Glyph(","; ",")");
-    }
-    public final String toString(String prefix, String infix, String suffix){
-        StringBuilder string = new StringBuilder();
-        if (null != prefix)
-            string.append(prefix);
-        fv3.font.Path[] list = this.list;
-        if (null != list){
-            for (int cc = 0, count = list.length; cc < count; cc++){
-                if (0 != cc)
-                    string.append(infix);
-                string.append(list[cc]);
-            }
-        }
-        if (null != suffix)
-            string.append(suffix);
-        return string.toString();
     }
     public java.util.Iterator<Path> iterator(){
         return new fv3.font.Path.Iterator<Path>(this.list);

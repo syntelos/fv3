@@ -38,12 +38,11 @@ public class FontsDir
 
     public FontsDir(){
         super();
-        int count = this.size;
+        int count = this.size();
         if (0 < count){
-            String[] names = this.names;
             this.awt = new Font[count];
             for (int cc = 0; cc < count; cc++){
-                String name = names[cc];
+                String name = this.get(cc);
                 try {
                     InputStream in = TTFFontReader.ResourceAsStream(name);
                     if (null != in){
@@ -71,7 +70,7 @@ public class FontsDir
         return this.cache(this.indexOf(name),name,fow,foh);
     }
     public TTFFont cache(int index, double fow, double foh){
-        return this.cache(index,(String)this.map.key(index),fow,foh);
+        return this.cache(index,this.get(index),fow,foh);
     }
     private TTFFont cache(int index, String name, double fow, double foh){
         if (-1 != index && null != name){

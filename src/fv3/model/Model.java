@@ -28,7 +28,8 @@ import javax.media.opengl.GL2;
  */
 public class Model
     extends fv3.nui.List
-    implements fv3.Model.Element
+    implements fv3.Model.Element,
+               java.lang.Iterable<fv3.Model.Element>
 {
 
 
@@ -126,6 +127,10 @@ public class Model
     public Element list(int idx){
         return this;
     }
+    public final java.util.Iterator<fv3.Model.Element> iterator(){
+
+        return new fv3.Model.Element.Iterator(this.model);
+    }
     public String toString(String pr, String in){
 
         fv3.Bounds bounds = this.bounds;
@@ -138,5 +143,61 @@ public class Model
             return ((fv3.Bounds.CircumSphere)bounds).toString(pr,in);
         else
             return this.getClass().getName();
+    }
+    public Model glBoundary(fv3.Bounds bounds){
+        final double minX = bounds.getBoundsMinX();
+        final double maxX = bounds.getBoundsMaxX();
+        final double minY = bounds.getBoundsMinY();
+        final double maxY = bounds.getBoundsMaxY();
+        final double minZ = bounds.getBoundsMinZ();
+        final double maxZ = bounds.getBoundsMaxZ();
+
+        this.add(new Begin(GL2.GL_LINES));
+        /*
+         * Boundary X
+         */
+        this.add(new Vertex( minX, maxY, minZ)); //(Xa)
+        this.add(new Vertex( maxX, maxY, minZ));
+
+        this.add(new Vertex( minX, maxY, maxZ)); //(Xb)
+        this.add(new Vertex( maxX, maxY, maxZ));
+
+        this.add(new Vertex( minX, minY, maxZ)); //(Xc)
+        this.add(new Vertex( maxX, minY, maxZ));
+
+        this.add(new Vertex( minX, minY, minZ)); //(Xd)
+        this.add(new Vertex( maxX, minY, minZ));
+        /*
+         * Boundary Y
+         */
+        this.add(new Vertex( minX, minY, minZ)); //(Ya)
+        this.add(new Vertex( minX, maxY, minZ));
+
+        this.add(new Vertex( minX, minY, maxZ)); //(Yb)
+        this.add(new Vertex( minX, maxY, maxZ));
+
+        this.add(new Vertex( maxX, minY, maxZ)); //(Yc)
+        this.add(new Vertex( maxX, maxY, maxZ));
+
+        this.add(new Vertex( maxX, minY, maxZ)); //(Yd)
+        this.add(new Vertex( maxX, maxY, minZ));
+        /*
+         * Boundary Z
+         */
+        this.add(new Vertex( minX, maxY, minZ)); //(Za)
+        this.add(new Vertex( minX, maxY, maxZ));
+
+        this.add(new Vertex( maxX, maxY, minZ)); //(Zb)
+        this.add(new Vertex( maxX, maxY, maxZ));
+
+        this.add(new Vertex( maxX, minY, minZ)); //(Zc)
+        this.add(new Vertex( maxX, minY, maxZ));
+
+        this.add(new Vertex( minX, minY, minZ)); //(Zd)
+        this.add(new Vertex( minX, minY, maxZ));
+
+        this.add(new End());
+
+        return this;
     }
 }

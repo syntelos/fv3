@@ -25,14 +25,36 @@ import fv3.csg.u.Segment.Path.Kind.*;
 import fv3.math.Vector;
 
 /**
- * The functions defined here perform face splitting.
+ * The functions defined here perform face splitting.  They are called
+ * from the {@link Face#triangulate Face triangulate} method.
  * 
- * An intersection segment has endpoints in Face A (from Solid A) and
- * Face B (from Solid B), and is shared by both.  However, the
- * intersection segment can be empty in one face (but not the other),
- * or can lie partially or entirely within the edge boundary of one or
- * both faces.
+ * The {@link Segment} class defines and manages segment endpoints.
+ * That code with the code defined here handles both simple and
+ * complex face segmentation cases.
+ * 
+ * The code in these classes has cases that appear to be loose or
+ * incorrect, but are intended to be correct under geometric
+ * reachability.  That is, geometrically valid input is unable to
+ * violate the correct operation of the code.  Or in other words,
+ * geometrically valid input is unable to reach incorrect paths of
+ * execution in the code.  
+ * 
+ * The code is designed for readability and correctness over a large
+ * number of geometric use cases.  For example, point equivalences due
+ * to the symmetry of intersection (A1 == B1), and the equivalence of
+ * points of intersection with vertices (B1 == Face.A), are multiplied
+ * by the uses of a point of intersection.
  *
+ * The simple "V" and "E" cases have one intersection line segment
+ * that splits the face.  These cases depend on both endpoints being
+ * defined in terms of the face to be split.  The correct operation of
+ * this code has been designed in terms of cases geometrically
+ * reachable.
+ * 
+ * The complex "M" cases are generalized.  Rotating the face triangle
+ * vertices for the segmentation case, these functions do not employ
+ * the endpoint classifiers which would have value "M".
+ * 
  * @see AH
  * @author John Pritchard
  */
@@ -41,11 +63,58 @@ public final class Triangulate
 {
 
     /**
+     * Principal triangulation segment case identity.
+     * 
+     * Segment kind: member of a multiple segment path,
+     * vertex-edge, edge-vertex, or edge-edge.  These are
+     * semantically equivalent to "vertex to edge" or "edge to
+     * edge" (as exist for a non empty, one segment triangle
+     * bisection), but symbolically differentiated for the
+     * compiler.
+     */
+    public enum Kind {
+
+        M, VE, EV, EE;
+
+        /**
+         * @return Triangulation segment case for face.
+         */
+        public final static Kind For(Face f, Segment.Endpoint e1, Segment.Endpoint e2){
+
+            if (null == e1 || null == e2)
+                throw new IllegalArgumentException();
+
+            else if (e1.isVertexOn(f)){
+
+                if (e2.isEdgeOn(f))
+
+                    return VE;
+                else
+                    return M;
+            }
+            else if (e2.isVertexOn(f)){
+
+                if (e1.isEdgeOn(f))
+
+                    return EV;
+                else
+                    return M;
+            }
+            else if (e1.isEdgeOn(f) && e2.isEdgeOn(f))
+                return EE;
+            else
+                return M;
+        }
+    }
+
+    /**
      * Singular intersection including a vertex of the argument face.
      */
     protected final static Face[] V(Face f, Solid s, Segment.Endpoint e1, Segment.Endpoint e2)
     {
         if (f.alive()){
+
+            assert e1.sameKind(e2);
 
             final Vertex a = f.a;
             final Vertex b = f.b;
@@ -139,6 +208,8 @@ public final class Triangulate
     protected final static Face[] E(Face f, Solid s, Segment.Endpoint e1, Segment.Endpoint e2)
     {
         if (f.alive()){
+
+            assert e1.sameKind(e2);
 
             final Vertex a = f.a;
             final Vertex b = f.b;
@@ -287,7 +358,15 @@ public final class Triangulate
     protected final static Face[] M(Face f, Solid s){
         if (f.alive()){
 
-            Segment.Path p = new Segment.Path(f);
+            Segment.Path p;
+            try {
+                p = new Segment.Path(f);
+            }
+            catch (IllegalStateException exc){
+
+                throw new 
+                    fv3.model.Debugger( f.getName().toString(), f.debugger());
+            }
 
             switch (p.kind){
             case VIE:
@@ -330,7 +409,7 @@ public final class Triangulate
 
         if (2 == count){
 
-            final Vertex o = p.startEndpointIn1(f);
+            final Vertex o = p.startEndpoint2(f);
 
             final Vertex m = b.midpoint(c).classify(c);
 
@@ -360,7 +439,7 @@ public final class Triangulate
 
             Vertex o;
 
-            o = p.startEndpointIn1(f);
+            o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -377,8 +456,8 @@ public final class Triangulate
 
             for (int sc = 1; sc < term; sc++){
                 Segment se = p.list[sc];
-                Vertex o1 = se.endpointIn1(f).vertex;
-                Vertex o2 = se.endpointIn2(f).vertex;
+                Vertex o1 = se.endpoint1(f).vertex;
+                Vertex o2 = se.endpoint2(f).vertex;
 
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
@@ -394,7 +473,7 @@ public final class Triangulate
                 }
             }
 
-            o = p.termEndpointIn2(f);
+            o = p.endEndpoint1(f);
 
             if (outbound){
                 replacements = Face.Cat(replacements, new Face[]{
@@ -437,7 +516,7 @@ public final class Triangulate
 
         if (2 == count){
 
-            final Vertex o = p.startEndpointIn1(f);
+            final Vertex o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -465,7 +544,7 @@ public final class Triangulate
 
             Vertex o;
 
-            o = p.startEndpointIn1(f);
+            o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -482,8 +561,8 @@ public final class Triangulate
 
             for (int sc = 1; sc < term; sc++){
                 Segment se = p.list[sc];
-                Vertex o1 = se.endpointIn1(f).vertex;
-                Vertex o2 = se.endpointIn2(f).vertex;
+                Vertex o1 = se.endpoint1(f).vertex;
+                Vertex o2 = se.endpoint2(f).vertex;
 
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
@@ -499,7 +578,7 @@ public final class Triangulate
                 }
             }
 
-            o = p.termEndpointIn2(f);
+            o = p.endEndpoint1(f);
 
             if (outbound){
                 replacements = Face.Cat(replacements, new Face[]{
@@ -547,7 +626,7 @@ public final class Triangulate
 
         if (2 == count){
 
-            final Vertex o = p.startEndpointIn1(f);
+            final Vertex o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -577,7 +656,7 @@ public final class Triangulate
 
             Vertex o;
 
-            o = p.startEndpointIn1(f);
+            o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -598,8 +677,8 @@ public final class Triangulate
 
             for (int sc = 1; sc < term; sc++){
                 Segment se = p.list[sc];
-                Vertex o1 = se.endpointIn1(f).vertex;
-                Vertex o2 = se.endpointIn2(f).vertex;
+                Vertex o1 = se.endpoint1(f).vertex;
+                Vertex o2 = se.endpoint2(f).vertex;
 
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
@@ -615,7 +694,7 @@ public final class Triangulate
                 }
             }
 
-            o = p.endEndpointIn1(f);
+            o = p.endEndpoint1(f);
 
             if (outbound){
                 replacements = Face.Cat(replacements, new Face[]{
@@ -656,7 +735,7 @@ public final class Triangulate
 
         if (2 == count){
 
-            final Vertex o = p.startEndpointIn1(f);
+            final Vertex o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -684,7 +763,7 @@ public final class Triangulate
 
             Vertex o;
 
-            o = p.startEndpointIn1(f);
+            o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -703,8 +782,8 @@ public final class Triangulate
 
             for (int sc = 1; sc < term; sc++){
                 Segment se = p.list[sc];
-                Vertex o1 = se.endpointIn1(f).vertex;
-                Vertex o2 = se.endpointIn2(f).vertex;
+                Vertex o1 = se.endpoint1(f).vertex;
+                Vertex o2 = se.endpoint2(f).vertex;
 
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
@@ -720,7 +799,7 @@ public final class Triangulate
                 }
             }
 
-            o = p.endEndpointIn1(f);
+            o = p.endEndpoint1(f);
 
             if (outbound){
                 replacements = Face.Cat(replacements, new Face[]{
@@ -766,7 +845,7 @@ public final class Triangulate
 
         if (2 == count){
 
-            final Vertex o = p.startEndpointIn2(f);
+            final Vertex o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -790,7 +869,7 @@ public final class Triangulate
 
             Vertex o;
 
-            o = p.startEndpointIn1(f);
+            o = p.startEndpoint2(f);
 
             if (outbound){
                 replacements = new Face[]{
@@ -805,8 +884,8 @@ public final class Triangulate
 
             for (int sc = 1; sc < term; sc++){
                 Segment se = p.list[sc];
-                Vertex o1 = se.endpointIn1(f).vertex;
-                Vertex o2 = se.endpointIn2(f).vertex;
+                Vertex o1 = se.endpoint1(f).vertex;
+                Vertex o2 = se.endpoint2(f).vertex;
 
                 if (outbound){
                     replacements = Face.Cat(replacements, new Face[]{
@@ -822,7 +901,7 @@ public final class Triangulate
                 }
             }
 
-            o = p.endEndpointIn1(f);
+            o = p.endEndpoint1(f);
 
             if (outbound){
                 replacements = Face.Cat(replacements, new Face[]{

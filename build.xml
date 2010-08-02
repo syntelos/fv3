@@ -50,6 +50,19 @@
 
   <target name="jar" depends="compile" description="Package bin to target jar, clean bin.">
     <delete file="${target.jar}"/>
+    <copy todir="${bin}/fonts">
+      <fileset dir="fonts">
+        <include name="**/*.otf" />
+        <include name="**/*.ttf" />
+        <include name="**/*.jhf" />
+        <include name="**/fonts.dir" />
+      </fileset>
+    </copy>
+    <copy todir="${bin}">
+      <fileset dir="${src}" includes="**/*.properties"/>
+      <fileset dir="${src}" includes="**/*.txt"/>
+      <fileset dir="${src}" includes="**/*.xml"/>
+    </copy>
     <jar jarfile="${target.jar}" basedir="${bin}" >
 
       <zipgroupfileset dir="lib" includes="**/*.jar"/>
@@ -66,10 +79,14 @@
 
   <target name="compile" depends="version" description="Compile src to bin">
     <mkdir dir="${bin}"/>
-    <copy todir="${bin}">
-      <fileset dir="${src}" includes="**/*.properties"/>
-      <fileset dir="${src}" includes="**/*.txt"/>
-      <fileset dir="${src}" includes="**/*.xml"/>
+      <copy todir="${src}" overwrite="true">
+      <filterset>
+        <filter token="VersionName"         value="${ant.project.name}"/>
+        <filter token="VersionNumber"       value="${this.version}"/>
+      </filterset>
+      <fileset dir="ver/src">
+        <include name="**/*.java"/>
+      </fileset>
     </copy>
     <javac srcdir="${src}" destdir="${bin}" debug="${compiler.debug}" encoding="${compiler.encoding}"
            classpathref="lib.path" source="${compiler.source}" target="${compiler.target}">

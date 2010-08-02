@@ -18,19 +18,13 @@
 package fv3;
 
 import fv3.math.Color;
-import fv3.tk.Animator;
-
-import java.io.IOException;
-
-import java.net.URL;
 
 import javax.media.opengl.GL2;
 import com.sun.javafx.newt.KeyEvent;
 
 /**
- * World is the root of Fv3 applications.  It handles the OGL clear
- * color and Fv3 cameras.  A {@link Camera} defines the projection and
- * view matrices.
+ * World is the root of an Fv3 application.  It handles Fv3 cameras.
+ * A {@link Camera} defines the projection and view matrices.
  *
  * @see fv3.nui.Region
  * @author jdp
@@ -38,56 +32,6 @@ import com.sun.javafx.newt.KeyEvent;
 public class World
     extends fv3.nui.Region
 {
-    /**
-     * @see #load(java.net.URL)
-     * @see #clear()
-     */
-    public static Component ClearAndLoad(URL jnlp) throws IOException {
-        Window.clear();
-        return Window.load(jnlp);
-    }
-    /**
-     * @see #load(java.net.URL)
-     */
-    public static Component Load(URL jnlp) throws IOException {
-        return Window.load(jnlp);
-    }
-    /**
-     * @see #unload(java.net.URL)
-     */
-    public static Component Unload(URL jnlp) throws IOException {
-        return Window.unload(jnlp);
-    }
-    /**
-     * Current focus of input events.
-     * @see Region
-     */
-    public static Component Current(){
-        return Window.getCurrent();
-    }
-    /**
-     * @see Region
-     */
-    public static void Current(Component c){
-        Window.setCurrent(c);
-    }
-
-
-    private volatile static World Window;
-    /*
-     * Main subclasses do the same..
-     */
-    public static void main(String[] argv){
-        try {
-            World window = new World();
-            Animator animator = new Animator(window);
-            animator.start();
-        }
-        catch (Exception exc){
-            exc.printStackTrace();
-            System.exit(1);
-        }
-    }
 
 
     private volatile Camera[] cameras = new Camera[20];
@@ -98,11 +42,8 @@ public class World
     private volatile Color bg;
 
 
-    protected World(){
+    public World(){
         super();
-        if (null == Window)
-            Window = this;
-
         this.useCamera('A');
     }
 
@@ -248,8 +189,6 @@ public class World
          * Propagate event to children via 'fv3.nui.Region'
          */
         super.init(gl);
-
-        this.checkErrors(gl);
     }
     public void display(GL2 gl){
 
@@ -277,33 +216,6 @@ public class World
          */
         super.display(gl);
     }
-    /**
-     * Unload current components.
-     */
-    public void clear(){
-
-
-        super.clear();
-    }
-    /**
-     * This function loads a JNLP descriptor using a {@link
-     * loader.sandbox.WebLoader}.  
-     * 
-     * The JNLP descriptor has an application main class with a main
-     * method that should do nothing.  
-     * 
-     * The JNLP application main class is an instance of {@link
-     * Component}.
-     * 
-     * The returned component becomes a child of the world region
-     * (this class).
-     */
-    public Component load(URL jnlp) throws IOException {
-        throw new UnsupportedOperationException("To be done");
-    }
-    public Component unload(URL jnlp) throws IOException {
-        throw new UnsupportedOperationException("To be done");
-    }
     public void keyTyped(KeyEvent e) {
 
         int cc = e.getKeyCode();
@@ -324,5 +236,9 @@ public class World
 
             return;
         }
+    }
+    public World show(){
+        new fv3.tk.Animator(this).start();
+        return this;
     }
 }

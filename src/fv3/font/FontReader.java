@@ -33,7 +33,7 @@ import java.nio.channels.ReadableByteChannel;
  * 
  * @author John Pritchard
  */
-public class FontReader
+public abstract class FontReader
     extends Object
     implements java.io.Closeable
 {
@@ -145,6 +145,9 @@ public class FontReader
             }
         else
             return this;
+    }
+    public int read(){
+        return this.buffer.get();
     }
     public FontReader read(byte[] bary, int ofs, int len){
         this.buffer.get(bary,ofs,len);

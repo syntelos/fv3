@@ -220,7 +220,7 @@ public class Main
         this.nav = Nav.Fonts;
 
         this.fontsDirIndex += n;
-        if (this.fontsDirIndex >= this.fontsDir.size)
+        if (this.fontsDirIndex >= this.fontsDir.size())
             this.fontsDirIndex = 0;
         this.init();
         return true;
@@ -230,7 +230,7 @@ public class Main
 
         this.fontsDirIndex -= n;
         if (0 > this.fontsDirIndex)
-            this.fontsDirIndex = (this.fontsDir.size-1);
+            this.fontsDirIndex = (this.fontsDir.size()-1);
         this.init();
         return true;
     }
@@ -246,7 +246,7 @@ public class Main
     }
     protected boolean fontsEnd(){
         this.nav = Nav.Fonts;
-        int idx = (this.fontsDir.size-1);
+        int idx = (this.fontsDir.size()-1);
         if (idx != this.fontsDirIndex){
             this.fontsDirIndex = idx;
             this.init();

@@ -21,12 +21,15 @@ package fv3.csg.u;
 import fv3.csg.Solid;
 import fv3.math.Vector;
 
+import javax.media.opengl.GL2;
+
 /**
- * An intersection segment has endpoints in Face A (from Solid A) and
- * Face B (from Solid B), and is shared by both.  However, the
+ * An intersection segment has endpoints in Face A (from CSG Operand
+ * A) and Face B (from CSG Operand B).  As the intersection of two
+ * faces, the points of intersection are in both faces.  However, the
  * intersection segment can be empty in one face (but not the other),
- * or can lie partially or entirely within the edge boundary of one or
- * both faces.
+ * or can lie partially or entirely within the boundary of one or both
+ * faces.
  *
  * @see AH
  * @author John Pritchard
@@ -43,9 +46,10 @@ public final class Segment
         extends java.lang.Object
     {
         /**
-         * Intersection path classifications for "Vertex In Edge",
-         * "Vertex To Edge", "Vertex To Vertex", "Edge In Edge", "Edge
-         * To Edge" and their directional (face orientation) inverses.
+         * Intersection / Triangulation Path classes for the start and
+         * end path endpoints as: "Vertex In Edge", "Vertex To Edge",
+         * "Vertex To Vertex", "Edge In Vertex", "Edge To Vertex",
+         * "Edge In Edge", and "Edge To Edge".
          */
         public enum Kind {
 
@@ -80,29 +84,29 @@ public final class Segment
 
             this.last = list.length-1;
 
-            Segment.Endpoint start = list[0].endpointOn1(f), end = list[last].endpointOn1(f);
+            Segment.Endpoint start = list[0].endpoint1(f), end = list[last].endpoint2(f);
 
             this.start = start;
             this.end = end;
 
-            if (start.isVertex()){
-                if (end.isVertex())
+            if (start.isVertexOn(f)){
+                if (end.isVertexOn(f))
                     this.kind = Kind.VTV;
                 else {
-                    if (start.isInEdge(end))
+                    if (start.isInEdgeOn(f,end))
                         this.kind = Kind.VIE;
                     else
                         this.kind = Kind.VTE;
                 }
             }
-            else if (end.isVertex()){
-                if (end.isInEdge(start))
+            else if (end.isVertexOn(f)){
+                if (end.isInEdgeOn(f,start))
                     this.kind = Kind.EIV;
                 else
                     this.kind = Kind.ETV;
             }
             else {
-                if (start.isInEdge(end))
+                if (start.isInEdgeOn(f,end))
                     this.kind = Kind.EIE;
                 else
                     this.kind = Kind.ETE;
@@ -114,45 +118,29 @@ public final class Segment
 
             return this.list[0].sclass(f,v);
         }
-        public Vertex startEndpointIn1(Face f){
+        public Vertex startEndpoint1(Face f){
 
-            return this.list[0].endpointIn1(f).vertex;
+            return this.list[0].endpoint1(f).vertex;
         }
-        public Vertex startEndpointOn1(Face f){
+        public Vertex startEndpoint2(Face f){
 
-            return this.list[0].endpointOn1(f).vertex;
+            return this.list[0].endpoint2(f).vertex;
         }
-        public Vertex startEndpointIn2(Face f){
+        public Vertex termEndpoint1(Face f){
 
-            return this.list[0].endpointIn2(f).vertex;
+            return this.list[this.last-1].endpoint1(f).vertex;
         }
-        public Vertex startEndpointOn2(Face f){
+        public Vertex termEndpoint2(Face f){
 
-            return this.list[0].endpointOn2(f).vertex;
+            return this.list[this.last-1].endpoint2(f).vertex;
         }
-        public Vertex termEndpointIn2(Face f){
+        public Vertex endEndpoint1(Face f){
 
-            return this.list[this.last-1].endpointIn2(f).vertex;
+            return this.list[this.last].endpoint1(f).vertex;
         }
-        public Vertex termEndpointOn2(Face f){
+        public Vertex endEndpoint2(Face f){
 
-            return this.list[this.last-1].endpointOn2(f).vertex;
-        }
-        public Vertex endEndpointIn1(Face f){
-
-            return this.list[this.last].endpointIn1(f).vertex;
-        }
-        public Vertex endEndpointOn1(Face f){
-
-            return this.list[this.last].endpointOn1(f).vertex;
-        }
-        public Vertex endEndpointIn2(Face f){
-
-            return this.list[this.last].endpointIn2(f).vertex;
-        }
-        public Vertex endEndpointOn2(Face f){
-
-            return this.list[this.last].endpointOn2(f).vertex;
+            return this.list[this.last].endpoint2(f).vertex;
         }
         public Vertex startFaceVertexForEdgeIn1(Face f){
 
@@ -164,24 +152,65 @@ public final class Segment
         }
     }
     /**
-     * 
+     * A segment endpoint in or on a Face from the other CSG Operand.
+     * "In" meaning contained by the Face but not on an edge, and "on"
+     * meaning on an edge of the Face.
      */
     public final static class Endpoint
-        extends java.lang.Object
-        implements java.lang.Comparable<Endpoint>
+        extends Face.Intersection
     {
         /**
-         * Segment endpoint source description: Face and Vertex.
+         * Segment endpoint description
          */
         public interface Kind {
             /**
-             * Identify Face and Vertex in CSG Operand order
+             * Identify a Face Vertex from a CSG Operand. A Face from
+             * operand A or B, Vertex A or B or C (is on a Face from
+             * the other operand).
              */
             public enum Vertex
                 implements Endpoint.Kind
             {
                 AA, AB, AC, BA, BB, BC;
 
+                public boolean isA(){
+                    switch(this){
+                    case AA:
+                    case AB:
+                    case AC:
+                        return true;
+                    default:
+                        return false;
+                    }
+                }
+                public boolean isB(){
+                    switch(this){
+                    case BA:
+                    case BB:
+                    case BC:
+                        return true;
+                    default:
+                        return false;
+                    }
+                }
+                public Endpoint.Kind.Edge edgeFor(){
+                    switch(this){
+                    case AA:
+                        return Endpoint.Kind.Edge.AAB;
+                    case AB:
+                        return Endpoint.Kind.Edge.ABC;
+                    case AC:
+                        return Endpoint.Kind.Edge.ACA;
+                    case BA:
+                        return Endpoint.Kind.Edge.BAB;
+                    case BB:
+                        return Endpoint.Kind.Edge.BBC;
+                    case BC:
+                        return Endpoint.Kind.Edge.BCA;
+                    default:
+                        throw new IllegalStateException();
+                    }
+                }
                 public boolean isInEdge(Kind.Edge e){
                     switch (e){
                     case AAB:
@@ -200,6 +229,10 @@ public final class Segment
                         throw new IllegalStateException();
                     }
                 }
+                /**
+                 * The argument edge is in normal "winding" order from
+                 * this vertex.
+                 */
                 public boolean isOutbound(Kind.Edge e){
                     switch (e){
                     case AAB:
@@ -247,13 +280,35 @@ public final class Segment
                 }
             }
             /**
-             * Identify Face and Edge in CSG Operand order
+             * Identify Face Edge in CSG Operands.  Identify an edge
+             * from a Face in CSG Operand A or B (as intersecting the
+             * Face from the other CSG Operand).
              */
             public enum Edge
                 implements Endpoint.Kind
             {
                 AAB, ABC, ACA, BAB, BBC, BCA;
 
+                public boolean isA(){
+                    switch(this){
+                    case AAB:
+                    case ABC:
+                    case ACA:
+                        return true;
+                    default:
+                        return false;
+                    }
+                }
+                public boolean isB(){
+                    switch(this){
+                    case BAB:
+                    case BBC:
+                    case BCA:
+                        return true;
+                    default:
+                        return false;
+                    }
+                }
 
                 public final static int IndexOf(Endpoint.Kind.Edge[] list, Endpoint.Kind.Edge item){
                     if (null == item || null == list)
@@ -283,36 +338,131 @@ public final class Segment
                         return list;
                 }
             }
+
+
+            public boolean isA();
+            public boolean isB();
         }
 
+        /**
+         * Kind in terms of CSG Operand order notation.
+         */
         public final Kind kind;
-        public final Vertex vertex;
+
+        public final Face face2;
+
         private final Vector normal;
 
+        /**
+         * @exception java.lang.IllegalArgumentException Intersection not found.
+         */
+        public Endpoint(Kind.Vertex k, Vertex v0, Face f1, Face f2)
+            throws java.lang.IllegalArgumentException
+        {
+            super(f1,v0);
 
-        public Endpoint(Kind k, Vertex v){
-            super();
-            if (null != k && null != v){
-                this.kind = k;
-                this.vertex = v;
-                this.normal = v.getVector().normalize();
+            this.kind = k;
+            this.face2 = f2;
+            this.normal = this.vertex.getVector().normalize();
+        }
+        /**
+         * @exception java.lang.IllegalArgumentException Intersection not found.
+         */
+        public Endpoint(Kind.Edge k, Vertex v0, Vertex v1, Face f1, Face f2)
+            throws java.lang.IllegalArgumentException
+        {
+            super(f1,Segment.Intersect(v0,v1,f1));
+
+            this.kind = k;
+            this.face2 = f2;
+            this.normal = this.vertex.getVector().normalize();
+        }
+
+
+        public boolean isA(){
+            return this.kind.isA();
+        }
+        public boolean isB(){
+            return this.kind.isB();
+        }
+        public boolean sameKind(Endpoint that){
+            if (this.kind.isA())
+                return that.kind.isA();
+            else
+                return that.kind.isB();
+        }
+        public boolean isIn(Face f){
+            if (f == this.face)
+                return this.in;
+            else
+                return false;
+        }
+        public boolean isOn(Face f){
+            if (f == this.face)
+                return this.on;
+            else
+                return true;
+        }
+        public boolean isVertexOn(Face f){
+            if (f == this.face){
+                if (this.on)
+                    return (this.isA || this.isB || this.isC);
+                else
+                    return false;
             }
             else
-                throw new IllegalStateException();//(error in Segment ctor)
+                return (this.kind instanceof Endpoint.Kind.Vertex);
         }
-
-
-        public boolean isEdge(){
-
-            return (this.kind instanceof Endpoint.Kind.Edge);
+        public boolean isEdgeOn(Face f){
+            if (f == this.face){
+                if (this.on)
+                    return (!(this.isA || this.isB || this.isC));
+                else
+                    return false;
+            }
+            else
+                return (this.kind instanceof Endpoint.Kind.Edge);
         }
-        public boolean isVertex(){
-
-            return (this.kind instanceof Endpoint.Kind.Vertex);
+        public Endpoint.Kind.Edge edgeFor(Face f){
+            if (f == this.face){
+                if (this.on){
+                    if (this.onAB){
+                        if (this.kind.isA())
+                            return Endpoint.Kind.Edge.BAB;
+                        else
+                            return Endpoint.Kind.Edge.AAB;
+                    }
+                    else if (this.onBC){
+                        if (this.kind.isA())
+                            return Endpoint.Kind.Edge.BBC;
+                        else
+                            return Endpoint.Kind.Edge.ABC;
+                    }
+                    else {
+                        if (this.kind.isA())
+                            return Endpoint.Kind.Edge.BCA;
+                        else
+                            return Endpoint.Kind.Edge.ACA;
+                    }
+                }
+                else
+                    throw new IllegalStateException();
+            }
+            else if (this.kind instanceof Endpoint.Kind.Edge)
+                return (Endpoint.Kind.Edge)this.kind;
+            else
+                return ((Endpoint.Kind.Vertex)this.kind).edgeFor();
         }
-        public boolean isInEdge(Endpoint that){
+        /**
+         * @return This endpoint shares an edge in 'f' with 'that'
+         * endpoint.
+         */
+        public boolean isInEdgeOn(Face f, Endpoint that){
 
-            if (this.kind instanceof Endpoint.Kind.Vertex)
+            if (f == this.face)
+                return (this.edgeFor(f) == that.edgeFor(f));
+
+            else if (this.kind instanceof Endpoint.Kind.Vertex)
 
                 return ((Endpoint.Kind.Vertex)this.kind).isInEdge((Endpoint.Kind.Edge)that.kind);
             else 
@@ -327,30 +477,6 @@ public final class Segment
         }
         public Vector getNormal(){
             return this.normal.clone();
-        }
-        public int hashCode(){
-            return this.vertex.hashCode();
-        }
-        public boolean equals(Object that){
-            if (that instanceof Endpoint)
-                return this.equals((Endpoint)that);
-            else
-                return false;
-        }
-        public boolean equals(Endpoint that){
-            if (null == that)
-                return false;
-            else
-                return this.vertex.equals(that.vertex);
-        }
-        /**
-         * Path order comparison
-         */
-        public int compareTo(Endpoint that){
-            if (null == that)
-                return 1;
-            else
-                return this.vertex.compareTo(that.vertex);
         }
 
 
@@ -381,31 +507,47 @@ public final class Segment
         }
     }
     /**
-     * Segment kind: member of a multiple segment path,
-     * vertex-edge, edge-vertex, or edge-edge.  These are
-     * semantically equivalent to "vertex to edge" or "edge to
-     * edge" (as exist for a non empty, one segment triangle
-     * bisection), but symbolically differentiated for the
-     * compiler.
+     * Segment classification by available endpoints from CSG
+     * Operands.
      */
     public enum Kind {
-        M, VE, EV, EE;
 
-        public final static Kind For(Segment.Endpoint e1, Segment.Endpoint e2){
+        AA,AAB,AB,AABB,ABB,BB;
 
-            if (null == e2)
+        /**
+         * @return Triangulation segment case for 'thisF'.
+         */
+        public final static Kind For(Segment.Endpoint a1, Segment.Endpoint a2,
+                                     Segment.Endpoint b1, Segment.Endpoint b2)
+        {
+            if (null != a1){
+                if (null != a2){
+                    if (null != b1){
+                        if (null != b2)
+                            return AABB;
+                        else
+                            return AAB;
+                    }
+                    else
+                        return AA;
+                }
+                else if (null != b1){
 
-                return Kind.M;
-
-            else if (e1.isEdge()){
-
-                if (e2.isEdge())
-                    return Kind.EE;
+                    if (null != b2)
+                        return ABB;
+                    else
+                        return AB;
+                }
                 else
-                    return Kind.EV;
+                    throw new IllegalArgumentException();
             }
-            else if (e2.isEdge())
-                return Kind.VE;
+            else if (null != b1){
+
+                if (null != b2)
+                    return BB;
+                else
+                    throw new IllegalArgumentException();
+            }
             else
                 throw new IllegalArgumentException();
         }
@@ -425,11 +567,13 @@ public final class Segment
     public final int a_A_b, a_B_b, a_C_b;
     public final int b_A_a, b_B_a, b_C_a;
 
-    public final Kind kindA, kindB;
+    public final Triangulate.Kind triKindA, triKindB;
+
+    public final Segment.Kind kind;
     /**
      * Path sort vector
      */
-    private final Vector vector;
+    private final Vector normal;
 
 
     Segment(Face a, Face b, 
@@ -525,40 +669,64 @@ public final class Segment
 
                     switch (endpoint){
                     case AA:
-                        if (null == endpointA1)
-                            endpointA1 = new Endpoint(endpoint,a.a);
-                        else 
-                            endpointA2 = new Endpoint(endpoint,a.a);
+                        try {
+                            if (null == endpointA1)
+                                endpointA1 = new Endpoint(endpoint,a.a,b,a);
+                            else 
+                                endpointA2 = new Endpoint(endpoint,a.a,b,a);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     case AB:
-                        if (null == endpointA1)
-                            endpointA1 = new Endpoint(endpoint,a.b);
-                        else 
-                            endpointA2 = new Endpoint(endpoint,a.b);
+                        try {
+                            if (null == endpointA1)
+                                endpointA1 = new Endpoint(endpoint,a.b,b,a);
+                            else 
+                                endpointA2 = new Endpoint(endpoint,a.b,b,a);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     case AC:
-                        if (null == endpointA1)
-                            endpointA1 = new Endpoint(endpoint,a.c);
-                        else 
-                            endpointA2 = new Endpoint(endpoint,a.c);
+                        try {
+                            if (null == endpointA1)
+                                endpointA1 = new Endpoint(endpoint,a.c,b,a);
+                            else 
+                                endpointA2 = new Endpoint(endpoint,a.c,b,a);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     case BA:
-                        if (null == endpointB1)
-                            endpointB1 = new Endpoint(endpoint,b.a);
-                        else 
-                            endpointB2 = new Endpoint(endpoint,b.a);
+                        try {
+                            if (null == endpointB1)
+                                endpointB1 = new Endpoint(endpoint,b.a,a,b);
+                            else 
+                                endpointB2 = new Endpoint(endpoint,b.a,a,b);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     case BB:
-                        if (null == endpointB1)
-                            endpointB1 = new Endpoint(endpoint,b.b);
-                        else 
-                            endpointB2 = new Endpoint(endpoint,b.b);
+                        try {
+                            if (null == endpointB1)
+                                endpointB1 = new Endpoint(endpoint,b.b,a,b);
+                            else 
+                                endpointB2 = new Endpoint(endpoint,b.b,a,b);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     case BC:
-                        if (null == endpointB1)
-                            endpointB1 = new Endpoint(endpoint,b.c);
-                        else 
-                            endpointB2 = new Endpoint(endpoint,b.c);
+                        try {
+                            if (null == endpointB1)
+                                endpointB1 = new Endpoint(endpoint,b.c,a,b);
+                            else 
+                                endpointB2 = new Endpoint(endpoint,b.c,a,b);
+                        }
+                        catch (IllegalArgumentException drop){
+                        }
                         break;
                     default:
                         throw new IllegalStateException();
@@ -579,73 +747,73 @@ public final class Segment
                     switch (endpoint){
                     case AAB:
                         if (null == endpointA1 || null == endpointA2){
-                            Vertex p = Intersect(a.a,a.b,b);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointA1)
-                                    endpointA1 = new Endpoint(endpoint,p);
+                                    endpointA1 = new Endpoint(endpoint,a.a,a.b,b,a);
                                 else 
-                                    endpointA2 = new Endpoint(endpoint,p);
+                                    endpointA2 = new Endpoint(endpoint,a.a,a.b,b,a);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
                     case ABC:
                         if (null == endpointA1 || null == endpointA2){
-                            Vertex p = Intersect(a.b,a.c,b);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointA1)
-                                    endpointA1 = new Endpoint(endpoint,p);
+                                    endpointA1 = new Endpoint(endpoint,a.b,a.c,b,a);
                                 else
-                                    endpointA2 = new Endpoint(endpoint,p);
+                                    endpointA2 = new Endpoint(endpoint,a.b,a.c,b,a);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
                     case ACA:
                         if (null == endpointA1 || null == endpointA2){
-                            Vertex p = Intersect(a.a,a.c,b);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointA1)
-                                    endpointA1 = new Endpoint(endpoint,p);
+                                    endpointA1 = new Endpoint(endpoint,a.a,a.c,b,a);
                                 else
-                                    endpointA2 = new Endpoint(endpoint,p);
+                                    endpointA2 = new Endpoint(endpoint,a.a,a.c,b,a);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
                     case BAB:
                         if (null == endpointB1 || null == endpointB2){
-                            Vertex p = Intersect(b.a,b.b,a);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointB1)
-                                    endpointB1 = new Endpoint(endpoint,p);
+                                    endpointB1 = new Endpoint(endpoint,b.a,b.b,a,b);
                                 else 
-                                    endpointB2 = new Endpoint(endpoint,p);
+                                    endpointB2 = new Endpoint(endpoint,b.a,b.b,a,b);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
                     case BBC:
                         if (null == endpointB1 || null == endpointB2){
-                            Vertex p = Intersect(b.b,b.c,a);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointB1)
-                                    endpointB1 = new Endpoint(endpoint,p);
+                                    endpointB1 = new Endpoint(endpoint,b.b,b.c,a,b);
                                 else 
-                                    endpointB2 = new Endpoint(endpoint,p);
+                                    endpointB2 = new Endpoint(endpoint,b.b,b.c,a,b);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
                     case BCA:
                         if (null == endpointB1 || null == endpointB2){
-                            Vertex p = Intersect(b.a,b.c,a);
-                            if (null != p){
-
+                            try {
                                 if (null == endpointB1)
-                                    endpointB1 = new Endpoint(endpoint,p);
+                                    endpointB1 = new Endpoint(endpoint,b.a,b.c,a,b);
                                 else 
-                                    endpointB2 = new Endpoint(endpoint,p);
+                                    endpointB2 = new Endpoint(endpoint,b.a,b.c,a,b);
+                            }
+                            catch (IllegalArgumentException drop){
                             }
                         }
                         break;
@@ -676,6 +844,9 @@ public final class Segment
                     switch (endpointA1.compareTo(endpointA2)){
                     case -1:
                         break;
+                    case 0:
+                        endpointA2 = null;
+                        break;
                     case 1:
                         Endpoint tmp = endpointA1;
                         endpointA1 = endpointA2;
@@ -691,6 +862,9 @@ public final class Segment
                     switch (endpointB1.compareTo(endpointB2)){
                     case -1:
                         break;
+                    case 0:
+                        endpointB2 = null;
+                        break;
                     case 1:
                         Endpoint tmp = endpointB1;
                         endpointB1 = endpointB2;
@@ -701,13 +875,15 @@ public final class Segment
                     }
                 }
 
-
-                this.kindA = Segment.Kind.For(endpointA1,endpointA2);
-                this.kindB = Segment.Kind.For(endpointB1,endpointB2);
                 this.endpointA1 = endpointA1;
                 this.endpointA2 = endpointA2;
                 this.endpointB1 = endpointB1;
                 this.endpointB2 = endpointB2;
+
+                this.kind = Segment.Kind.For(endpointA1,endpointA2,endpointB1,endpointB2);
+
+                this.triKindA = Triangulate.Kind.For(a,this.endpoint1(a),this.endpoint2(a));
+                this.triKindB = Triangulate.Kind.For(a,this.endpoint1(b),this.endpoint2(b));
 
                 /*
                  * A-B symmetric path order vector for
@@ -717,18 +893,18 @@ public final class Segment
 
                     if (null != endpointA2){
 
-                        this.vector = endpointA1.getNormal().mid(endpointA2.getNormal());
+                        this.normal = endpointA1.getNormal().mid(endpointA2.getNormal());
                     }
                     else if (null != endpointB1){
 
-                        this.vector = endpointA1.getNormal().mid(endpointB1.getNormal());
+                        this.normal = endpointA1.getNormal().mid(endpointB1.getNormal());
                     }
                     else
                         throw new IllegalArgumentException();
                 }
                 else if (null != endpointB2){
 
-                    this.vector = endpointB1.getNormal().mid(endpointB2.getNormal());
+                    this.normal = endpointB1.getNormal().mid(endpointB2.getNormal());
                 }
                 else
                     throw new IllegalArgumentException();
@@ -778,57 +954,78 @@ public final class Segment
         else
             throw new IllegalArgumentException();
     }
-    public Segment.Kind kind(Face f){
+    public Triangulate.Kind triangulateKind(Face f){
         if (f == this.a)
-            return this.kindA;
+            return this.triKindA;
         else if (f == this.b)
-            return this.kindB;
+            return this.triKindB;
         else
             throw new IllegalArgumentException();
     }
-    /**
-     * On the boundary defined by the vertices and edges of the
-     * argument face.
-     * @see Segment$Kind#M
-     * @see Segment$Path
-     */
-    public Endpoint endpointOn1(Face f){
+    public Endpoint endpoint1(Face f){
 
-        if (f == this.a)
-
-            return this.endpointA1;
-        else 
-            return this.endpointB1;
+        if (f == this.a){
+            switch (this.kind){
+            case AA:
+            case AAB:
+            case AB:
+            case AABB:
+            case ABB:
+                return this.endpointA1;
+            case BB:
+                return this.endpointB1;
+            default:
+                throw new IllegalStateException();
+            }
+        }
+        else {
+            switch (this.kind){
+            case AA:
+                return this.endpointA1;
+            case AAB:
+            case AB:
+            case AABB:
+            case ABB:
+            case BB:
+                return this.endpointB1;
+            default:
+                throw new IllegalStateException();
+            }
+        }
     }
-    public Endpoint endpointOn2(Face f){
+    public Endpoint endpoint2(Face f){
 
-        if (f == this.a)
-
-            return this.endpointA2;
-        else 
-            return this.endpointB2;
-    }
-    /**
-     * In the surface defined by the vertices and edges of the
-     * argument face.
-     * @see Segment$Kind#M
-     * @see Segment$Path
-     */
-    public Endpoint endpointIn1(Face f){
-
-        if (f == this.a)
-
-            return this.endpointB1;
-        else 
-            return this.endpointA1;
-    }
-    public Endpoint endpointIn2(Face f){
-
-        if (f == this.a)
-
-            return this.endpointB2;
-        else 
-            return this.endpointA2;
+        if (f == this.a){
+            switch (this.kind){
+            case AA:
+            case AAB:
+                return this.endpointA2;
+            case AB:
+                return this.endpointB1;
+            case AABB:
+                return this.endpointA2;
+            case ABB:
+                return this.endpointB1;
+            case BB:
+                return this.endpointB2;
+            default:
+                throw new IllegalStateException();
+            }
+        }
+        else {
+            switch (this.kind){
+            case AA:
+            case AAB:
+                return this.endpointA2;
+            case AB:
+            case AABB:
+            case ABB:
+            case BB:
+                return this.endpointB2;
+            default:
+                throw new IllegalStateException();
+            }
+        }
     }
     /**
      * @param f Face in this segment having first endpoint (1) in
@@ -982,7 +1179,58 @@ public final class Segment
      */
     public int compareTo(Segment that){
 
-        return this.vector.compareTo(that.vector);
+        Vector a = this.normal;
+        Vector b = that.normal;
+        if (a.equals(b))
+            return 0;
+        else {
+            double angle = a.angle(b);
+            if (0.0 > angle)
+                return -1;
+            else
+                return 1;
+        }
+    }
+    public fv3.Model.Element[] debugger(double rX, double rY, double rZ){
+
+
+        fv3.Model.Element[] model = new fv3.Model.Element[]{
+            new fv3.model.PointSize(3.0),
+            new fv3.model.Begin(GL2.GL_POINTS)
+        };
+
+        Vertex v;
+
+        if (null != this.endpointA1){
+                
+            v = this.endpointA1.vertex;
+
+            model = fv3.model.Object.Add(model,new fv3.model.Vertex(v.x,v.y,v.z));
+
+            if (null != this.endpointA2){
+
+                v = this.endpointA2.vertex;
+
+                model = fv3.model.Object.Add(model,new fv3.model.Vertex(v.x,v.y,v.z));
+            }
+        }
+
+        if (null != this.endpointB1){
+
+            v = this.endpointB1.vertex;
+
+            model = fv3.model.Object.Add(model,new fv3.model.Vertex(v.x,v.y,v.z));
+
+            if (null != this.endpointB2){
+
+                v = this.endpointB2.vertex;
+
+                model = fv3.model.Object.Add(model,new fv3.model.Vertex(v.x,v.y,v.z));
+            }
+        }
+        model = fv3.model.Object.Add(model,new fv3.model.End());
+
+        return model;
     }
 
     /*
@@ -1036,8 +1284,16 @@ public final class Segment
             return copy;
         }
     }
-
-    public Vertex Intersect(Vertex lineA, Vertex lineB, Face fp){
+    /**
+     * @param lineA Point A in line of intersection
+     * @param lineB Point B in line of intersection
+     * @param fp Face plane: a face describing the plane of intersection
+     * 
+     * @return Point of intersection between a line and a plane.
+     * Return null for no point of intersection, including the case of
+     * the line on the plane.
+     */
+    public final static Vertex Intersect(Vertex lineA, Vertex lineB, Face fp){
 
         final Vector u = lineB.getVector().sub(lineA.getVector());
         final Vector w = lineA.getVector().sub(fp.a.getVector());
@@ -1053,17 +1309,8 @@ public final class Segment
             double s = (n/d);
             if (0.0 > s || 1.0 < s)
                 return null;
-            else {
-                Vertex p = new Vertex(lineA.getVector().add(u.mul(s)));
-
-                if (fp.contains(p))
-                    /*
-                     * Initial vertex classification
-                     */
-                    return p.boundary();
-                else
-                    return null;
-            }
+            else 
+                return new Vertex(lineA.getVector().add(u.mul(s))).boundary();
         }
     }
 
