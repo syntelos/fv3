@@ -218,24 +218,16 @@ public class World
     }
     public void keyTyped(KeyEvent e) {
 
-        int cc = e.getKeyCode();
-        switch (cc){
-        case KeyEvent.VK_ESCAPE:
-        case KeyEvent.VK_F4:
-            super.keyTyped(e);
-            return;
-        default:
-            char ch = e.getKeyChar();
+        char ch = e.getKeyChar();
 
-            if ('a' <= ch && ch <= 't')
-                this.useCamera(ch);
-            else if ('A' <= ch && ch <= 'T')
-                this.useCamera(ch);
-            else 
-                this.keyNav(ch);
+        if ('a' <= ch && ch <= 't')
+            this.useCamera(ch);
+        else if ('A' <= ch && ch <= 'T')
+            this.useCamera(ch);
+        else 
+            this.keyNav(ch);
 
-            return;
-        }
+        return;
     }
     public World show(){
         new fv3.tk.Animator(this).start();

@@ -45,14 +45,19 @@ public interface Model
         extends fv3.math.Notation
     {
         /**
+         * Called after define from display.
          * @return List of client state enables before call list,
          * disables after call list.  Null for none.
          */
         public int[] ables();
         /**
-         * Define the display list
+         * Called before ables from init to define a display list
          */
         public void define(GL2 gl);
+        /**
+         * @return False until requesting redefine
+         */
+        public boolean needsRedefine();
 
 
         public final static class Iterator

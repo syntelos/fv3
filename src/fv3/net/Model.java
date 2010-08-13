@@ -79,6 +79,9 @@ public abstract class Model
         this.parent = null;
         this.matrix = null;
     }
+    public boolean needsReinit(){
+        return false;
+    }
     public void init(GL2 gl){
     }
     public final void setGLU(GLU glu){

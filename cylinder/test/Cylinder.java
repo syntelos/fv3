@@ -4,6 +4,7 @@ package test;
 import fv3.Bounds;
 import fv3.Camera;
 import fv3.csg.Solid;
+import fv3.csg.u.Illustrator;
 import fv3.math.Color;
 import fv3.math.VertexArray;
 import fv3.model.Debugger;
@@ -19,6 +20,7 @@ import fv3.tk.Animator;
 import lxl.List;
 
 import javax.media.opengl.GL2;
+import com.sun.javafx.newt.KeyEvent;
 
 /**
  * 
@@ -73,12 +75,18 @@ public class Cylinder
     }
 
 
+    private fv3.csg.Cylinder cxy10, cxy05;
+    private Illustrator illustrator;
+
 
     public Cylinder(){
         super();
         this.setBgColor(Color.White);
 
         this.add(new Light());
+
+        this.cxy10 = new fv3.csg.Cylinder.XY(10,10,1);
+        this.cxy05 = new fv3.csg.Cylinder.XY(5,12,1);
 
         Model cylinder = new Model();
         {
@@ -87,13 +95,19 @@ public class Cylinder
             cylinder.add(new PolygonMode.Line(GL2.GL_FRONT_AND_BACK));
             cylinder.add(new Enable(GL2.GL_DEPTH_TEST));
 
-            Solid s = new fv3.csg.Cylinder.XY(10,10,1)
-                .difference(new fv3.csg.Cylinder.XY(5,12,1));
+//             Solid s = new fv3.csg.Cylinder.XY(10,10,1)
+//                 .difference(new fv3.csg.Cylinder.XY(5,12,1));
 
-            cylinder.add(s.compile());
+//             cylinder.add(s.compile());
 
+            cylinder.add(this.cxy10.compile());
+            cylinder.add(this.cxy05.compile());
         }
         this.add(cylinder);
+        {
+            this.illustrator = new Illustrator(this.cxy10,this.cxy05);
+        }
+        this.add(this.illustrator);
 
         this.setFv3Bounds();
 
@@ -103,5 +117,16 @@ public class Cylinder
         this.defineCamera('D').orthoBottom(this);
         this.defineCamera('E').orthoLeft(this);
         this.defineCamera('F').orthoRight(this);
+    }
+
+    public void keyTyped(KeyEvent e) {
+
+        char ch = e.getKeyChar();
+
+        if (('a' <= ch && ch <= 'z')||('A' <= ch && ch <= 'Z'))
+            super.keyTyped(e);
+        else {
+            this.illustrator.next();
+        }
     }
 }

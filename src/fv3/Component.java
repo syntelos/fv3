@@ -53,6 +53,10 @@ public interface Component
             lxl.Component
 {
     /**
+     * @return False until requesting reinit 
+     */
+    public boolean needsReinit();
+    /**
      * @return Parent
      */
     public Component getFv3Parent();

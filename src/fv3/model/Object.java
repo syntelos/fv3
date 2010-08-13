@@ -116,4 +116,7 @@ public abstract class Object
     public int[] ables(){
         return null;
     }
+    public boolean needsRedefine(){
+        return false;
+    }
 }

@@ -102,7 +102,7 @@ public class VertexArray
 
     protected volatile double[] normals;
 
-    protected volatile boolean visible = true, useNormals;
+    protected volatile boolean visible = true, useNormals, redefine;
 
     protected volatile fv3.Bounds bounds;
 
@@ -188,6 +188,12 @@ public class VertexArray
         catch (java.lang.CloneNotSupportedException exc){
             throw new InternalError();
         }
+    }
+    public boolean needsRedefine(){
+        boolean re = this.redefine;
+        if (re)
+            this.redefine = false;
+        return re;
     }
     public int[] ables(){
 
@@ -519,6 +525,20 @@ public class VertexArray
         final int many = (3 * count);
 
         System.arraycopy(vertex,ofs,this.vertices,start,many);
+        return this;
+    }
+    public final VertexArray addVertex(double x, double y, double z){
+        return this.addVertex(new double[]{x,y,z});
+    }
+    public final VertexArray addVertex(double[] vertex){
+
+        final int thisL = (this.vertices.length);
+        final int thisC = (thisL/3);
+
+        this.countVertices(thisC+1);
+
+        System.arraycopy(vertex,0,this.vertices,thisL,3);
+
         return this;
     }
     public final double[] array(){

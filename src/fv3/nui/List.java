@@ -80,7 +80,11 @@ public abstract class List
 
             int lid = this.lid[cc];
 
-            if (-1 == lid){
+            Element el = this.list(cc);
+            /*
+             * Init(cc)
+             */
+            if (-1 == lid && null != el){
 
                 lid = gl.glGenLists(1);
 
@@ -88,7 +92,7 @@ public abstract class List
 
                 gl.glNewList(lid, GL2.GL_COMPILE);
 
-                this.list(cc).define(gl);
+                el.define(gl);
 
                 gl.glEndList();
             }
@@ -98,25 +102,79 @@ public abstract class List
 
         super.display(gl);
 
+        boolean once = false;
+
         for (int cc = 0; cc < this.count; cc++){
 
             int lid = this.lid[cc];
 
-            if (-1 != lid){
-                final int[] ables = this.list(cc).ables();
-                {
-                    if (null != ables){
-                        for (int ac = 0, az = ables.length; ac < az; ac++)
-                            gl.glEnableClientState(ables[ac]);
+            Element el = this.list(cc);
+
+            if (null != el){
+
+                if (-1 != lid){
+                    once = false;
+
+                    if (el.needsRedefine()){
+
+                        this.lid[cc] = -1;
+
+                        gl.glDeleteLists(lid,1);
+                        /*
+                         * Init(cc)
+                         */
+                        {
+                            lid = gl.glGenLists(1);
+
+                            this.lid[cc] = lid;
+
+                            gl.glNewList(lid, GL2.GL_COMPILE);
+
+                            el.define(gl);
+
+                            gl.glEndList();
+                        }
+                    }
+
+                    /*
+                     * Display(cc)
+                     */
+                    final int[] ables = el.ables();
+                    {
+                        if (null != ables){
+                            for (int ac = 0, az = ables.length; ac < az; ac++)
+                                gl.glEnableClientState(ables[ac]);
+                        }
+                    }
+
+                    gl.glCallList(lid);
+
+                    {
+                        if (null != ables){
+                            for (int ac = 0, az = ables.length; ac < az; ac++)
+                                gl.glDisableClientState(ables[ac]);
+                        }
                     }
                 }
+                else if (once)
+                    continue;
+                else {
+                    once = true;
+                    /*
+                     * Init(cc)
+                     */
+                    {
+                        lid = gl.glGenLists(1);
 
-                gl.glCallList(lid);
+                        this.lid[cc] = lid;
 
-                {
-                    if (null != ables){
-                        for (int ac = 0, az = ables.length; ac < az; ac++)
-                            gl.glDisableClientState(ables[ac]);
+                        gl.glNewList(lid, GL2.GL_COMPILE);
+
+                        el.define(gl);
+
+                        gl.glEndList();
+
+                        cc -= 1;
                     }
                 }
             }

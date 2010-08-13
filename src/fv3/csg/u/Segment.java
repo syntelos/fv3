@@ -354,6 +354,8 @@ public final class Segment
         private final Vector normal;
 
         /**
+         * Segment construction vertex case
+         * 
          * @exception java.lang.IllegalArgumentException Intersection not found.
          */
         public Endpoint(Kind.Vertex k, Vertex v0, Face f1, Face f2)
@@ -366,6 +368,8 @@ public final class Segment
             this.normal = this.vertex.getVector().normalize();
         }
         /**
+         * Segment construction edge case
+         * 
          * @exception java.lang.IllegalArgumentException Intersection not found.
          */
         public Endpoint(Kind.Edge k, Vertex v0, Vertex v1, Face f1, Face f2)
@@ -674,8 +678,11 @@ public final class Segment
                                 endpointA1 = new Endpoint(endpoint,a.a,b,a);
                             else 
                                 endpointA2 = new Endpoint(endpoint,a.a,b,a);
+
+                            //System.err.println("+ "+endpoint+" "+b.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+b.getName());
                         }
                         break;
                     case AB:
@@ -684,8 +691,11 @@ public final class Segment
                                 endpointA1 = new Endpoint(endpoint,a.b,b,a);
                             else 
                                 endpointA2 = new Endpoint(endpoint,a.b,b,a);
+
+                            //System.err.println("+ "+endpoint+" "+b.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+b.getName());
                         }
                         break;
                     case AC:
@@ -694,8 +704,11 @@ public final class Segment
                                 endpointA1 = new Endpoint(endpoint,a.c,b,a);
                             else 
                                 endpointA2 = new Endpoint(endpoint,a.c,b,a);
+
+                            //System.err.println("+ "+endpoint+" "+b.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+b.getName());
                         }
                         break;
                     case BA:
@@ -704,8 +717,11 @@ public final class Segment
                                 endpointB1 = new Endpoint(endpoint,b.a,a,b);
                             else 
                                 endpointB2 = new Endpoint(endpoint,b.a,a,b);
+
+                            //System.err.println("+ "+endpoint+" "+a.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+a.getName());
                         }
                         break;
                     case BB:
@@ -714,8 +730,11 @@ public final class Segment
                                 endpointB1 = new Endpoint(endpoint,b.b,a,b);
                             else 
                                 endpointB2 = new Endpoint(endpoint,b.b,a,b);
+
+                            //System.err.println("+ "+endpoint+" "+a.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+a.getName());
                         }
                         break;
                     case BC:
@@ -724,8 +743,11 @@ public final class Segment
                                 endpointB1 = new Endpoint(endpoint,b.c,a,b);
                             else 
                                 endpointB2 = new Endpoint(endpoint,b.c,a,b);
+
+                            //System.err.println("+ "+endpoint+" "+a.getName());
                         }
                         catch (IllegalArgumentException drop){
+                            //System.err.println("! "+endpoint+" "+a.getName());
                         }
                         break;
                     default:
@@ -752,8 +774,11 @@ public final class Segment
                                     endpointA1 = new Endpoint(endpoint,a.a,a.b,b,a);
                                 else 
                                     endpointA2 = new Endpoint(endpoint,a.a,a.b,b,a);
+
+                                //System.err.println("+ "+endpoint+" "+b.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+b.getName());
                             }
                         }
                         break;
@@ -764,8 +789,11 @@ public final class Segment
                                     endpointA1 = new Endpoint(endpoint,a.b,a.c,b,a);
                                 else
                                     endpointA2 = new Endpoint(endpoint,a.b,a.c,b,a);
+
+                                //System.err.println("+ "+endpoint+" "+b.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+b.getName());
                             }
                         }
                         break;
@@ -776,8 +804,11 @@ public final class Segment
                                     endpointA1 = new Endpoint(endpoint,a.a,a.c,b,a);
                                 else
                                     endpointA2 = new Endpoint(endpoint,a.a,a.c,b,a);
+
+                                //System.err.println("+ "+endpoint+" "+b.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+b.getName());
                             }
                         }
                         break;
@@ -788,8 +819,11 @@ public final class Segment
                                     endpointB1 = new Endpoint(endpoint,b.a,b.b,a,b);
                                 else 
                                     endpointB2 = new Endpoint(endpoint,b.a,b.b,a,b);
+
+                                //System.err.println("+ "+endpoint+" "+a.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+a.getName());
                             }
                         }
                         break;
@@ -800,8 +834,11 @@ public final class Segment
                                     endpointB1 = new Endpoint(endpoint,b.b,b.c,a,b);
                                 else 
                                     endpointB2 = new Endpoint(endpoint,b.b,b.c,a,b);
+
+                                //System.err.println("+ "+endpoint+" "+a.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+a.getName());
                             }
                         }
                         break;
@@ -812,8 +849,11 @@ public final class Segment
                                     endpointB1 = new Endpoint(endpoint,b.a,b.c,a,b);
                                 else 
                                     endpointB2 = new Endpoint(endpoint,b.a,b.c,a,b);
+
+                                //System.err.println("+ "+endpoint+" "+a.getName());
                             }
                             catch (IllegalArgumentException drop){
+                                //System.err.println("! "+endpoint+" "+a.getName());
                             }
                         }
                         break;

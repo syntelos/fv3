@@ -75,6 +75,9 @@ public class Component
     }
 
 
+    public boolean needsReinit(){
+        return false;
+    }
     public final boolean alive(){
         return this.alive;
     }

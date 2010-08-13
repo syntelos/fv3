@@ -126,6 +126,12 @@ public class Solid
     }
 
 
+    public int countSolidFaces(){
+        return this.mesh.size();
+    }
+    public Face getSolidFace(int idx){
+        return this.mesh.get(idx);
+    }
     /**
      * Initial build "add" is overridden by {@link Geom} for sorting
      * face vertex order in three space.

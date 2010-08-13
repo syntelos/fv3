@@ -121,6 +121,11 @@ public class Region
 
                     fv3.Component child = (fv3.Component)childrenAry[cc];
 
+                    if (child.needsReinit()){
+
+                        child.init(gl);
+                    }
+
                     if (child.isVisible()){
 
                         cps = (child.pushFv3Matrix());

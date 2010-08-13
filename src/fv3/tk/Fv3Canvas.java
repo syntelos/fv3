@@ -134,15 +134,6 @@ public class Fv3Canvas
         }
     }
     public void keyTyped(KeyEvent e) {
-        switch (e.getKeyCode()){
-        case KeyEvent.VK_ESCAPE:
-            Animator.currentAnimator().halt();
-            return;
-        case KeyEvent.VK_F4:
-            if (e.isAltDown())
-                Animator.currentAnimator().halt();
-            return;
-        }
     }
     public void mouseClicked(MouseEvent e){
     }

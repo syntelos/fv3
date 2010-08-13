@@ -47,6 +47,9 @@ public class Model
     }
 
 
+    public boolean needsRedefine(){
+        return false;
+    }
     public int[] ables(){
 
         return this.ables;
