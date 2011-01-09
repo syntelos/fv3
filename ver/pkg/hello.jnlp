@@ -17,6 +17,7 @@
     <property name="fv3.tk.Animator.W" value="1000"/>
     <property name="fv3.tk.Animator.H" value="700"/>
     <property name="sun.java2d.noddraw" value="true"/>
+    <property name="sun.java2d.opengl" value="false"/>
     <jar href="@ProjectName@-@ProjectVersion@.jar" main="true"/>
     <extension name="newt-jogl" href="newt-jogl.jnlp" />
   </resources>

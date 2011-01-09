@@ -12,6 +12,7 @@
     <property name="fv3.tk.Animator.Sync.DT" value="40"/>
     <property name="fv3.tk.Animator.GLTrace" value="false"/>
     <property name="sun.java2d.noddraw" value="true"/>
+    <property name="sun.java2d.opengl" value="false"/>
     <jar href="@ProjectName@-@ProjectVersion@.jar" main="true"/>
     <extension name="newt-jogl" href="newt-jogl.jnlp" />
   </resources>
