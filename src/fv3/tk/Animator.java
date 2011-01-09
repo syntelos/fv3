@@ -24,12 +24,11 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.TraceGL2;
 import javax.media.opengl.glu.GLU;
 
-import com.sun.javafx.newt.PaintEvent;
-import com.sun.javafx.newt.PaintListener;
-import com.sun.javafx.newt.Window;
-import com.sun.javafx.newt.WindowEvent;
-import com.sun.javafx.newt.WindowListener;
-import com.sun.javafx.newt.opengl.GLWindow;
+import com.jogamp.newt.Window;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.event.WindowListener;
+import com.jogamp.newt.event.WindowUpdateEvent;
+import com.jogamp.newt.opengl.GLWindow;
 
 /**
  * Animator is instantiated by the application main in a subclass of
@@ -55,8 +54,7 @@ import com.sun.javafx.newt.opengl.GLWindow;
  */
 public final class Animator
     extends java.lang.Thread
-    implements PaintListener,
-               WindowListener
+    implements WindowListener
 {
     /**
      * This can be called from any of the {@link Fv3Component}
@@ -218,6 +216,22 @@ public final class Animator
         Undecorated = traceb;
     }
     /**
+     * Window decoration optionally defined by system property
+     * <code>"fv3.tk.Animator.Fullscreen"</code>.
+     * 
+     * Default value: accept underlying JOGL/NEWT default value.
+     */
+    public final static boolean Fullscreen;
+    static {
+        boolean traceb = false;
+        String config = System.getProperty("fv3.tk.Animator.Fullscreen");
+        if (null != config){
+            traceb = ("true".equals(config));
+            System.err.println(String.format("%s: Set fv3.tk.Animator.Fullscreen(%b)",Thread.currentThread().getName(),traceb));
+        }
+        Fullscreen = traceb;
+    }
+    /**
      * GL tracing optionally defined by system property
      * <code>"fv3.tk.Animator.GLTrace"</code>.
      * 
@@ -336,6 +350,8 @@ public final class Animator
 
     private volatile boolean undecorated = Animator.Undecorated;
 
+    private volatile boolean fullscreen = Animator.Fullscreen;
+
     private volatile boolean halting, running;
 
     private volatile GLWindow glWindow;
@@ -368,6 +384,17 @@ public final class Animator
     public Animator setUndecorated(boolean undecorated){
         if (!this.running){
             this.undecorated = undecorated;
+            return this;
+        }
+        else
+            throw new IllegalStateException("Running");
+    }
+    public boolean isFullscreen(){
+        return this.fullscreen;
+    }
+    public Animator setFullscreen(boolean fullscreen){
+        if (!this.running){
+            this.fullscreen = fullscreen;
             return this;
         }
         else
@@ -476,26 +503,25 @@ public final class Animator
         int width = (int)fv3s.width;
         int height = (int)fv3s.height;
 
-        this.glWindow = GLWindow.create(fv3s.glCapabilities,this.undecorated);
-        GLWindow glWindow = this.glWindow;
+        this.glWindow = GLWindow.create(fv3s.glCapabilities);
 
-        /*[TODO Fullscreen disabled for review]
-         * 
-         * modal := is this modal on some platforms?
-         * 
-         * if (modal)
-         * then
-         *  (dont use fullscreen);
-         * else
-         *   (use fullscreen);
-         *
-        glWindow.setFullscreen(true);
-         */
-        glWindow.setPosition(x,y);
-        glWindow.setSize(width,height);
+        final GLWindow glWindow = this.glWindow;
+
+	if (this.undecorated)
+	    glWindow.setUndecorated(true);
+
+	if (this.fullscreen){
+	    if (!glWindow.setFullscreen(true)){
+		glWindow.setPosition(x,y);
+		glWindow.setSize(width,height);
+	    }
+	}
+	else {
+	    glWindow.setPosition(x,y);
+	    glWindow.setSize(width,height);
+	}
         glWindow.addKeyListener(fv3c);
         glWindow.addMouseListener(fv3c);
-        glWindow.addPaintListener(this);
         glWindow.addWindowListener(this);
 
         glWindow.setVisible(true);
@@ -592,19 +618,19 @@ public final class Animator
         if (null != glWindow)
             glWindow.requestFocus();
     }
-    public void exposed(PaintEvent e){
-    }
+
     public void windowResized(WindowEvent e){
     }
     public void windowResizing(WindowEvent e){
     }
     public void windowMoved(WindowEvent e){
     }
+    public void windowRepaint(WindowUpdateEvent e){
+    }
     public void windowDestroyNotify(WindowEvent e){
         this.halt();
     }
     public void windowGainedFocus(WindowEvent e){
-        this.requestFocus();
     }
     public void windowLostFocus(WindowEvent e){
     }

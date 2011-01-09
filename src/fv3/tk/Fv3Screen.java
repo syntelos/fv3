@@ -21,9 +21,9 @@ import fv3.Fv3Exception;
 
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
-import com.sun.javafx.newt.Display;
-import com.sun.javafx.newt.NewtFactory;
-import com.sun.javafx.newt.Screen;
+import com.jogamp.newt.Display;
+import com.jogamp.newt.NewtFactory;
+import com.jogamp.newt.Screen;
 
 /**
  * This physical screen descriptor is created by the Animator} thread.
@@ -136,7 +136,7 @@ public final class Fv3Screen
     }
     void input(){
         if (this.alive)
-            this.display.pumpMessages();
+            this.display.dispatchMessages();
     }
 
 }

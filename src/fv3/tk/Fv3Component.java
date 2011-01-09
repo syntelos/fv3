@@ -17,8 +17,6 @@
  */
 package fv3.tk;
 
-import com.sun.javafx.newt.* ;
-
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.glu.GLU;
@@ -33,8 +31,8 @@ import javax.media.opengl.glu.GLU;
  * @author jdp
  */
 public interface Fv3Component
-    extends KeyListener,
-            MouseListener
+    extends com.jogamp.newt.event.KeyListener,
+            com.jogamp.newt.event.MouseListener
 {
     /**
      * Called once from the {@link Animator} after the {@link

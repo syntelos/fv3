@@ -20,7 +20,7 @@ import fv3.tk.Animator;
 import lxl.List;
 
 import javax.media.opengl.GL2;
-import com.sun.javafx.newt.KeyEvent;
+import com.jogamp.newt.event.KeyEvent;
 
 /**
  * 

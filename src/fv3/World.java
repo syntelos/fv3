@@ -20,7 +20,7 @@ package fv3;
 import fv3.math.Color;
 
 import javax.media.opengl.GL2;
-import com.sun.javafx.newt.KeyEvent;
+import com.jogamp.newt.event.KeyEvent;
 
 /**
  * World is the root of an Fv3 application.  It handles Fv3 cameras.

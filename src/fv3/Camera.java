@@ -27,7 +27,7 @@ import lxl.List;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
-import com.sun.javafx.newt.KeyEvent;
+import com.jogamp.newt.event.KeyEvent;
 
 /**
  * The {@link World} manages a set of cameras, and can dynamically

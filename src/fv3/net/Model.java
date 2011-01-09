@@ -29,8 +29,8 @@ import java.nio.DoubleBuffer;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
-import com.sun.javafx.newt.KeyEvent;
-import com.sun.javafx.newt.MouseEvent;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 
 /**

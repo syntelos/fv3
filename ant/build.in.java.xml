@@ -45,6 +45,7 @@
              source="${compiler.source}"
              target="${compiler.target}"
              encoding="${compiler.encoding}"
+	     includeAntRuntime="false"
              failonerror="true">
 
         <classpath refid="@{classpath.id}"/>

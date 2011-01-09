@@ -16,7 +16,7 @@ import lxl.List;
 
 import javax.media.opengl.GL2;
 
-import com.sun.javafx.newt.MouseEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 /**
  * <a
