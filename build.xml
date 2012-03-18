@@ -1,22 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="fv3" default="gles2">
+<project name="fv3" default="update">
 
-  <property name="gles2" value="${basedir}/gles2"/>
+  <tstamp/>
 
-  <import file="${basedir}/ant/build.in.version.xml"/>
+  <property name="src" location="${basedir}/src"/>
+  <property name="tgt" location="${basedir}/tgt"/>
+  <property name="dst" location="${basedir}"/>
+  <property name="lib" location="${basedir}/lib"/>
+  <property name="ant" location="${basedir}/ant"/>
+  <property name="build.version" location="${basedir}/build.version"/>
 
-  <target name="gles2" description="Build subproject gles2">
+  <property name="compiler.source" value="1.6"/>
+  <property name="compiler.target" value="1.6"/>
+  <property name="compiler.optimize" value="false"/>
+  <property name="compiler.debug" value="true"/>
+  <property name="compiler.deprecation" value="false"/>
+  <property name="compiler.encoding" value="utf-8"/>
 
-    <ant dir="${gles2}"/>
+  <import file="${ant}/build.in.update.xml"/>
+  <import file="${ant}/build.in.version.xml"/>
+
+  <property file="${user.home}/update.properties"/>
+
+  <path id="lib.path">
+    <fileset dir="${lib}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <target name="update" depends="jar" if="fv3.update">
+
+    <do-update src="${target.jar}" tgt="${fv3.update}"/>
   </target>
 
-  <target name="clean" description="Clean subprojects">
+  <target name="jar" depends="compile" description="Create JAR. Dep 'compile'.">
+    <delete file="${target.jar}"/>
 
-    <ant dir="${gles2}" target="clean"/>
+    <jar jarfile="${target.jar}" >
+
+      <fileset dir="${tgt}" includes="**/*.class" />
+    </jar>
+    <delete dir="${tgt}"/>
+  </target>
+
+  <target name="compile" depends="version">
+    <mkdir dir="${tgt}"/>
+
+    <javac srcdir="${src}" destdir="${tgt}" debug="${compiler.debug}" encoding="${compiler.encoding}"
+           classpathref="lib.path" source="${compiler.source}" target="${compiler.target}">
+    </javac>
+  </target>
+
+  <target name="clean" description="Clean up project.">
+    <delete dir="${tgt}"/>
   </target>
 
   <target name="version" description="Report current project version.">
     <version/>
+    <property name="target.jar" value="${dst}/${ant.project.name}-${this.version}.jar"/>
   </target>
 
   <target name="build" description="Increment project version build number.">
