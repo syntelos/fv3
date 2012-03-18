@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="fv3" default="update">
+<project name="fv3-jogl" default="update">
 
   <property name="src" value="src"/>
   <property name="bin" value="bin"/>

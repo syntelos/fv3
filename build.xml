@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="fv3" default="gles2">
+
+  <property name="gles2" value="${basedir}/gles2"/>
+
+  <import file="${basedir}/ant/build.in.version.xml"/>
+
+  <target name="gles2" description="Build subproject gles2">
+
+    <ant dir="${gles2}"/>
+  </target>
+
+  <target name="clean" description="Clean subprojects">
+
+    <ant dir="${gles2}" target="clean"/>
+  </target>
+
+  <target name="version" description="Report current project version.">
+    <version/>
+  </target>
+
+  <target name="build" description="Increment project version build number.">
+    <version-build/>
+    <version/>
+  </target>
+  <target name="minor" description="Increment project version minor number.">
+    <version-minor/>
+    <version/>
+  </target>
+  <target name="major" description="Increment project version major number.">
+    <version-major/>
+    <version/>
+  </target>
+</project>
