@@ -78,19 +78,19 @@ public final class TTFFontReader
             return this.readSint32();
         }
     }
-    public double read1616() {
+    public float read1616() {
         int val = this.readSint32();
 
-        double integer = (val>>16);
-        double fraction = ((val & 0xffff) / 65536.0);
+        float integer = (val>>16);
+        float fraction = ((val & 0xffff) / 65536.0f);
 
         return (integer + fraction);
     }
-    public double read214() {
+    public float read214() {
         int val = this.readUint16();
 
-        double integer = ((val<<16)>>30);
-        double fraction = ((val & 0x3fff) / 16384.0);
+        float integer = ((val<<16)>>30);
+        float fraction = ((val & 0x3fff) / 16384.0f);
 
         return (integer + fraction);
     }
@@ -179,28 +179,28 @@ public final class TTFFontReader
 
     public static class TestF2DOT14 {
 
-        public final static double F214(int bits){
-            double integer = ((bits<<16)>>30);
-            double fraction = ((bits & 0x3fff) / 16384.0);
+        public final static float F214(int bits){
+            float integer = ((bits<<16)>>30);
+            float fraction = ((bits & 0x3fff) / 16384.0f);
             return (integer+fraction);
         }
 
         public static TestF2DOT14[] List = {
-            new TestF2DOT14(1.99993896484375,  0x7fff),
-            new TestF2DOT14(1.75,      0x7000),
-            new TestF2DOT14(6.103515625E-5,  0x0001),
-            new TestF2DOT14(0.0,       0x0000),
-            new TestF2DOT14(-6.103515625E-5, 0xffff),
-            new TestF2DOT14(-2.0,      0x8000)
+            new TestF2DOT14(1.99993896484375f,  0x7fff),
+            new TestF2DOT14(1.75f,      0x7000),
+            new TestF2DOT14(6.103515625E-5f,  0x0001),
+            new TestF2DOT14(0.0f,       0x0000),
+            new TestF2DOT14(-6.103515625E-5f, 0xffff),
+            new TestF2DOT14(-2.0f,      0x8000)
         };
 
 
-        public final double R;
+        public final float R;
 
         public final int B;
 
 
-        TestF2DOT14(double R, int B){
+        TestF2DOT14(float R, int B){
             super();
             this.R = R;
             this.B = B;
@@ -210,7 +210,7 @@ public final class TTFFontReader
 
             return (this.R == F214(this.B));
         }
-        public double value(){
+        public float value(){
 
             return F214(this.B);
         }

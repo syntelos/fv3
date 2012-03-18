@@ -24,8 +24,6 @@ import fv3.font.ttf.Head;
 import fv3.font.ttf.Point;
 import fv3.font.ttf.TTF;
 
-import javax.media.opengl.GL2;
-
 /**
  * 
  * 
@@ -53,7 +51,7 @@ public class TTFGlyph
     /**
      * Glyph bounding box
      */
-    public double minX, maxX, minY, maxY;
+    public float minX, maxX, minY, maxY;
 
     public char character;
 
@@ -152,9 +150,9 @@ public class TTFGlyph
                         }
                     }
                 }
-                double points[] = new double[(nPoints<<1)];
+                float points[] = new float[(nPoints<<1)];
                 {
-                    double last = 0.0;
+                    float last = ZERO;
                     int x, y;
                     for (int cc = 0; cc < nPoints; cc++){
                         x = (cc<<1);
@@ -173,7 +171,7 @@ public class TTFGlyph
 
                         last = points[x];
                     }
-                    last = 0.0;
+                    last = ZERO;
 
                     for (int cc = 0; cc < nPoints; cc++){
                         y = (cc<<1)+1;
@@ -211,10 +209,10 @@ public class TTFGlyph
                         int x = (cc<<1);
                         int y = (x+1);
 
-                        double startX = 0.0, startY = 0.0;
-                        double controlX = 0.0, controlY = 0.0;
-                        double controlX2 = 0.0, controlY2 = 0.0;
-                        double endX = 0.0, endY = 0.0;
+                        float startX = ZERO, startY = ZERO;
+                        float controlX = ZERO, controlY = ZERO;
+                        float controlX2 = ZERO, controlY2 = ZERO;
+                        float endX = ZERO, endY = ZERO;
 
                         Point point = new Point(contour);
 
@@ -272,12 +270,12 @@ public class TTFGlyph
                                     HavePoint = HaveStart;
                                     point.start = cc;
 
-                                    controlX = 0.0;
-                                    controlY = 0.0;
-                                    controlX2 = 0.0;
-                                    controlY2 = 0.0;
-                                    endX = 0.0;
-                                    endY = 0.0;
+                                    controlX = ZERO;
+                                    controlY = ZERO;
+                                    controlX2 = ZERO;
+                                    controlY2 = ZERO;
+                                    endX = ZERO;
+                                    endY = ZERO;
                                 }
                                 else {
 
@@ -287,12 +285,12 @@ public class TTFGlyph
                                     HavePoint = HaveControl;
                                     point.control = cc;
 
-                                    startX = 0.0;
-                                    startY = 0.0;
-                                    controlX2 = 0.0;
-                                    controlY2 = 0.0;
-                                    endX = 0.0;
-                                    endY = 0.0;
+                                    startX = ZERO;
+                                    startY = ZERO;
+                                    controlX2 = ZERO;
+                                    controlY2 = ZERO;
+                                    endX = ZERO;
+                                    endY = ZERO;
                                 }
                                 first = null;
                                 last = null;
@@ -322,12 +320,12 @@ public class TTFGlyph
                                     HavePoint = HaveStart;
                                     point.start = cc;
 
-                                    controlX = 0.0;
-                                    controlY = 0.0;
-                                    controlX2 = 0.0;
-                                    controlY2 = 0.0;
-                                    endX = 0.0;
-                                    endY = 0.0;
+                                    controlX = ZERO;
+                                    controlY = ZERO;
+                                    controlX2 = ZERO;
+                                    controlY2 = ZERO;
+                                    endX = ZERO;
+                                    endY = ZERO;
                                     break;
                                 case HaveControl:
 
@@ -351,12 +349,12 @@ public class TTFGlyph
                                     HavePoint = HaveStart;
                                     point.start = cc;
 
-                                    controlX = 0.0;
-                                    controlY = 0.0;
-                                    controlX2 = 0.0;
-                                    controlY2 = 0.0;
-                                    endX = 0.0;
-                                    endY = 0.0;
+                                    controlX = ZERO;
+                                    controlY = ZERO;
+                                    controlX2 = ZERO;
+                                    controlY2 = ZERO;
+                                    endX = ZERO;
+                                    endY = ZERO;
                                     break;
 
                                 default:
@@ -389,8 +387,8 @@ public class TTFGlyph
                                     controlY2 = points[y];
                                     /*
                                      */
-                                    endX = (controlX2 + controlX)/2.0;
-                                    endY = (controlY2 + controlY)/2.0; 
+                                    endX = (controlX2 + controlX)/2.0f;
+                                    endY = (controlY2 + controlY)/2.0f; 
 
                                     this.add(last = new TTFPath(point.close(this), true,
                                                                 startX, startY, controlX, controlY,
@@ -409,10 +407,10 @@ public class TTFGlyph
                                     HavePoint = HaveControl;
                                     point.control = cc;
 
-                                    controlX2 = 0.0;
-                                    controlY2 = 0.0;
-                                    endX = 0.0;
-                                    endY = 0.0;
+                                    controlX2 = ZERO;
+                                    controlY2 = ZERO;
+                                    endX = ZERO;
+                                    endY = ZERO;
                                     break;
 
                                 default:

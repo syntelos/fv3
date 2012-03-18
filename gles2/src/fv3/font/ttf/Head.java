@@ -47,11 +47,11 @@ public final class Head
     /**
      * Font bounding box
      */
-    public double minX, maxX, minY, maxY;
+    public float minX, maxX, minY, maxY;
 
     public boolean optimized_for_cleartype, apply_lsb, indexToLocIsLong;
 
-    public double emsize;
+    public float emsize;
 
 
     protected Head(int ofs, int len) {
@@ -97,15 +97,15 @@ public final class Head
     public int getType(){
         return TYPE;
     }
-    public double scale(FontOptions options){
+    public float scale(FontOptions options){
 
         if (0 == options.width || 0 == options.height)
-            return 1.0;
+            return 1.0f;
         else {
-            double x = (this.maxX - this.minX);
-            double y = (this.maxY - this.minY);
-            double sx = (options.width / x);
-            double sy = (options.height / y);
+            float x = (this.maxX - this.minX);
+            float y = (this.maxY - this.minY);
+            float sx = (options.width / x);
+            float sy = (options.height / y);
             return Math.max(sx,sy);
         }
     }

@@ -36,7 +36,7 @@ public final class Os2
     public final static String NAME = "OS/2";
     public final static String DESC = "OS/2 and Windows specific metrics table";
 
-    public double xAverageCharWidth, ySubscriptXSize, ySubscriptYSize, 
+    public float xAverageCharWidth, ySubscriptXSize, ySubscriptYSize, 
         ySubscriptXOffset, ySubscriptYOffset, ySuperscriptXSize, ySuperscriptYSize,
         ySuperscriptXOffset, ySuperscriptYOffset, yStrikeoutSize, yStrikeoutPosition;
 

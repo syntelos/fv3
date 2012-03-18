@@ -19,7 +19,7 @@
 
   <include file="${ant}/build.in.update.xml"/>
 
-  <include file="${user.home}/update.properties"/>
+  <property file="${user.home}/update.properties"/>
 
   <path id="lib.path">
     <fileset dir="${lib}">

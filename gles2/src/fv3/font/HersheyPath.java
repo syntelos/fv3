@@ -145,14 +145,14 @@ public final class HersheyPath
 
         if (0 < this.nlines){
 
-            final double ofsX = -font.pathSetMinX;
-            final double ofsY = -font.pathSetMinY;
+            final float ofsX = -font.pathSetMinX;
+            final float ofsY = -font.pathSetMinY;
 
             final int vn = this.nvertices;
 
             boolean moveto = true;
             int nc = 0;
-            double x0 = 0, y0 = 0, x1, y1;
+            float x0 = 0, y0 = 0, x1, y1;
 
             for (int vc = 1; vc < vn; vc++){
                 char vx = this.vertices[X][vc];
@@ -169,8 +169,8 @@ public final class HersheyPath
 
                         if (x0 != x1 || y0 != y1){
 
-                            glyph.setVertex(nc++,x0,y0,0.0);
-                            glyph.setVertex(nc++,x1,y1,0.0);
+                            glyph.setVertex(nc++,x0,y0,0.0f);
+                            glyph.setVertex(nc++,x1,y1,0.0f);
                         }
                     }
                     else
@@ -186,13 +186,13 @@ public final class HersheyPath
     public void destroy(){
     }
 
-    private static double TX (double p, double mag){
+    private static float TX (float p, float mag){
         if (0.0 < mag)
             return ((p - 'R') * mag);
         else
             return (p - 'R');
     }
-    private static double TY (double p, double mag){
+    private static float TY (float p, float mag){
         if (0.0 < mag)
             return (('R' - p) * mag);
         else

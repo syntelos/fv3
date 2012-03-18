@@ -38,13 +38,13 @@ public final class CompoundGlyph {
     private final static int USE_MY_METRICS           = (1<<9);
     private final static int OVERLAP_COMPOUND         = (1<<10);
 
-    private final static double EPSILON = 33.0/65536.0;
+    private final static float EPSILON = 33.0f/65536.0f;
 
     public final boolean scale, translation, match;
 
     public final int flags, index, matchCompound, matchComponent;
 
-    public final double xx, xy, yy, yx, tx, ty;
+    public final float xx, xy, yy, yx, tx, ty;
 
 
     public CompoundGlyph(TTFFontReader reader){
@@ -64,11 +64,11 @@ public final class CompoundGlyph {
             arg2 = reader.readSint8();
         }
 
-        double tx, ty;
+        float tx, ty;
 
         if (0 != (this.flags & WE_HAVE_A_SCALE)){
             this.scale = true;
-            double s = reader.read214();
+            float s = reader.read214();
             this.xx = s;
             this.xy = s;
             this.yy = s;
@@ -79,9 +79,9 @@ public final class CompoundGlyph {
         else if (0 != (this.flags & WE_HAVE_AN_X_AND_Y_SCALE)){
             this.scale = true;
             this.xx = reader.read214();
-            this.xy = 0.0;
+            this.xy = 0.0f;
             this.yy = reader.read214();
-            this.yx = 0.0;
+            this.yx = 0.0f;
             tx = this.xx;
             ty = this.yy;
         }
@@ -91,17 +91,17 @@ public final class CompoundGlyph {
             this.yx = reader.read214();
             this.xy = reader.read214();
             this.yy = reader.read214();
-            tx = Math.sqrt((this.xx*this.xx)+(this.xy+this.xy));
-            ty = Math.sqrt((this.yy*this.yy)+(this.yx+this.yx));
+            tx = (float)Math.sqrt((this.xx*this.xx)+(this.xy+this.xy));
+            ty = (float)Math.sqrt((this.yy*this.yy)+(this.yx+this.yx));
         }
         else {
             this.scale = false;
-            this.xx = 0.0;
-            this.xy = 0.0;
-            this.yy = 0.0;
-            this.yx = 0.0;
-            tx = 1.0;
-            ty = 1.0;
+            this.xx = 0.0f;
+            this.xy = 0.0f;
+            this.yy = 0.0f;
+            this.yx = 0.0f;
+            tx = 1.0f;
+            ty = 1.0f;
         }
 
         if ( 0 != (this.flags & ARGS_ARE_XY_VALUES)){
@@ -121,15 +121,15 @@ public final class CompoundGlyph {
         else {
             this.match = true;
             this.translation = false;
-            this.tx = 0.0;
-            this.ty = 0.0;
+            this.tx = 0.0f;
+            this.ty = 0.0f;
             this.matchCompound = arg1;
             this.matchComponent = arg2;
         }
     }
 
 
-    public double[] transform(double[] dst, double[] src){
+    public float[] transform(float[] dst, float[] src){
         /*
          * From freetype 'ttgload.c'.  The documented composite glyph
          * transform is known to be broken, and fontforge is hard to

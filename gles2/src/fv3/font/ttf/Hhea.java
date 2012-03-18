@@ -37,7 +37,7 @@ public final class Hhea
     public final static String DESC = "horizontal header table";
 
 
-    public double ascent, descent, leading, advanceWidthMax, 
+    public float ascent, descent, leading, advanceWidthMax, 
         minLeftSideBearing, minRightSideBearing, xMaxExtent, 
         caretSlopeRise, caretSlopeRun, caretOffset;
 

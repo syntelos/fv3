@@ -69,7 +69,7 @@ public final class Face
          */
         public final Vertex vertex;
 
-        public final double ca, ba;
+        public final float ca, ba;
 
         public final boolean in, on, onAB, onBC, onCA;
 
@@ -92,12 +92,12 @@ public final class Face
                     final Vector ca = f.c.getVector().sub(f.a.getVector());
                     final Vector ba = f.b.getVector().sub(f.a.getVector());
                     final Vector pa = p.getVector().sub(f.a.getVector());
-                    final double dotCACA = ca.dot(ca);
-                    final double dotCABA = ca.dot(ba);
-                    final double dotCAPA = ca.dot(pa);
-                    final double dotBABA = ba.dot(ba);
-                    final double dotBAPA = ba.dot(pa);
-                    final double _den = (dotCACA * dotBABA - dotCABA * dotCABA);
+                    final float dotCACA = ca.dot(ca);
+                    final float dotCABA = ca.dot(ba);
+                    final float dotCAPA = ca.dot(pa);
+                    final float dotBABA = ba.dot(ba);
+                    final float dotBAPA = ba.dot(pa);
+                    final float _den = (dotCACA * dotBABA - dotCABA * dotCABA);
 
                     this.ca = Z1((dotBABA * dotCAPA - dotCABA * dotBAPA) / _den);
                     this.ba = Z1((dotCACA * dotBAPA - dotCABA * dotCAPA) / _den);
@@ -146,20 +146,20 @@ public final class Face
                         throw new IllegalArgumentException();
                 }
                 else {
-                    final double sum = this.ca + this.ba;
+                    final float sum = this.ca + this.ba;
 
                     this.isA = false;
                     this.isB = false;
                     this.isC = false;
 
-                    if (EEQ(1.0, sum)){
+                    if (EEQ(1.0f, sum)){
                         this.in = false;
                         this.on = true;
                         this.onAB = false;
                         this.onBC = true;
                         this.onCA = false;
                     }
-                    else if (sum < 1.0){
+                    else if (sum < 1.0f){
                         this.in = true;
                         this.on = false;
                         this.onAB = false;
@@ -221,42 +221,42 @@ public final class Face
 
     private Segment[] membership;
 
-    private double d;
+    private float d;
 
     private boolean alive = true;
 
 
-    public Face(Solid s, Name n, double[] a, double[] b, double[] c){
+    public Face(Solid s, Name n, float[] a, float[] b, float[] c){
         this(s,n,new Vertex(a),new Vertex(b),new Vertex(c));
     }
-    public Face(Solid s, Name n, double[] a, double[] b, double[] c, double[] nv){
+    public Face(Solid s, Name n, float[] a, float[] b, float[] c, float[] nv){
         this(s,n,new Vertex(a),new Vertex(b),new Vertex(c),new Vector(nv));
     }
-    public Face(Solid s, Name n, double[] face){
+    public Face(Solid s, Name n, float[] face){
         this(s,n,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6));
     }
-    public Face(Solid s, Name n, double[] face, double[] normal){
+    public Face(Solid s, Name n, float[] face, float[] normal){
         this(s,n,new Vertex(face,0),new Vertex(face,3),new Vertex(face,6),new Vector(normal));
     }
     public Face(Solid s, Name n,
-                double ax, double ay, double az, 
-                double bx, double by, double bz, 
-                double cx, double cy, double cz)
+                float ax, float ay, float az, 
+                float bx, float by, float bz, 
+                float cx, float cy, float cz)
     {
         this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
     }
     public Face(Solid s, Name n,
-                double ax, double ay, double az, 
-                double bx, double by, double bz, 
-                double cx, double cy, double cz,
-                double nx, double ny, double nz)
+                float ax, float ay, float az, 
+                float bx, float by, float bz, 
+                float cx, float cy, float cz,
+                float nx, float ny, float nz)
     {
         this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz));
     }
     public Face(Solid s, Name n,
-                double ax, double ay, double az, 
-                double bx, double by, double bz, 
-                double cx, double cy, double cz,
+                float ax, float ay, float az, 
+                float bx, float by, float bz, 
+                float cx, float cy, float cz,
                 Vector nv)
     {
         this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),nv);
@@ -339,45 +339,45 @@ public final class Face
         }
         return bound;
     }
-    public double getBoundsMinX(){
+    public float getBoundsMinX(){
         return this.getBound().getBoundsMinX();
     }
-    public double getBoundsMidX(){
+    public float getBoundsMidX(){
         return this.getBound().getBoundsMidX();
     }
-    public double getBoundsMaxX(){
+    public float getBoundsMaxX(){
         return this.getBound().getBoundsMaxX();
     }
-    public double getBoundsMinY(){
+    public float getBoundsMinY(){
         return this.getBound().getBoundsMinY();
     }
-    public double getBoundsMidY(){
+    public float getBoundsMidY(){
         return this.getBound().getBoundsMidY();
     }
-    public double getBoundsMaxY(){
+    public float getBoundsMaxY(){
         return this.getBound().getBoundsMaxY();
     }
-    public double getBoundsMinZ(){
+    public float getBoundsMinZ(){
         return this.getBound().getBoundsMinZ();
     }
-    public double getBoundsMidZ(){
+    public float getBoundsMidZ(){
         return this.getBound().getBoundsMidZ();
     }
-    public double getBoundsMaxZ(){
+    public float getBoundsMaxZ(){
         return this.getBound().getBoundsMaxZ();
     }
-    public double[] vertices(){
+    public float[] vertices(){
 
-        double[] re = new double[9];
+        float[] re = new float[9];
         this.a.copy(re,0);
         this.b.copy(re,3);
         this.c.copy(re,6);
         return re;
     }
-    public double[] normal(){
+    public float[] normal(){
         return this.getNormal().array();
     }
-    public double[] centroid(){
+    public float[] centroid(){
         return this.getCentroid().array();
     }
     /**
@@ -533,11 +533,11 @@ public final class Face
 		
             this.normal = n;
             {
-                final double[] na = n.array();
+                final float[] na = n.array();
 
-                final double x = na[X];
-                final double y = na[Y];
-                final double z = na[Z];
+                final float x = na[X];
+                final float y = na[Y];
+                final float z = na[Z];
 
                 this.d = -(x*a.x + x*a.y + z*a.z);
             }
@@ -570,27 +570,27 @@ public final class Face
 
         return new Face.Intersection(this,p);
     }
-    public double distance(Vertex that){
+    public float distance(Vertex that){
 
-        final double[] n = this.getNxyzd();
+        final float[] n = this.getNxyzd();
 
-        final double nx = n[0];
-        final double ny = n[1];
-        final double nz = n[2];
-        final double fd = n[3];
+        final float nx = n[0];
+        final float ny = n[1];
+        final float nz = n[2];
+        final float fd = n[3];
 
         return (nx*that.x + ny*that.y + nz*that.z + fd);
     }
     public int sdistance(Vertex that){
 
-        final double d;
+        final float d;
         {
-            final double[] n = this.getNxyzd();
+            final float[] n = this.getNxyzd();
 
-            final double nx = n[0];
-            final double ny = n[1];
-            final double nz = n[2];
-            final double fd = n[3];
+            final float nx = n[0];
+            final float ny = n[1];
+            final float nz = n[2];
+            final float fd = n[3];
 
             d = (nx*that.x + ny*that.y + nz*that.z + fd);
         }
@@ -653,9 +653,9 @@ public final class Face
 
         fv3.font.Font font = fv3.font.Font.For("futural");
 
-        double rX = (this.getBoundsMaxX()-this.getBoundsMinX())/3.0f;
-        double rY = (this.getBoundsMaxY()-this.getBoundsMinY())/3.0f;
-        double rZ = (this.getBoundsMaxZ()-this.getBoundsMinZ())/3.0f;
+        float rX = (this.getBoundsMaxX()-this.getBoundsMinX())/3.0f;
+        float rY = (this.getBoundsMaxY()-this.getBoundsMinY())/3.0f;
+        float rZ = (this.getBoundsMaxZ()-this.getBoundsMinZ())/3.0f;
 
 
         fv3.Model.Element[] model = new fv3.Model.Element[]{

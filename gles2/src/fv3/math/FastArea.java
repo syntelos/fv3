@@ -117,7 +117,7 @@ public abstract class FastArea
 
                 sum += (xm * (yhigh - ylow));
             }
-            return (sum / 2.0);
+            return (sum / 2.0f);
         }
         else
             throw new IllegalArgumentException();
@@ -158,7 +158,7 @@ public abstract class FastArea
         /*
          * Length of normal
          */
-        float len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+        float len = (float)Math.sqrt(nx*nx + ny*ny + nz*nz);
 
         /* 
          * Select largest normal coordinate to ignore for projection
@@ -210,7 +210,7 @@ public abstract class FastArea
          * 
          * (Area of polygon = length of Newell normal)
          */
-        float nlen = Math.sqrt( nwx*nwx + nwy*nwy + nwz*nwz );
+        float nlen = (float)Math.sqrt( nwx*nwx + nwy*nwy + nwz*nwz );
         /* 
          * Unit normal
          */

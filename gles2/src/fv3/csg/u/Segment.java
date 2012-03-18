@@ -1222,19 +1222,16 @@ public final class Segment
         if (a.equals(b))
             return 0;
         else {
-            double angle = a.angle(b);
+            float angle = a.angle(b);
             if (0.0 > angle)
                 return -1;
             else
                 return 1;
         }
     }
-    public fv3.Model.Element[] debugger(double rX, double rY, double rZ){
+    public fv3.Model.Element[] debugger(float rX, float rY, float rZ){
 
-
-        fv3.Model.Element[] model = new fv3.Model.Element[]{
-            new fv3.model.PointSize(3.0f),
-        };
+        fv3.Model.Element[] model = null;
 
         Vertex v;
 
@@ -1265,7 +1262,6 @@ public final class Segment
                 model = fv3.model.Object.Add(model,new fv3.model.Vertex(v.x,v.y,v.z));
             }
         }
-        model = fv3.model.Object.Add(model,new fv3.model.End());
 
         return model;
     }
@@ -1337,13 +1333,13 @@ public final class Segment
 
         final Vector fpn = fp.getNormal();
 
-        double d = fpn.dot(u);
-        double n = -(fpn.dot(w));
+        float d = fpn.dot(u);
+        float n = -(fpn.dot(w));
 
         if (EPS > Math.abs(d))
             return null;
         else {
-            double s = (n/d);
+            float s = (n/d);
             if (0.0 > s || 1.0 < s)
                 return null;
             else 

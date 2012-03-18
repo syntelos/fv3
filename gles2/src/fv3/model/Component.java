@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fv3.nui;
+package fv3.model;
 
 import fv3.Bounds;
 
@@ -35,9 +35,9 @@ import fv3.math.Vector;
  * 
  * @see fv3.Component
  */
-public class Component 
+public abstract class Component 
     extends java.lang.Object
-    implements fv3.Component
+    implements fv3.Model
 {
     protected final static Class Type = fv3.Component.class;
 

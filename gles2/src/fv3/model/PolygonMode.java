@@ -20,47 +20,12 @@ package fv3.model;
 public class PolygonMode
     extends fv3.model.Object
 {
-    public final static class Fill
-        extends PolygonMode
-    {
-        public Fill(){
-            super(GL_FRONT,GL_FILL);
-        }
-        public Fill(int face){
-            super(face,GL_FILL);
-        }
-    }
-    public final static class Line
-        extends PolygonMode
-    {
-        public Line(){
-            super(GL_FRONT,GL_LINE);
-        }
-        public Line(int face){
-            super(face,GL_LINE);
-        }
-    }
-    public final static class Point
-        extends PolygonMode
-    {
-        public Point(){
-            super(GL_FRONT,GL_POINT);
-        }
-        public Point(int face){
-            super(face,GL_POINT);
-        }
-    }
-
 
     private final int glFace;
-    private final int glType;
 
 
-    public PolygonMode(int glFace, int glType){
+    public PolygonMode(int glFace){
         super();
         this.glFace = glFace;
-        this.glType = glType;
     }
-
-
 }

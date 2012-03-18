@@ -141,12 +141,6 @@ public class Illustrator
         public float[] normal(){
             return this.faceA.normal();
         }
-        public int[] ables(){
-            int[] ables = null;
-            ables = Add(ables,this.points.ables());
-            ables = Add(ables,this.lines.ables());
-            return ables;
-        }
     } 
 
 
@@ -171,7 +165,7 @@ public class Illustrator
 
     public Illustrator(Solid a, Solid b){
         super();
-        super.add(new PolygonMode.Line(GL_FRONT_AND_BACK));
+        super.add(new PolygonMode(GL_FRONT_AND_BACK));
         super.add(new PointSize(3.0f));
         this.normalIndex = this.size();
         this.pairIndex = this.normalIndex+1;

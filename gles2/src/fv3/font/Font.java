@@ -41,13 +41,13 @@ public abstract class Font<Glyph extends fv3.font.Glyph>
     /**
      * @return Null for not found
      */
-    public final static Font For(String name, double w, double h, double d){
+    public final static Font For(String name, float w, float h, float d){
         return Font.For(new Font.Key(name,(new FontOptions(w,h,d))));
     }
     /**
      * @return Null for not found
      */
-    public final static Font For(String name, double w, double h){
+    public final static Font For(String name, float w, float h){
         return Font.For(new Font.Key(name,(new FontOptions(w,h))));
     }
     /**
@@ -192,15 +192,15 @@ public abstract class Font<Glyph extends fv3.font.Glyph>
 
     public abstract Glyph clone(char ch);
 
-    public abstract double getEm();
+    public abstract float getEm();
 
-    public abstract double getAscent();
+    public abstract float getAscent();
 
-    public abstract double getDescent();
+    public abstract float getDescent();
 
-    public abstract double getLeading();
+    public abstract float getLeading();
 
-    public abstract double spacing(char previous, char next);
+    public abstract float spacing(char previous, char next);
 
     public final GlyphVector toString(String string){
         return new GlyphVector(this,string);

@@ -116,9 +116,6 @@ public final class Mesh
         super.clear();
         this.vertices.clear();
     }
-    public boolean equals(Object that){
-        return (this == that);
-    }
     public int compare(Face a, Face b){
         return a.compareTo(b);
     }

@@ -85,7 +85,6 @@ public class Solid
 
         this.name = new Name(name);
 
-        this.visible = false;
         this.constructOp = null;
         this.constructA = null;
         this.constructB = null;
@@ -117,7 +116,6 @@ public class Solid
 
         this.name = new Name(String.format("%s of (%s) and (%s))",op,a.getName(),b.getName()));
 
-        this.visible = false;
         this.constructOp = op;
         this.constructA = a;
         this.constructB = b;
@@ -209,14 +207,9 @@ public class Solid
     }
     public final Solid transform(Matrix m){
 
-        if (this.visible)
-            super.transform(m);
-        else {
+        for (Face face: this){
 
-            for (Face face: this){
-
-                face.transform(this,m);
-            }
+            face.transform(this,m);
         }
         return this;
     }
@@ -246,8 +239,6 @@ public class Solid
             this.setNormal(nc++, n);
             this.setNormal(nc++, n);
         }
-        this.visible = true;
-
         return this;
     }
     public final Solid compile(Matrix m){
@@ -271,9 +262,6 @@ public class Solid
                 this.setNormal(nc++, n);
                 this.setNormal(nc++, n);
             }
-
-            this.visible = true;
-
             return this;
         }
         else

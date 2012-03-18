@@ -62,7 +62,7 @@ public class Spline
             this.np = x.length;
             this.inX = x.clone();
             this.inY = y.clone();
-            this.ds = Math.pow((1.0 / this.n),2);
+            this.ds = (float)Math.pow((1.0 / this.n),2);
             /*
              * Initialize
              */
@@ -83,7 +83,7 @@ public class Spline
                 for (int cc = 1; cc < this.np; cc++){
                     dx1 = (this.inX[cc] - this.inX[cc-1]);
                     dy1 = (this.inY[cc] - this.inY[cc-1]);
-                    ds = Math.sqrt( dx1*dx1 + dy1*dy1);
+                    ds = (float)Math.sqrt( dx1*dx1 + dy1*dy1);
                     this.s1[cc] = (this.s1[cc-1] + ds);
                 }
             }
@@ -138,8 +138,8 @@ public class Spline
             final int trm = (n-1);
             for (int lc = 0, idx; lc < 2; lc++){
                 for (idx = 1; idx < trm; idx++){
-                    x[idx] = ((xx[idx-1] + xx[idx] + xx[idx+1]) / 3.0);
-                    y[idx] = ((yy[idx-1] + yy[idx] + yy[idx+1]) / 3.0);
+                    x[idx] = ((xx[idx-1] + xx[idx] + xx[idx+1]) / 3.0f);
+                    y[idx] = ((yy[idx-1] + yy[idx] + yy[idx+1]) / 3.0f);
                 }
                 System.arraycopy(x,1,xx,1,trm);
                 System.arraycopy(y,1,yy,1,trm);
@@ -166,11 +166,11 @@ public class Spline
 
                 sig = (x[i]-x[i-1])/(x[i+1]-x[i-1]);
 
-                p = sig*y2[i-1]+2.0;
+                p = sig*y2[i-1]+2.0f;
 
-                y2[i] = (sig-1.0)/p;
+                y2[i] = (sig-1.0f)/p;
 
-                u[i] = (6.0*((y[i+1]-y[i])/(x[i+1]-x[i])-(y[i]-y[i-1])
+                u[i] = (6.0f*((y[i+1]-y[i])/(x[i+1]-x[i])-(y[i]-y[i-1])
                              /(x[i]-x[i-1]))/(x[i+1]-x[i-1])-sig*u[i-1])/p;
             }
         }
@@ -207,7 +207,7 @@ public class Spline
         else {
             a = (xa[khi]-x)/h;
             b = (x-xa[klo])/h; 
-            return (a*ya[klo]+b*ya[khi]+((a*a*a-a)*y2a[klo]+(b*b*b-b)*y2a[khi])*(h*h)/6.0);
+            return (a*ya[klo]+b*ya[khi]+((a*a*a-a)*y2a[klo]+(b*b*b-b)*y2a[khi])*(h*h)/6.0f);
         }
     }
     public final static void Distribute(float[] s1, int nb1, int ne1, 
@@ -243,8 +243,8 @@ public class Spline
 
                 s2[j] = (c[0] +
                          c[1] * (j+1) +
-                         c[2] * Math.pow((j+1),2) +
-                         c[3] * Math.pow((j+1),3));
+                         c[2] * (float)Math.pow((j+1),2) +
+                         c[3] * (float)Math.pow((j+1),3));
             }
 
             s2[ne2] = s1[ne1];
@@ -272,12 +272,12 @@ public class Spline
                   /*
                    * Position control
                    */
-                  a[irow][icol] = Math.pow( ipt[irow], icol);
+                  a[irow][icol] = (float)Math.pow( ipt[irow], icol);
               else
                   /*
                    * Slope control
                    */
-                  a[irow][icol] = (icol)*Math.pow(ipt[irow],(icol-1));
+                  a[irow][icol] = (icol)*(float)Math.pow(ipt[irow],(icol-1));
             }
             /*
              * RHS loaded

@@ -65,9 +65,9 @@ public class VertexArrayBounds
         this.maxZ = maxZ;
         this.minZ = minZ;
 
-        this.midX = (minX + maxX)/2.0;
-        this.midY = (minY + maxY)/2.0;
-        this.midZ = (minZ + maxZ)/2.0;
+        this.midX = (minX + maxX)/2.0f;
+        this.midY = (minY + maxY)/2.0f;
+        this.midZ = (minZ + maxZ)/2.0f;
     }
 
 

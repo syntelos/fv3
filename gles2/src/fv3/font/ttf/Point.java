@@ -66,21 +66,21 @@ public final class Point {
         this.index = glyph.getLength();
         return this;
     }
-    public String stringMoveTo(double startX, double startY){
+    public String stringMoveTo(float startX, float startY){
 
         if (-1 != this.start)
             return String.format("Path: %3d; Contour: %2d; MoveTo(%d:{%f,%f});",this.index,this.contour,this.start,startX,startY);
         else
             return String.format("Path: %3d; Contour: %2d; MoveTo({%f,%f});",this.index,this.contour,startX,startY);
     }
-    public String stringLineTo(double endX, double endY){
+    public String stringLineTo(float endX, float endY){
 
         if (-1 != this.end)
             return String.format("Path: %3d; Contour: %2d; LineTo(%d:{%f,%f});",this.index,this.contour,this.end,endX,endY);
         else
             return String.format("Path: %3d; Contour: %2d; LineTo({%f,%f});",this.index,this.contour,endX,endY);
     }
-    public String stringQuadTo(double controlX, double controlY, double endX, double endY){
+    public String stringQuadTo(float controlX, float controlY, float endX, float endY){
 
         if (-1 != this.control){
             if (-1 != this.end)

@@ -496,13 +496,13 @@ public class HersheyFont
     }
 
 
-    protected final double pathSetMinX, pathSetMaxX;
-    protected final double pathSetMinY, pathSetMaxY;
+    protected final float pathSetMinX, pathSetMaxX;
+    protected final float pathSetMinY, pathSetMaxY;
 
-    protected final double characterSetMinX, characterSetMaxX;
-    protected final double characterSetMinY, characterSetMaxY;
+    protected final float characterSetMinX, characterSetMaxX;
+    protected final float characterSetMinY, characterSetMaxY;
 
-    protected final double em, ascent, descent, leading;
+    protected final float em, ascent, descent, leading;
 
 
     public HersheyFont(Font.Key key)
@@ -526,11 +526,11 @@ public class HersheyFont
     public HersheyFont(String name, HersheyFontReader reader, FontOptions opts) {
         super(name,reader,opts);
 
-        double pathSetMinX = 0;
-        double pathSetMaxX = 0;
+        float pathSetMinX = 0;
+        float pathSetMaxX = 0;
 
-        double pathSetMinY = 0;
-        double pathSetMaxY = 0;
+        float pathSetMinY = 0;
+        float pathSetMaxY = 0;
 
         for (int cc = 0; ; cc++){
 
@@ -541,10 +541,10 @@ public class HersheyFont
 
                 HersheyGlyph glyph = this.createGlyph(path);
 
-                final double minX = glyph.getPathMinX();
-                final double maxX = glyph.getPathMaxX();
-                final double minY = glyph.getPathMinY();
-                final double maxY = glyph.getPathMaxY();
+                final float minX = glyph.getPathMinX();
+                final float maxX = glyph.getPathMaxX();
+                final float minY = glyph.getPathMinY();
+                final float maxY = glyph.getPathMaxY();
 
                 if (0 < cc){
                     if (1 == cc){
@@ -579,11 +579,11 @@ public class HersheyFont
 
         final int count = this.getLength();
 
-        double characterSetMinX = 0;
-        double characterSetMaxX = 0;
+        float characterSetMinX = 0;
+        float characterSetMaxX = 0;
 
-        double characterSetMinY = 0;
-        double characterSetMaxY = 0;
+        float characterSetMinY = 0;
+        float characterSetMaxY = 0;
 
         for (int cc = 0; cc < count; cc++){
 
@@ -591,10 +591,10 @@ public class HersheyFont
 
             glyph.init(opts);
 
-            final double minX = glyph.getBoundsMinX();
-            final double maxX = glyph.getBoundsMaxX();
-            final double minY = glyph.getBoundsMinY();
-            final double maxY = glyph.getBoundsMaxY();
+            final float minX = glyph.getBoundsMinX();
+            final float maxX = glyph.getBoundsMaxX();
+            final float minY = glyph.getBoundsMinY();
+            final float maxY = glyph.getBoundsMaxY();
 
             if (0 == cc){
                 characterSetMinX = minX;
@@ -618,12 +618,12 @@ public class HersheyFont
             }
         }
 
-        double em;
+        float em;
         try {
             HersheyGlyph cM = this.get('M');
             HersheyGlyph cH = this.get('H');
-            em = Math.max( ((cM.getBoundsMaxX()-cM.getBoundsMinX())*1.1),
-                           ((cH.getBoundsMaxX()-cH.getBoundsMinX())*1.1));
+            em = Math.max( ((cM.getBoundsMaxX()-cM.getBoundsMinX())*1.1f),
+                           ((cH.getBoundsMaxX()-cH.getBoundsMinX())*1.1f));
             HersheyGlyph sp = this.get(0);
             sp.setSpaceHorizontal(this.em);
         }
@@ -641,25 +641,25 @@ public class HersheyFont
         this.characterSetMinY = characterSetMinY;
         this.characterSetMaxY = characterSetMaxY;
 
-        final double height = (characterSetMaxY-characterSetMinY);
+        final float height = (characterSetMaxY-characterSetMinY);
 
-        this.ascent = (0.7 * height);
-        this.descent = (0.3 * height);
-        this.leading = (0.1 * height);
+        this.ascent = (0.7f * height);
+        this.descent = (0.3f * height);
+        this.leading = (0.1f * height);
     }
 
 
 
-    public double getEm(){
+    public float getEm(){
         return this.em;
     }
-    public double getAscent(){
+    public float getAscent(){
         return this.ascent;
     }
-    public double getDescent(){
+    public float getDescent(){
         return this.descent;
     }
-    public double getLeading(){
+    public float getLeading(){
         return this.leading;
     }
     public VertexArray.Type getGlyphVectorType(){
@@ -671,7 +671,7 @@ public class HersheyFont
     public HersheyGlyph clone(char ch){
         return super.get(ch - ' ').clone();
     }
-    public double spacing(char previous, char next){
+    public float spacing(char previous, char next){
         return this.em;
     }
     protected HersheyGlyph createGlyph(HersheyPath path){

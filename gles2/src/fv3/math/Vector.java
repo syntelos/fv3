@@ -125,24 +125,24 @@ public class Vector
             if (anX > anY){
 
                 if (anX > anZ){
-                    if (0.0 > nX)
+                    if (ZERO > nX)
                         return DXN;
                     else
                         return DXP;
                 }
-                else if (0.0 > nZ)
+                else if (ZERO > nZ)
                     return DZN;
                 else
                     return DZP;
             }
             else if (anY > anZ){
 
-                if (0.0 > nY)
+                if (ZERO > nY)
                     return DYN;
                 else
                     return DYP;
             }
-            else if (0.0 > nZ)
+            else if (ZERO > nZ)
                 return DZN;
             else
                 return DZP;
@@ -155,7 +155,7 @@ public class Vector
 
         DX, DY, DZ, DXY, DXZ, DYZ;
 
-        public final static float E = 1e-2;
+        public final static float E = 1e-2f;
 
         public static Direction2 For(float[] n){
 
@@ -167,15 +167,15 @@ public class Vector
             final float anY = Math.abs(nY);
             final float anZ = Math.abs(nZ);
 
-            if (0.0 == DE((anX - anY),E))
+            if (ZERO == DE((anX - anY),E))
 
                 return DXY;
 
-            else if (0.0 == DE((anX - anZ),E))
+            else if (ZERO == DE((anX - anZ),E))
 
                 return DXZ;
 
-            else if (0.0 == DE((anY - anZ),E))
+            else if (ZERO == DE((anY - anZ),E))
 
                 return DYZ;
 
@@ -204,7 +204,7 @@ public class Vector
 
 
     public Vector(){
-        this(0.0f,0.0f,0.0f);
+        this(ZERO,ZERO,ZERO);
     }
     public Vector(float x, float y, float z){
         super();
@@ -227,7 +227,6 @@ public class Vector
         try {
             Vector clone = (Vector)super.clone();
             clone.v = clone.v.clone();
-            clone.b = null;
             return clone;
         }
         catch (java.lang.CloneNotSupportedException exc){
@@ -324,7 +323,7 @@ public class Vector
         return Z(a[X]*b[X] + a[Y]*b[Y] + a[Z]*b[Z]);
     }
     public final float length(){
-        return Math.sqrt(this.dot(this));
+        return (float)Math.sqrt(this.dot(this));
     }
     public final Vector cross(Vector v){
         float[] c = this.v;
@@ -340,24 +339,24 @@ public class Vector
         float[] c = this.v;
 
         float length = this.length();
-        if (0.0 == Z(length)) {
+        if (ZERO == Z(length)) {
             if ((c[X] >= c[Y]) && (c[X] >= c[Z])) {
-                c[X] = 1.0;
-                c[Y] = c[Z] = 0.0;
+                c[X] = 1.0f;
+                c[Y] = c[Z] = ZERO;
             }
             else {
                 if (c[Y] >= c[Z]) {
-                    c[Y] = 1.0;
-                    c[X] = c[Z] = 0.0;
+                    c[Y] = 1.0f;
+                    c[X] = c[Z] = ZERO;
                 }
                 else {
-                    c[Z] = 1.0;
-                    c[X] = c[Y] = 0.0;
+                    c[Z] = 1.0f;
+                    c[X] = c[Y] = ZERO;
                 }
             }
         }
         else {
-            float m = 1.0 / length;
+            float m = 1.0f / length;
             c[X] = Z1(c[X] * m);
             c[Y] = Z1(c[Y] * m);
             c[Z] = Z1(c[Z] * m);
@@ -370,7 +369,7 @@ public class Vector
      */
     public final float angle(Vector that){
 
-        return Math.acos(this.dot(that));
+        return (float)Math.acos(this.dot(that));
     }
     /**
      * Compute a vector normal to the line from this to 'a' and the
@@ -432,9 +431,9 @@ public class Vector
         float[] a = this.v;
         float[] b = v.v;
 
-        a[X] = Z((a[X] + b[X]) / 2.0);
-        a[Y] = Z((a[Y] + b[Y]) / 2.0);
-        a[Z] = Z((a[Z] + b[Z]) / 2.0);
+        a[X] = Z((a[X] + b[X]) / 2.0f);
+        a[Y] = Z((a[Y] + b[Y]) / 2.0f);
+        a[Z] = Z((a[Z] + b[Z]) / 2.0f);
 
         return this;
     }
@@ -445,7 +444,7 @@ public class Vector
         final float dy = (this_v[Y]-that_v[Y]);
         final float dz = (this_v[Z]-that_v[Z]);
 
-        return Math.sqrt( (dx*dx) + (dy*dy) + (dz*dz));
+        return (float)Math.sqrt( (dx*dx) + (dy*dy) + (dz*dz));
     }
     public Magnitude1 magnitude1(){
         return Magnitude1.For(this.v);
@@ -559,13 +558,13 @@ public class Vector
             if (adx > ady){
                 if (adz > adx){
 
-                    if (0.0 < dz)
+                    if (ZERO < dz)
                         return 1;
                     else
                         return -1;
                 }
                 else {
-                    if (0.0 < dx)
+                    if (ZERO < dx)
                         return 1;
                     else
                         return -1;
@@ -573,22 +572,22 @@ public class Vector
             }
             else if (ady > adz){
 
-                if (0.0 < dy)
+                if (ZERO < dy)
                     return 1;
                 else
                     return -1;
             }
             else if (adz > adx){
 
-                if (0.0 < dz)
+                if (ZERO < dz)
                     return 1;
                 else
                     return -1;
             }
-            else if (0.0 == dx)
+            else if (ZERO == dx)
                 return 0;
             else {
-                if (0.0 < dx)
+                if (ZERO < dx)
                     return 1;
                 else
                     return -1;
@@ -597,7 +596,7 @@ public class Vector
     }
 
 
-    private final static float[] Zero = {0.0,0.0,0.0};
+    private final static float[] Zero = {ZERO,ZERO,ZERO};
 
 
     public final static float Diameter(fv3.Bounds bounds){

@@ -262,9 +262,9 @@ public class Vertex
     }
     public Vertex midpoint(Vertex b){
 
-        final float x = Z((this.x + b.x) / 2.0);
-        final float y = Z((this.y + b.y) / 2.0);
-        final float z = Z((this.z + b.z) / 2.0);
+        final float x = Z((this.x + b.x) / 2.0f);
+        final float y = Z((this.y + b.y) / 2.0f);
+        final float z = Z((this.z + b.z) / 2.0f);
 
         return new Vertex(x,y,z);
     }

@@ -77,7 +77,7 @@ public abstract class Torus
 
                 Vertex[][] re = new Vertex[t.rn][t.cn];
 
-                float ra = 0.0, ca;
+                float ra = ZERO, ca;
 
                 for (int ru = 0; ru < t.rn; ru++){
 
@@ -86,7 +86,7 @@ public abstract class Torus
 
                     Vertex[] rel = re[ru];
 
-                    ca = 0.0;
+                    ca = ZERO;
                     for (int cu = 0; cu < t.cn; cu++){
 
                         rel[cu] = new Vertex(t.innerRadius,t.outerRadius,
@@ -103,7 +103,7 @@ public abstract class Torus
                              float cos_ra, float sin_ra, 
                              float ca)
             {
-                this(iR,oR,cos_ra,sin_ra,ca,Math.cos(ca),Math.sin(ca));
+                this(iR,oR,cos_ra,sin_ra,ca,(float)Math.cos(ca),(float)Math.sin(ca));
             }
             private Vertex(float iR, float oR, 
                            float cos_ra, float sin_ra, 
@@ -135,8 +135,8 @@ public abstract class Torus
 
     protected Torus(String n, float innerR, float outerR, float e){
         super(n,0);
-        if (innerR == innerR && 0.0 < innerR){
-            if (outerR == outerR && 0.0 < outerR){
+        if (innerR == innerR && ZERO < innerR){
+            if (outerR == outerR && ZERO < outerR){
                 if (outerR > innerR){
                     if (Error.Circle.V(e)){
                         this.innerRadius = innerR;

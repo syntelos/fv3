@@ -31,32 +31,28 @@ public class FontOptions
     public final static FontOptions Default = new FontOptions();
 
 
-    public final double width, height, depth;
+    public final float width, height, depth;
 
     public final int hashCode;
 
 
-    public FontOptions(double w, double h, double d){
+    public FontOptions(float w, float h, float d){
         super();
         if (0.0 <= w && 0.0 <= h && 0.0 <= d){
             this.width = w;
             this.height = h;
             this.depth = d;
 
-            long wh = Double.doubleToLongBits(w);
-            wh ^= (wh>>>32);
-            long hh = Double.doubleToLongBits(h);
-            hh ^= (hh>>>32);
-            long dh = Double.doubleToLongBits(d);
-            dh ^= (dh>>>32);
+            final int wh = Float.floatToIntBits(w);
+            final int hh = Float.floatToIntBits(h);
+            final int dh = Float.floatToIntBits(d);
 
-            long hashCodeL = (wh^hh^dh);
-            this.hashCode = (int)hashCodeL;
+            this.hashCode = (wh^hh^dh);
         }
         else
             throw new IllegalArgumentException();
     }
-    public FontOptions(double w, double h){
+    public FontOptions(float w, float h){
         this(w,h,0);
     }
     public FontOptions(){

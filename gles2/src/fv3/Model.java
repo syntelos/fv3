@@ -66,4 +66,12 @@ public interface Model
             }
         }
     }
+
+
+    public Element get(int idx);
+
+    public Model add(Element object);
+
+    public Model add(Element[] list);
+
 }

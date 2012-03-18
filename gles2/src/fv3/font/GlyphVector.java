@@ -45,9 +45,9 @@ public class GlyphVector
 
     protected final Font font;
 
-    protected final double em, lineheight;
+    protected final float em, lineheight;
 
-    protected double x, y, z, xp, yp, zp;
+    protected float x, y, z, xp, yp, zp;
 
 
     public GlyphVector(Font font){
@@ -75,37 +75,37 @@ public class GlyphVector
     }
 
 
-    public final double getX(){
+    public final float getX(){
         return this.x;
     }
-    public final double getXp(){
+    public final float getXp(){
         return this.xp;
     }
-    public final GlyphVector setX(double x){
+    public final GlyphVector setX(float x){
         this.x = x;
         return this;
     }
-    public final double getY(){
+    public final float getY(){
         return this.y;
     }
-    public final double getYp(){
+    public final float getYp(){
         return this.yp;
     }
-    public final GlyphVector setY(double y){
+    public final GlyphVector setY(float y){
         this.y = y;
         return this;
     }
-    public final double getZ(){
+    public final float getZ(){
         return this.z;
     }
-    public final double getZp(){
+    public final float getZp(){
         return this.zp;
     }
-    public final GlyphVector setZ(double z){
+    public final GlyphVector setZ(float z){
         this.z = z;
         return this;
     }
-    public final GlyphVector init(double x, double y, double z){
+    public final GlyphVector init(float x, float y, float z){
 
         this.x = x;
         this.y = y;

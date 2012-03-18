@@ -17,8 +17,6 @@
  */
 package fv3.font;
 
-import javax.media.opengl.GL2;
-
 /**
  * This class may be subclassed with a {@link Font} subclass as for
  * implementing a text editor.
@@ -48,8 +46,8 @@ public abstract class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Pa
     public boolean isSpace(){
         return false;
     }
-    public double getSpaceHorizontal(){
-        return 0.0;
+    public float getSpaceHorizontal(){
+        return 0.0f;
     }
     public Glyph clone(){
         Glyph clone = (Glyph)super.clone();

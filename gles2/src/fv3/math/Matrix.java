@@ -142,7 +142,7 @@ public class Matrix
         float ab;
         for (j = 0; j < 4; j++) {
             for (i = 0; i < 4; i++) {
-                ab = 0.0;
+                ab = ZERO;
                 for (k = 0; k < 4; k++){
                     ab += (a[I(k,i)] * b[I(j,k)]);
                 }
@@ -210,9 +210,9 @@ public class Matrix
         float z = axis[Vector.Z];
 
         float angle = a.angle();
-        float s = Math.sin(angle);
-        float c = Math.cos(angle);
-        float c1 = (1.0 - c);
+        float s = (float)Math.sin(angle);
+        float c = (float)Math.cos(angle);
+        float c1 = (1.0f - c);
 
         float xx = (x * x);
         float yy = (y * y);
@@ -239,8 +239,8 @@ public class Matrix
     public final Matrix rotateX(float rax){
         float[] R = Identity.clone();
 
-        float c = Math.cos(rax);
-        float s = Math.sin(rax);
+        float c = (float)Math.cos(rax);
+        float s = (float)Math.sin(rax);
 
         R[M11] = c;
         R[M21] = -s;
@@ -253,8 +253,8 @@ public class Matrix
     public final Matrix rotateY(float ray){
         float[] R = Identity.clone();
 
-        float c = Math.cos(ray);
-        float s = Math.sin(ray);
+        float c = (float)Math.cos(ray);
+        float s = (float)Math.sin(ray);
 
         R[M00] = c;
         R[M20] = -s;
@@ -267,8 +267,8 @@ public class Matrix
     public final Matrix rotateZ(float raz){
         float[] R = Identity.clone();
 
-        float c = Math.cos(raz);
-        float s = Math.sin(raz);
+        float c = (float)Math.cos(raz);
+        float s = (float)Math.sin(raz);
 
         R[M00] = c;
         R[M10] = -s;
@@ -281,14 +281,14 @@ public class Matrix
     public final Matrix rotate(float rax, float ray, float raz){
         float[] R = Identity.clone();
 
-        float cx = Math.cos(rax);
-        float sx = Math.sin(rax);
+        float cx = (float)Math.cos(rax);
+        float sx = (float)Math.sin(rax);
 
-        float cy = Math.cos(ray);
-        float sy = Math.sin(ray);
+        float cy = (float)Math.cos(ray);
+        float sy = (float)Math.sin(ray);
 
-        float cz = Math.cos(raz);
-        float sz = Math.sin(raz);
+        float cz = (float)Math.cos(raz);
+        float sz = (float)Math.sin(raz);
 
         R[M00] =  cy * cz;
         R[M01] = -cy * sz;
@@ -619,10 +619,10 @@ public class Matrix
     }
 
 
-    private final static float[] Identity = {1.0f, 0.0f, 0.0f, 0.0f, 
-                                             0.0f, 1.0f, 0.0f, 0.0f, 
-                                             0.0f, 0.0f, 1.0f, 0.0f, 
-                                             0.0f, 0.0f, 0.0f, 1.0f};
+    private final static float[] Identity = {1.0f, ZERO, ZERO, ZERO, 
+                                             ZERO, 1.0f, ZERO, ZERO, 
+                                             ZERO, ZERO, 1.0f, ZERO, 
+                                             ZERO, ZERO, ZERO, 1.0f};
 
 
     /*

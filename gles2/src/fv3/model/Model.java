@@ -18,6 +18,7 @@
 package fv3.model;
 
 import fv3.math.Matrix;
+import fv3.Model.Element;
 
 /**
  * 
@@ -25,8 +26,8 @@ import fv3.math.Matrix;
  */
 public class Model
     extends Component
-    implements fv3.Model.Element,
-               java.lang.Iterable<fv3.Model.Element>
+    implements Element,
+               java.lang.Iterable<Element>
 {
 
 
@@ -36,10 +37,10 @@ public class Model
 
 
     public Model(){
-        super(1);
+        super();
     }
     public Model(Element[] model){
-        super(1);
+        super();
         this.add(model);
     }
 
@@ -108,12 +109,12 @@ public class Model
             return this.getClass().getName();
     }
     public Model glBoundary(fv3.Bounds bounds){
-        final double minX = bounds.getBoundsMinX();
-        final double maxX = bounds.getBoundsMaxX();
-        final double minY = bounds.getBoundsMinY();
-        final double maxY = bounds.getBoundsMaxY();
-        final double minZ = bounds.getBoundsMinZ();
-        final double maxZ = bounds.getBoundsMaxZ();
+        final float minX = bounds.getBoundsMinX();
+        final float maxX = bounds.getBoundsMaxX();
+        final float minY = bounds.getBoundsMinY();
+        final float maxY = bounds.getBoundsMaxY();
+        final float minZ = bounds.getBoundsMinZ();
+        final float maxZ = bounds.getBoundsMaxZ();
 
         /*
          * Boundary X

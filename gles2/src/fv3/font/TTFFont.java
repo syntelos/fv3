@@ -74,7 +74,7 @@ public class TTFFont
 
     private lxl.Index map;
 
-    private double scale;
+    private float scale;
 
     private String[] desc;
 
@@ -177,77 +177,77 @@ public class TTFFont
         else
             throw new IllegalStateException("Glyphs not mapped.");
     }
-    public final double getScale(){
-        double scale = this.scale;
-        if (0.0 == scale){
+    public final float getScale(){
+        float scale = this.scale;
+        if (0.0f == scale){
             scale = this.getTableHead().scale(this.options);
             this.scale = scale;
         }
         return scale;
     }
-    public final double getEm(){
+    public final float getEm(){
 
         Head head = this.getTableHead();
         if (null != head)
             return head.emsize;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getMinX(){
+    public final float getMinX(){
 
         Head head = this.getTableHead();
         if (null != head)
             return head.minX;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getMinY(){
+    public final float getMinY(){
 
         Head head = this.getTableHead();
         if (null != head)
             return head.minY;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getMaxX(){
+    public final float getMaxX(){
 
         Head head = this.getTableHead();
         if (null != head)
             return head.maxX;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getMaxY(){
+    public final float getMaxY(){
 
         Head head = this.getTableHead();
         if (null != head)
             return head.maxY;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getAscent(){
+    public final float getAscent(){
 
         Hhea hhea = this.getTableHhea();
         if (null != hhea)
             return hhea.ascent;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getDescent(){
+    public final float getDescent(){
 
         Hhea hhea = this.getTableHhea();
         if (null != hhea)
             return hhea.descent;
         else
-            return 0.0;
+            return 0.0f;
     }
-    public final double getLeading(){
+    public final float getLeading(){
 
         Hhea hhea = this.getTableHhea();
         if (null != hhea)
             return hhea.leading;
         else
-            return 0.0;
+            return 0.0f;
     }
     public final String getCopyright(){
         Name name = this.getTableName();
@@ -501,7 +501,7 @@ public class TTFFont
             this.map.put(new Character(ch),index);
         }
     }
-    public double spacing(char previous, char next){
+    public float spacing(char previous, char next){
         return this.getEm();
     }
 

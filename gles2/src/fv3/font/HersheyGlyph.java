@@ -25,7 +25,7 @@ public class HersheyGlyph
     extends Glyph<HersheyFont,HersheyPath>
 {
 
-    private double sp;
+    private float sp;
 
 
     protected HersheyGlyph(HersheyFont font, HersheyPath path){
@@ -40,46 +40,46 @@ public class HersheyGlyph
     public boolean isSpace(){
         return (0.0 < this.sp);
     }
-    public double getSpaceHorizontal(){
+    public float getSpaceHorizontal(){
         return this.sp;
     }
-    protected HersheyGlyph setSpaceHorizontal(double x){
+    protected HersheyGlyph setSpaceHorizontal(float x){
         this.sp = x;
         return this;
     }
-    public double getPathMinX(){
+    public float getPathMinX(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.minX;
     }
-    public double getPathMidX(){
+    public float getPathMidX(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.midX;
     }
-    public double getPathMaxX(){
+    public float getPathMaxX(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.maxX;
     }
-    public double getPathMinY(){
+    public float getPathMinY(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.minY;
     }
-    public double getPathMidY(){
+    public float getPathMidY(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.midY;
     }
-    public double getPathMaxY(){
+    public float getPathMaxY(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.maxY;
     }
-    public double getPathMinZ(){
+    public float getPathMinZ(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.minZ;
     }
-    public double getPathMidZ(){
+    public float getPathMidZ(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.midZ;
     }
-    public double getPathMaxZ(){
+    public float getPathMaxZ(){
         final HersheyPath path = (HersheyPath)this.list[0];
         return path.maxZ;
     }

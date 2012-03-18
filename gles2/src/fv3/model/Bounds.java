@@ -137,9 +137,9 @@ public class Bounds
         this.maxY = maxY;
         this.maxZ = maxZ;
 
-        this.midX = (minX + maxX)/2.0;
-        this.midY = (minY + maxY)/2.0;
-        this.midZ = (minZ + maxZ)/2.0;
+        this.midX = (minX + maxX)/2.0f;
+        this.midY = (minY + maxY)/2.0f;
+        this.midZ = (minZ + maxZ)/2.0f;
     }
 
     public float getBoundsMinX(){

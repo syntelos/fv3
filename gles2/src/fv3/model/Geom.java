@@ -70,7 +70,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,(r*Math.cos(a)),(r*Math.sin(a)),ZERO);
+                        this.setVertex(idx,(r*(float)Math.cos(a)),(r*(float)Math.sin(a)),ZERO);
 
                         a += ds;
                     }
@@ -79,7 +79,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,Math.cos(a),Math.sin(a),ZERO);
+                        this.setVertex(idx,(float)Math.cos(a),(float)Math.sin(a),ZERO);
 
                         a += ds;
                     }
@@ -106,7 +106,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,ZERO,(r*Math.cos(a)),(r*Math.sin(a)));
+                        this.setVertex(idx,ZERO,(r*(float)Math.cos(a)),(r*(float)Math.sin(a)));
 
                         a += ds;
                     }
@@ -115,7 +115,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,ZERO,(Math.cos(a)),(Math.sin(a)));
+                        this.setVertex(idx,ZERO,((float)Math.cos(a)),((float)Math.sin(a)));
 
                         a += ds;
                     }
@@ -142,7 +142,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,(r*Math.sin(a)),ZERO,(r*Math.cos(a)));
+                        this.setVertex(idx,(r*(float)Math.sin(a)),ZERO,(r*(float)Math.cos(a)));
 
                         a += ds;
                     }
@@ -151,7 +151,7 @@ public abstract class Geom
 
                     for (int idx = 0, count = this.countVertices; idx < count; idx++){
 
-                        this.setVertex(idx,(Math.sin(a)),ZERO,(Math.cos(a)));
+                        this.setVertex(idx,((float)Math.sin(a)),ZERO,((float)Math.cos(a)));
 
                         a += ds;
                     }
@@ -164,7 +164,7 @@ public abstract class Geom
 
 
         protected Circle(float r){
-            super(Type.LineLoop,(r*2.0));
+            super(Type.LineLoop,(r*2.0f));
         }
         protected Circle(Circle c){
             super(c);

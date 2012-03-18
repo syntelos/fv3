@@ -18,6 +18,7 @@
 package fv3;
 
 import fv3.math.Vector;
+import fv3.model.Vertex;
 
 /**
  * Interface implemented by components having bounds.  All methods
@@ -31,7 +32,7 @@ import fv3.math.Vector;
  * @see Component#composeFv3Matrix
  */
 public interface Bounds
-    extends GLES2
+    extends fv3.math.Notation
 {
     public float getBoundsMinX();
     public float getBoundsMidX();
@@ -87,7 +88,7 @@ public interface Bounds
             this.diameter = Vector.Diameter(this.minX, this.maxX,
                                             this.minY, this.maxY,
                                             this.minZ, this.maxZ);
-            this.radius = (this.diameter / 2.0);
+            this.radius = (this.diameter / 2.0f);
         }
         /**
          * Fetch bounds for a component or region or throw an
@@ -119,7 +120,7 @@ public interface Bounds
                 this.diameter = Vector.Diameter(this.minX, this.maxX,
                                                 this.minY, this.maxY,
                                                 this.minZ, this.maxZ);
-                this.radius = (this.diameter / 2.0);
+                this.radius = (this.diameter / 2.0f);
             }
             else if (c instanceof Region){
 
@@ -161,16 +162,16 @@ public interface Bounds
                     this.maxY = maxY;
                     this.maxZ = maxZ;
 
-                    this.midX = (minX + maxX)/2.0;
-                    this.midY = (minY + maxY)/2.0;
-                    this.midZ = (minZ + maxZ)/2.0;
+                    this.midX = (minX + maxX)/2.0f;
+                    this.midY = (minY + maxY)/2.0f;
+                    this.midZ = (minZ + maxZ)/2.0f;
 
                     float d = Vector.Diameter(minX, maxX,
                                                minY, maxY,
                                                minZ, maxZ);
 
                     this.diameter = d;
-                    this.radius = (d / 2.0);
+                    this.radius = (d / 2.0f);
                 }
                 else
                     throw new IllegalStateException("No bounds found in region");
@@ -183,30 +184,30 @@ public interface Bounds
         public float tX(){
             float tx = ( (maxX + minX) / (maxX - minX));
             if (tx != tx)
-                return 0.0; //(minX=0; maxX = 0)
+                return ZERO; //(minX=0; maxX = 0)
 
-            else if (0.0 == tx)
-                return 0.0;
+            else if (ZERO == tx)
+                return ZERO;
             else
                 return -(tx);
         }
         public float tY(){
             float ty = ( (maxY + minY) / (maxY - minY));
             if (ty != ty)
-                return 0.0;
+                return ZERO;
 
-            else if (0.0 == ty)
-                return 0.0;
+            else if (ZERO == ty)
+                return ZERO;
             else
                 return -(ty);
         }
         public float tZ(){
             float tz = ( (maxZ + minZ) / (maxZ - minZ));
             if (tz != tz)
-                return 0.0;
+                return ZERO;
 
-            else if (0.0 == tz)
-                return 0.0;
+            else if (ZERO == tz)
+                return ZERO;
             else
                 return -(tz);
         }
@@ -220,13 +221,13 @@ public interface Bounds
             return Math.abs(maxZ - minZ);
         }
         public boolean hasDx(){
-            return (0.0 < this.dX());
+            return (ZERO < this.dX());
         }
         public boolean hasDy(){
-            return (0.0 < this.dY());
+            return (ZERO < this.dY());
         }
         public boolean hasDz(){
-            return (0.0 < this.dZ());
+            return (ZERO < this.dZ());
         }
         public float getBoundsMinX(){
             return this.minX;
