@@ -34,7 +34,9 @@
   </target>
 
   <target name="jar" depends="compile" description="Create JAR. Dep 'compile'.">
-    <delete file="${target.jar}"/>
+    <delete>
+      <fileset dir="${basedir}" includes="fv3-*.jar" />
+    </delete>
 
     <jar jarfile="${target.jar}" >
 

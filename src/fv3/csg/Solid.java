@@ -1,6 +1,6 @@
 /*
  * Fv3 
- * Copyright (C) 2010  John Pritchard, jdp@syntelos.org
+ * Copyright (C) 2012  John Pritchard, all rights reserved.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
