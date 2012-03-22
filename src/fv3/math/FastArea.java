@@ -35,6 +35,13 @@ package fv3.math;
  * Computation", Daniel Sunday, Journal of Graphics Tools, 7(2):9-13,
  * 2002
  * 
+ * <h3>Signed Area</h3>
+ * 
+ * The Signed area for a polygon is positive when the vertices are
+ * oriented counterclockwise around the polygon, and negative when
+ * oriented clockwise.
+ * 
+ * 
  * @see http://jgt.akpeters.com/papers/Sunday02/
  * @see http://softsurfer.com/Archive/algorithm_0101/algorithm_0101.htm
  * @author Daniel Sunday
@@ -121,6 +128,23 @@ public abstract class FastArea
         }
         else
             throw new IllegalArgumentException();
+    }
+    /**
+     * @param face 2D polygon coordinates list in (X,Y)+ order
+     * @return The signed area of a 2D polygon
+     */
+    public final static float Area2(float[] vertices){
+
+        final int count = vertices.length/2;
+
+        float[] x = new float[count], y = new float[count];
+
+        for (int v = 0, p = 0; p < count; p++){
+
+            x[p] = vertices[v++];
+            y[p] = vertices[v++];
+        }
+        return FastArea.Area(x,y);
     }
     /**
      * @param face Face coordinates list in (X,Y,Z)+ order

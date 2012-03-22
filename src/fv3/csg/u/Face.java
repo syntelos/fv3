@@ -242,25 +242,25 @@ public final class Face
                 float ax, float ay, float az, 
                 float bx, float by, float bz, 
                 float cx, float cy, float cz)
-    {
-        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
-    }
+        {
+            this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz));
+        }
     public Face(Solid s, Name n,
                 float ax, float ay, float az, 
                 float bx, float by, float bz, 
                 float cx, float cy, float cz,
                 float nx, float ny, float nz)
-    {
-        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz));
-    }
+        {
+            this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),new Vector(nx,ny,nz));
+        }
     public Face(Solid s, Name n,
                 float ax, float ay, float az, 
                 float bx, float by, float bz, 
                 float cx, float cy, float cz,
                 Vector nv)
-    {
-        this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),nv);
-    }
+        {
+            this(s,n,new Vertex(ax,ay,az),new Vertex(bx,by,bz),new Vertex(cx,cy,cz),nv);
+        }
     public Face(Solid s, Name n, Vertex[] face){
         this(s,n,face[0],face[1],face[2]);
     }
@@ -520,7 +520,7 @@ public final class Face
 
         return this;
     }
-	public Vector getNormal(){
+    public Vector getNormal(){
 
         Vector n = this.normal;
 
@@ -543,8 +543,8 @@ public final class Face
             }
         }
         return n;
-	}
-	public Vector getCentroid(){
+    }
+    public Vector getCentroid(){
 
         Vector c = this.centroid;
 
@@ -555,7 +555,7 @@ public final class Face
             this.centroid = c;
         }
         return c;
-	}
+    }
     public Vertex next(Vertex v){
         if (v == this.a)
             return this.b;
