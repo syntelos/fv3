@@ -21,13 +21,13 @@ package fv3;
  * 
  */
 public interface Model
-    extends Component
+    extends Component, GLES2
 {
     /**
      * 
      */
     public interface Element
-        extends fv3.math.Notation
+        extends fv3.math.Notation, GLES2
     {
         /**
          * 

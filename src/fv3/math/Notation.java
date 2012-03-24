@@ -23,7 +23,6 @@ package fv3.math;
  * 
  */
 public interface Notation
-    extends fv3.GLES2
 {
     /**
      * Common Math constants, epsilon for values 0.0 to 10.0.
