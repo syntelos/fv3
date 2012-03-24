@@ -267,6 +267,14 @@ public class Vector
         else
             throw new IllegalArgumentException();
     }
+    public final float[] copyTo(float[] v, int o){
+        if (3 <= v.length){
+            System.arraycopy(this.v,0,v,o,3);
+            return v;
+        }
+        else
+            throw new IllegalArgumentException();
+    }
     public final Vector add(Vector v){
         float[] a = this.v;
         float[] b = v.v;

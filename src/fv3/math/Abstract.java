@@ -116,6 +116,16 @@ public abstract class Abstract
         else
             return (Math.abs(d) <= EPSILON(a,b));
     }
+    public final static boolean NEQ(float a, float b){
+
+        final float d = (a - b);
+
+        if (Float.isNaN(d))
+
+            return true;
+        else
+            return (Math.abs(d) > EPSILON(a,b));
+    }
     public final static boolean EEQ(float a, float b, float e){
 
         final float d = (a - b);
