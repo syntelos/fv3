@@ -442,7 +442,37 @@ public class VertexArray
 
         this.countVertices(thisC+1);
 
-        System.arraycopy(vertex,0,this.vertices,thisL,3);
+        final int vertexL = Math.min(vertex.length,3);
+
+        System.arraycopy(vertex,0,this.vertices,thisL,vertexL);
+
+        return this;
+    }
+    public final VertexArray addVerticesXY(float[] vertex){
+
+        final int thisL = (this.vertices.length);
+        final int thisC = (thisL/3);
+        final int vertexL = vertex.length;
+        final int vertexC = (vertexL/2);
+
+        this.countVertices(thisC+vertexC);
+
+        for (int c0 = 0, c1 = thisL, end1 = (thisL+vertexL); c1 < end1; c0 += 2, c1 += 3){
+
+            System.arraycopy(vertex,c0,this.vertices,c1,2);
+        }
+        return this;
+    }
+    public final VertexArray addVerticesXYZ(float[] vertex){
+
+        final int thisL = (this.vertices.length);
+        final int thisC = (thisL/3);
+        final int vertexL = vertex.length;
+        final int vertexC = (vertexL/3);
+
+        this.countVertices(thisC+vertexC);
+
+        System.arraycopy(vertex,0,this.vertices,thisL,vertexL);
 
         return this;
     }
