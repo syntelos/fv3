@@ -661,7 +661,8 @@ public class VertexArray
                                 /*
                                  * Maybe this is a perspective to
                                  * start from for looking into
-                                 * http://steve.hollasch.net/cgindex/geometry/gridmesh.c
+                                 *  http://steve.hollasch.net/cgindex/geometry/gridmesh.c
+                                 * See fv3/etc/gridmesh.c
                                  */
                                 throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                             }
