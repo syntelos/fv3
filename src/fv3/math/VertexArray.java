@@ -463,6 +463,31 @@ public class VertexArray
         }
         return this;
     }
+    /**
+     * Repeat internal points
+     */
+    public final VertexArray addLinesXY(float[] vertex){
+
+        final int thisL = (this.vertices.length);
+        final int thisC = (thisL/3);
+        final int vertexL = vertex.length;
+        final int vertexC = (vertexL-2);
+
+        this.countVertices(thisC+vertexC);
+
+        final int end0 = vertexL, end1 = (thisL)+((vertexC-2)*3);
+
+        for (int c0 = 0, c1 = thisL; c0 < end0; c0 += 2, c1 += 3){
+
+            System.arraycopy(vertex,c0,this.vertices,c1,2);
+            if (0 < c0){
+                c1 += 3;
+                if (c1 < end1)
+                    System.arraycopy(vertex,c0,this.vertices,c1,2);
+            }
+        }
+        return this;
+    }
     public final VertexArray addVerticesXYZ(float[] vertex){
 
         final int thisL = (this.vertices.length);
