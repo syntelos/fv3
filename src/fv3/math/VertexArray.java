@@ -464,40 +464,67 @@ public class VertexArray
         return this;
     }
     /**
-     * Repeat internal points
+     * Repeat internal points (A,B,C) to (A,B,B,C) in vertices to
+     * lines operation
      */
-    public final VertexArray addLinesXY(float[] vertex){
+    public final VertexArray addLinesXY(float[] source){
 
         final int thisL = (this.vertices.length);
         final int thisC = (thisL/3);
-        final int vertexL = vertex.length;
-        final int vertexC = (vertexL-2);
+        final int sourceL = source.length;
+        final int sourceC = (sourceL-2); //((sourceL/dim2)*dim2)-2
 
-        this.countVertices(thisC+vertexC);
+        this.countVertices(thisC+sourceC);
 
-        final int end0 = vertexL, end1 = (thisL)+((vertexC-2)*3);
+        final int end0 = sourceL, end1 = (thisL)+((sourceC-2)*3);
 
         for (int c0 = 0, c1 = thisL; c0 < end0; c0 += 2, c1 += 3){
 
-            System.arraycopy(vertex,c0,this.vertices,c1,2);
+            System.arraycopy(source,c0,this.vertices,c1,2);
             if (0 < c0){
                 c1 += 3;
                 if (c1 < end1)
-                    System.arraycopy(vertex,c0,this.vertices,c1,2);
+                    System.arraycopy(source,c0,this.vertices,c1,2);
             }
         }
         return this;
     }
-    public final VertexArray addVerticesXYZ(float[] vertex){
+    /**
+     * Repeat internal points (A,B,C,D) to (A,B,B,C,C,D) in vertices
+     * to lines operation
+     */
+    public final VertexArray addLinesXYZ(float[] source){
 
         final int thisL = (this.vertices.length);
         final int thisC = (thisL/3);
-        final int vertexL = vertex.length;
-        final int vertexC = (vertexL/3);
+        final int sourceL = source.length;
+        final int sourceC = (sourceL-2);//((sourceL/dim3)*dim3)-2
 
-        this.countVertices(thisC+vertexC);
+        this.countVertices(thisC+sourceC);
 
-        System.arraycopy(vertex,0,this.vertices,thisL,vertexL);
+        final int end0 = sourceL, end1 = (thisL)+((sourceC-2)*3);
+
+        for (int c0 = 0, c1 = thisL; c0 < end0; c0 += 3, c1 += 3){
+
+            System.arraycopy(source,c0,this.vertices,c1,3);
+            if (0 < c0){
+                c1 += 3;
+                if (c1 < end1)
+                    System.arraycopy(source,c0,this.vertices,c1,3);
+            }
+        }
+        return this;
+    }
+    public final VertexArray addVerticesXYZ(float[] source){
+
+        final int thisL = (this.vertices.length);
+        final int thisC = (thisL/3);
+        final int sourceL = source.length;
+        final int sourceC = (sourceL/3);
+
+        this.countVertices(thisC+sourceC);
+
+        System.arraycopy(source,0,this.vertices,thisL,sourceL);
 
         return this;
     }
