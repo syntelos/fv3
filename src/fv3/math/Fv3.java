@@ -31,4 +31,6 @@ public interface Fv3
     extends fv3.math.Notation
 {
     public float[] array();
+
+    public void copy(float[] dst);
 }

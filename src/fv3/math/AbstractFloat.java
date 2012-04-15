@@ -33,4 +33,21 @@ public abstract class AbstractFloat
 
 
     public abstract float[] array();
+
+    public final void copy(float[] dst){
+        float[] src = this.array();
+        if (null == src){
+            if (null == dst)
+                return;
+            else
+                throw new IllegalStateException();
+        }
+        else if (null == dst)
+            throw new IllegalArgumentException();
+        else if (dst.length != src.length)
+            throw new IllegalArgumentException(String.format("%d/%d",dst.length,src.length));
+        else
+            System.arraycopy(src,0,dst,0,src.length);
+    }
+
 }

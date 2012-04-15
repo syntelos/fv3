@@ -29,9 +29,8 @@ package fv3.math;
  * @author jdp
  */
 public class VertexArray
-    extends Abstract
-    implements fv3.math.Fv3,
-               fv3.Model.Element,
+    extends AbstractFloat
+    implements fv3.Model.Element,
                fv3.Bounds,
                java.lang.Cloneable
 {
