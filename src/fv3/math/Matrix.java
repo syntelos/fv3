@@ -175,6 +175,18 @@ public class Matrix
     public final Vector getTranslation(){
         return new Vector(this.m[M03],this.m[M13],this.m[M23]);
     }
+    public final Matrix translate(int axis, float delta){
+        switch(axis){
+        case X:
+            return this.translateX(delta);
+        case Y:
+            return this.translateY(delta);
+        case Z:
+            return this.translateZ(delta);
+        default:
+            throw new IllegalArgumentException(String.valueOf(axis));
+        }
+    }
     public final Matrix scale(float s){
         if (1.0 != s){
             float[] m = this.m;
@@ -303,6 +315,18 @@ public class Matrix
         R[M22] =  cx * cy;
 
         return this.mul(R);
+    }
+    public final Matrix rotate(int axis, float radians){
+        switch(axis){
+        case X:
+            return this.rotateX(radians);
+        case Y:
+            return this.rotateY(radians);
+        case Z:
+            return this.rotateZ(radians);
+        default:
+            throw new IllegalArgumentException(String.valueOf(axis));
+        }
     }
     public final Vector transform(Vector v){
         float[] c = v.array();
