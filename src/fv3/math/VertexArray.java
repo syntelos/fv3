@@ -471,11 +471,13 @@ public class VertexArray
         final int thisL = (this.vertices.length);
         final int thisC = (thisL/3);
         final int sourceL = source.length;
-        final int sourceC = (sourceL-2); //((sourceL/dim2)*dim2)-2
+        final int sourceC = (sourceL/2);
+        final int targetC = (sourceC*2)-2;
+        final int targetL = (targetC*3);
 
-        this.countVertices(thisC+sourceC);
+        this.countVertices(thisC+targetC);
 
-        final int end0 = sourceL, end1 = (thisL)+((sourceC-2)*3);
+        final int end0 = sourceL, end1 = (thisL+targetL);
 
         for (int c0 = 0, c1 = thisL; c0 < end0; c0 += 2, c1 += 3){
 
@@ -497,11 +499,13 @@ public class VertexArray
         final int thisL = (this.vertices.length);
         final int thisC = (thisL/3);
         final int sourceL = source.length;
-        final int sourceC = (sourceL-2);//((sourceL/dim3)*dim3)-2
+        final int sourceC = (sourceL/3);
+        final int targetC = (sourceC*2)-2;
+        final int targetL = (targetC*3);
 
-        this.countVertices(thisC+sourceC);
+        this.countVertices(thisC+targetC);
 
-        final int end0 = sourceL, end1 = (thisL)+((sourceC-2)*3);
+        final int end0 = sourceL, end1 = (thisL+targetL);
 
         for (int c0 = 0, c1 = thisL; c0 < end0; c0 += 3, c1 += 3){
 
