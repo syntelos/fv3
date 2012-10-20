@@ -20,6 +20,7 @@ package fv3.font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.BufferUnderflowException;
 import java.nio.CharBuffer;
@@ -54,6 +55,11 @@ public final class TTFFontReader
         throws IOException
     {
         super("/fonts/"+name+".ttf");
+    }
+    public TTFFontReader(String name, URL url)
+        throws IOException
+    {
+        super(name,url);
     }
     public TTFFontReader(String name, ByteBuffer in){
         super(name, in);

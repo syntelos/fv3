@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
@@ -48,9 +49,9 @@ public abstract class FontReader
             throw new IOException(String.format("Resource not found '%s'",name));
         else {
             try {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                int array_size = 1024; // choose a size...
-                byte[] array = new byte[array_size];
+                final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                final int array_size = 1024;
+                final byte[] array = new byte[array_size];
                 int rb;
 
                 while ((rb = in.read(array, 0, array_size)) > -1) {
@@ -61,6 +62,25 @@ public abstract class FontReader
             finally {
                 in.close();
             }
+        }
+    }
+    public static ByteBuffer Resource(URL url)
+        throws IOException
+    {
+        InputStream in = url.openStream();
+        try {
+            final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            final int array_size = 1024;
+            final byte[] array = new byte[array_size];
+            int rb;
+
+            while ((rb = in.read(array, 0, array_size)) > -1) {
+                bytes.write(array, 0, rb);
+            }
+            return ByteBuffer.wrap(bytes.toByteArray());
+        }
+        finally {
+            in.close();
         }
     }
 
@@ -74,6 +94,11 @@ public abstract class FontReader
         throws IOException
     {
         this(resource,Resource(resource));
+    }
+    public FontReader(String name, URL url)
+        throws IOException
+    {
+        this(name,Resource(url));
     }
     public FontReader(String name, ByteBuffer in){
         super();
