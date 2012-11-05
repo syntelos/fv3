@@ -59,11 +59,7 @@ public class TTFGlyph
 
 
     protected TTFGlyph(TTFFont font, Glyf glyf, int index, int offset, int next){
-        super(Type.Triangles,
-              /*
-               * [TODO] Define TTF GL 
-               */ 0,
-              font);
+        super(font);
         this.index = index;
         this.offset = (glyf.offset + offset);
         this.length = (next-offset);

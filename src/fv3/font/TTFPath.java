@@ -35,7 +35,6 @@ public final class TTFPath
 
     public float startX, startY, controlX, controlY, controlX2, controlY2, endX, endY;
 
-    private float[] points;
 
     /**
      * Straight line
@@ -205,110 +204,53 @@ public final class TTFPath
             throw new IllegalStateException();
     }
     public void init(TTFFont font, TTFGlyph glyph, FontOptions opts){
-        float scale = font.getScale();
+
+        final float scale = font.getScale();
+
         if (this.isStraight){
-            float x0 = (this.startX * scale);
-            float y0 = (this.startY * scale);
-            float x3 = (this.endX * scale);
-            float y3 = (this.endY * scale);
+
+            final float x0 = (this.startX * scale);
+            final float y0 = (this.startY * scale);
+            final float x3 = (this.endX * scale);
+            final float y3 = (this.endY * scale);
+
             if (x0 != x3 || y0 != y3){
-                float[] points = new float[4];
-                points[0] = x0;
-                points[1] = y0;
-                points[2] = x3;
-                points[3] = y3;
-                this.points = points;
+
+                glyph.moveTo(x0,y0);
+                glyph.lineTo(x3,y3);
             }
+
         }
         else if (this.isQuadratic){
 
-            float x0 = (this.startX * scale);
-            float y0 = (this.startY * scale);
-            float x1 = (this.controlX * scale);
-            float y1 = (this.controlY * scale);
-            float x3 = (this.endX * scale);
-            float y3 = (this.endY * scale);
+            final float x0 = (this.startX * scale);
+            final float y0 = (this.startY * scale);
+            final float x1 = (this.controlX * scale);
+            final float y1 = (this.controlY * scale);
+            final float x3 = (this.endX * scale);
+            final float y3 = (this.endY * scale);
 
-            float x_b = 1 * x0 - 2 * x1 + 1 * x3;
-            float x_c = -2 * x0 + 2 * x1;
-            float x_d = x0;
-            float y_b = 1 * y0 - 2 * y1 + 1 * y3;
-            float y_c = -2 * y0 + 2 * y1;
-            float y_d = y0;
-
-            int step = 12; /*(TODO) Range step to scale
-                            * (a) project fair value
-                            * (b) drop points not significant
-                            */
-            float em = font.getEm();
-            float dt = (em/step);
-            float[] points = new float[(step<<1)+2];
-
-            int xp = 0;
-            int yp = 1;
-            points[xp] = x0;
-            points[yp] = y0;
-            xp += 2;
-            xp += 2;
-
-            for (float t = dt; t < em; t += dt, xp += 2, yp += 2){
-
-                float x = (((((x_b * t) / em) + x_c) * t) / em) + x_d;
-                float y = (((((y_b * t) / em) + y_c) * t) / em) + y_d;
-
-                points[xp] = x;
-                points[yp] = y;
-            }
-            this.points = points;
+            glyph.moveTo(x0,y0);
+            glyph.quadTo(x1,y1,x3,y3);
         }
         else {
 
+            final float x0 = (this.startX * scale);
+            final float y0 = (this.startY * scale);
+            final float x1 = (this.controlX * scale);
+            final float y1 = (this.controlY * scale);
+            final float x2 = (this.controlX2 * scale);
+            final float y2 = (this.controlY2 * scale);
+            final float x3 = (this.endX * scale);
+            final float y3 = (this.endY * scale);
 
-            float x0 = (this.startX * scale);
-            float y0 = (this.startY * scale);
-            float x1 = (this.controlX * scale);
-            float y1 = (this.controlY * scale);
-            float x2 = (this.controlX2 * scale);
-            float y2 = (this.controlY2 * scale);
-            float x3 = (this.endX * scale);
-            float y3 = (this.endY * scale);
-            float x_a = -x0 + 3 * x1 - 3 * x2 + x3;
-            float x_b = 3 * x0 - 6 * x1 + 3 * x2;
-            float x_c = -3 * x0 + 3 * x1;
-            float x_d = x0;
-            float y_a = -y0 + 3 * y1 - 3 * y2 + y3;
-            float y_b = 3 * y0 - 6 * y1 + 3 * y2;
-            float y_c = -3 * y0 + 3 * y1;
-            float y_d = y0;
-
-            int step = 12; /*(TODO) Range step to scale
-                            */
-            float em = font.getEm();
-            float dt = (em/step);
-            float[] points = new float[(step<<1)+2];
-
-            int xp = 0;
-            int yp = 1;
-            points[xp] = x0;
-            points[yp] = y0;
-            xp += 2;
-            xp += 2;
-
-            for (float t = dt; t < em; t += dt, xp += 2, yp += 2){
-
-                float x = ((((((((x_a * t) / em) + x_b) * t) / em) + x_c) * t) / em) + x_d;
-                float y = ((((((((y_a * t) / em) + y_b) * t) / em) + y_c) * t) / em) + y_d;
-
-                points[xp] = x;
-                points[yp] = y;
-            }
+            glyph.moveTo(x0,y0);
+            glyph.cubicTo(x1,y1,x2,y2,x3,y3);
         }
     }
     public void destroy(){
     }
-    public float[] points(){
-        return this.points;
-    }
+
     public final float[] source(){
         if (this.isStraight){
             return new float[]{this.startX,this.startY,this.endX,this.endY};

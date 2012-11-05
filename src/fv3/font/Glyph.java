@@ -18,6 +18,8 @@
 package fv3.font;
 
 /**
+ * Glyph path.
+ * 
  * This class may be subclassed with a {@link Font} subclass as for
  * implementing a text editor.
  * 
@@ -34,8 +36,15 @@ public abstract class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Pa
     protected fv3.font.Path[] list;
 
 
-    protected Glyph(Type type, int count, Font font){
-        super(type,count);
+    protected Glyph(Font font){
+        super();
+        if (null != font)
+            this.font = font;
+        else
+            throw new IllegalArgumentException();
+    }
+    protected Glyph(Type type, int cap, Font font){
+        super(type,cap);
         if (null != font)
             this.font = font;
         else

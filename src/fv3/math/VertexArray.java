@@ -1,7 +1,7 @@
 /*
  * fv3.math
  * Copyright (C) 2012, John Pritchard, all rights reserved.
- * 
+ *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -19,12 +19,38 @@
 package fv3.math;
 
 /**
- * An (X,Y,Z) vertices buffer with tools.  
+ * An <i>(X,Y,Z)*</i> list of vertices as in the following pseudo-code.
+ * <pre>
+ * float[] va = new float[]{
  * 
- * The vertices and normals buffers may be resized using the
- * "countVertices" method.  This operation expands or contracts the
- * vertics and normals buffers, preserving information.
+ *     x0,y0,z0,  // first vertex
  * 
+ *     x1,y1,z1,  // second vertex
+ *                // ...,
+ *     xN,yN,zN   // last vertex
+ * };
+ * </pre>
+ * 
+ * <h3>Count Vertices</h3>
+ *
+ * <p> The vertices and normals buffers may be resized using the
+ * {@link #countVertices} method.  This operation expands or contracts
+ * the vertices and normals buffers, preserving information. </p>
+ * 
+ * <h3>Path Type</h3>
+ * 
+ * <p> The subtype {@link Path} employs {@link Type$Path Type Path} to
+ * identify a special intermediate value type.  This data is not
+ * native to GL, but an intermediate buffer for transformation to and
+ * from GL data types.  </p>
+ * 
+ * <h4>Path data type conversions</h4>
+ * 
+ * <p> Path data format conversions are defined here and in {@link
+ * Path}.  </p>  
+ * 
+ * <blockquote><b>Work in progress</b></blockquote>
+ *
  * @see Abstract
  * @author jdp
  */
@@ -409,7 +435,7 @@ public class VertexArray
     /**
      * @param index Vertex index
      * @param vertex Array of three values to copy into the referenced vertex.
-     * @param ofs Offset into vertex array 
+     * @param ofs Offset into vertex array
      * @return This
      */
     public final VertexArray setVertex(int index, float[] vertex, int ofs){
@@ -422,7 +448,7 @@ public class VertexArray
     /**
      * @param index Vertex index
      * @param vertex Array of three values to copy into the referenced vertex.
-     * @param ofs Offset into vertex array 
+     * @param ofs Offset into vertex array
      * @param count Number of vertices from vertex array to copy into
      * <code>(index, index+1, ..., index+count-1)</code>
      * @return This
@@ -689,7 +715,7 @@ public class VertexArray
             final int thatCountVertices = CountVertices(thatType,this.type,this.countVertices);
 
             float[] thatVertices = new float[3 * thatCountVertices];
-            
+
             for (int face = 0, count = this.countFaces; face < count; face++){
 
                 float[] thisFace = this.getFace(face);
@@ -706,7 +732,7 @@ public class VertexArray
                     case TriangleStrip:{
                         int[] next = FaceIndeces(thatType,face);
                         if (0 == face){
-                            
+
                             SetVertex(next[0], thisFace, 0, thatVertices);
                             SetVertex(next[1], thisFace, 3, thatVertices);
                             SetVertex(next[2], thisFace, 6, thatVertices);
@@ -959,7 +985,7 @@ public class VertexArray
     /**
      * Fit to box
      */
-    public final VertexArray fit(float minX, float maxX, float minY, float maxY, 
+    public final VertexArray fit(float minX, float maxX, float minY, float maxY,
                                  boolean aspect)
     {
         final float bMinX = this.getBoundsMinX();
@@ -999,8 +1025,8 @@ public class VertexArray
     /**
      * Fit to box with aspect ratio lock
      */
-    public final VertexArray fit(float minX, float maxX, 
-                                 float minY, float maxY, 
+    public final VertexArray fit(float minX, float maxX,
+                                 float minY, float maxY,
                                  float minZ, float maxZ)
     {
         return this.fit(minX,maxX,minY,maxY,minZ,maxZ,true);
@@ -1008,9 +1034,9 @@ public class VertexArray
     /**
      * Fit to box
      */
-    public final VertexArray fit(float minX, float maxX, 
-                                 float minY, float maxY, 
-                                 float minZ, float maxZ, 
+    public final VertexArray fit(float minX, float maxX,
+                                 float minY, float maxY,
+                                 float minZ, float maxZ,
                                  boolean aspect)
     {
         final float bMinX = this.getBoundsMinX();
@@ -1287,11 +1313,41 @@ public class VertexArray
             return (2 * (countFaces+1));
 
         case Polygon:
-        case Path:
             return 1;
 
+        case Path:{
+
+            final int countVertices = (countFaces/3);
+
+            return countVertices;
+        }
         default:
             throw new IllegalStateException();
+        }
+    }
+    /**
+     * @return Number of vertices in the 3d list of
+     * <code>{x0,y0,z0,x1,y1,z1,...,xN,yN,zN}</code>
+     */
+    public final static int CountVertices(Type type, float[] list3d){
+        if (null == list3d)
+            return 0;
+        else {
+            final int countVertices = (list3d.length/3);
+
+            switch(type){
+
+                /************************************
+                 * Number of vertices for list      *
+                 ***********************************/
+            case TriangleStrip:
+            case TriangleFan:
+            case Quads:
+            case QuadStrip:
+
+            default:
+                return countVertices;
+            }
         }
     }
     public final static int CountFaces(Type to, int countVertices){
@@ -1318,8 +1374,10 @@ public class VertexArray
             return (countVertices/2)-1;
 
         case Polygon:
-        case Path:
             return 1;
+
+        case Path:
+            return 0;
 
         default:
             throw new IllegalStateException();

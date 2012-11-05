@@ -18,6 +18,10 @@
  */
 package fv3.math;
 
+import path.Op;
+import path.Operand;
+import path.Winding;
+
 /**
  * {@link Path} is a list of path operations and their operands.  A
  * Path is an intermediate value, not for GL.
@@ -29,12 +33,12 @@ package fv3.math;
  * not applicable to GL, but is an intermediate value for conversions
  * to and from Path data lists. </p>
  *
+ * <h3>GL data type conversions</h3>
  * 
+ * <p> Data format conversions are defined here and in {@link
+ * VertexArray}.  </p>
  * 
- * <h3>Work in progress</h3>
- * 
- * <p> Conversions defined here and in {@link VertexArray}.
- * </p>
+ * <blockquote><b>Work in progress</b></blockquote>
  * 
  * 
  * @see VertexArray
@@ -42,86 +46,13 @@ package fv3.math;
  */
 public class Path
     extends VertexArray
+    implements path.Path
 {
-
-    /** 
-     * Winding algorithms make more sense for a ray from centroid
-     * point to subject point.
-     * 
-     * <h3>Non zero winding</h3>
-     * 
-     * <p> From P, a ray R intersects the outline having clock-wise
-     * (CW) or counter-clock-wise (CCW) direction.  </p>
-     * 
-     * <p> An accumulator A is initialized to zero, and incremented
-     * for a CCW intersection, and decremented for a CW
-     * intersection.</p>
-     * 
-     * <p> For A equal to zero P is "outside" the outline, otherwise P
-     * is "inside" the outline. </p>
-     * 
-     * <h3>Even odd winding</h3>
-     * 
-     * <p> From P, a ray R intersects the outline an even or odd
-     * number of times.  If even, P is "outside" the outline.
-     * Otherwise when P is odd, P is "inside" the outline.  </p>
-     * 
-     * <h3>Future</h3>
-     * 
-     * <p> The Winding enum constant {@link Path$Winding#Future
-     * Future} represents and unknown, wait and see status. </p>
-     */
-    public static enum Winding {
-        EvenOdd, NonZero, Future;
+    public final static float[] EmptySet = {};
 
 
-        public final static Winding For(int rule){
-            switch(rule){
-            case 0:
-                return EvenOdd;
-            case 1:
-                return NonZero;
-            default:
-                return null;
-            }
-        }
 
-        /**
-         * Missing a required winding 
-         */
-        public static class Missing
-            extends IllegalStateException
-        {
-
-            public Missing(){
-                super("Require winding");
-            }
-        }
-    }
-    /**
-     *
-     */
-    public static enum Op {
-        MoveTo, LineTo, QuadTo, CubicTo, Close;
-
-
-        public final static Op[] Add(Op[] list, Op item){
-            if (null == item)
-                return list;
-            else if (null == list)
-                return new Op[]{item};
-            else {
-                int len = list.length;
-                Op[] copier = new Op[len+1];
-                System.arraycopy(list,0,copier,0,len);
-                copier[len] = item;
-                return copier;
-            }
-        }
-    }
-
-
-    protected Path.Winding winding;
+    protected Winding winding;
 
     protected boolean closed;
 
@@ -141,20 +72,20 @@ public class Path
     }
 
 
-    public Path.Winding getWinding(){
+    public Winding getWinding(){
         return this.winding;
     }
     public boolean isWindingNonZero(){
-        return (Path.Winding.NonZero == this.winding);
+        return (Winding.NonZero == this.winding);
     }
     public boolean isWindingEvenOdd(){
-        return (Path.Winding.EvenOdd == this.winding);
+        return (Winding.EvenOdd == this.winding);
     }
     public Path setWindingNonZero(){
-        return this.setWinding(Path.Winding.NonZero);
+        return this.setWinding(Winding.NonZero);
     }
     public Path setWindingEvenOdd(){
-        return this.setWinding(Path.Winding.EvenOdd);
+        return this.setWinding(Winding.EvenOdd);
     }
     /**
      * Preparation to define new data: clear path and define winding.
@@ -174,7 +105,15 @@ public class Path
         else
             throw new IllegalArgumentException();
     }
-    protected Op op(int index){
+    public float[] getVerticesPath(int index, Op op, float[] vertices){
+
+        final int vx = IndexForVertices(this.operators,index);
+        if (-1 < vx)
+            return OperandsFromVertices(op,vertices,vx);
+        else
+            return null;
+    }
+    public Op op(int index){
         Op[] operators = this.operators;
         if (null == operators || 0 > index)
             return null;
@@ -183,17 +122,24 @@ public class Path
         else
             return null;
     }
-    protected Op lop(){
+    public Op lop(){
         Op[] operators = this.operators;
         if (null == operators)
             return null;
         else
             return operators[operators.length-1];
     }
-    protected void nop(Op op){
+    /**
+     * @param op Operator
+     * @param operands Two dimensional point list (2D, XY)
+     */
+    public void add(Op op, float[] operands){
+
         this.operators = Op.Add(this.operators,op);
+
+        this.addVerticesXY(operands);
     }
-    protected int lindexOf(Op op){
+    public int lindexOf(Op op){
         Op[] operators = this.operators;
         if (null != operators){
             for (int lindex = (operators.length-1); lindex >= 0; lindex--){
@@ -204,7 +150,7 @@ public class Path
         }
         return -1;
     }
-    protected boolean valid(int index){
+    public boolean valid(int index){
         Op[] operators = this.operators;
         if (null == operators || 0 > index)
             return false;
@@ -218,25 +164,26 @@ public class Path
         if (this.lop() == Op.MoveTo)
             this.setVertex(this.index-1,x,y,0);
         else {
-            this.nop(Op.MoveTo);
-            this.setVertex(this.index++,x,y,0);
+            this.add(Op.MoveTo,new float[]{x,y});
         }
     }
     public final void lineTo(float x, float y) {
 
-        this.nop(Op.LineTo);
-        this.setVertex(this.index++,x,y,0);
+        this.add(Op.LineTo,new float[]{x,y});
     }
     public void quadTo(float x1, float y1,
                        float x2, float y2)
     {
+
+        this.add(Op.QuadTo,new float[]{x1,y1,0,x2,y2,0});
     }
-    public void curveTo(float x1, float y1,
+    public void cubicTo(float x1, float y1,
                         float x2, float y2,
                         float x3, float y3)
     {
+        this.add(Op.CubicTo,new float[]{x1,y1,0,x2,y2,0,x3,y3,0});
     }
-    public final void closePath(){
+    public final void close(){
         int lindex = lindexOf(Op.Close);
         if (-1 < lindex){
             int mt = (lindex+1);
@@ -244,241 +191,67 @@ public class Path
                 mt += 1;
 
             if (this.valid(mt)){
-                this.nop(Op.Close);
-                this.setVertex(this.index++,this.getVertex(mt));
+
+                this.add(Op.Close,this.getVertex(mt));
             }
             else {
-                this.nop(Op.Close);
-                this.setVertex(this.index++,this.getVertex(lindex));
+                this.add(Op.Close,this.getVertex(lindex));
             }
         }
         else {
             lindex = lindexOf(Op.MoveTo);
             if (-1 < lindex){
 
-                this.nop(Op.Close);
-                this.setVertex(this.index++,this.getVertex(lindex));
+                this.add(Op.Close,this.getVertex(lindex));
             }
         }
     }
 
     public final Path apply(String pexpr){
-        return this.apply(new Path.Parser(pexpr));
+        return this.apply(new path.Parser(pexpr));
     }
-    public final Path apply(Path.Parser p){
-        Path.Parser.Token last = null;
+    public final Path apply(path.Parser p){
+        return path.Parser.Apply(this,p);
+    }
+    public java.lang.Iterable<Operand> toPathIterable(){
+        return new path.Iterator(this,this.operators,this.vertices);
+    }
+    public java.util.Iterator<Operand> toPathIterator(){
+        return new path.Iterator(this,this.operators,this.vertices);
+    }
 
-        float mx = 0, my = 0, sx = 0, sy = 0;
+
+    /**
+     * Three dimensional vertices
+     */
+    public final static int IndexForVertices(Op[] operators, int search){
+        if (null == operators || 0 > search)
+            return -1;
+        else {
+            int vx = 0;
+            for (int cc = 0; cc <= search; cc++){
 
-        for (Path.Parser.Token tok : p){
-            switch(tok){
-            case Coordinate:
-            case M:
-                this.moveTo((mx = p.getCoordinate()),(my = p.getCoordinate()));
-                sx = mx;
-                sy = my;
-                break;
-            case m:
-                this.moveTo((mx += p.getCoordinate()),(my += p.getCoordinate()));
-                sx = mx;
-                sy = my;
-                break;
-            case Z:
-            case z:
-                this.closePath();
-                break;
-            case L:
-                this.lineTo((sx = p.getCoordinate()),(sy = p.getCoordinate()));
-                break;
-            case l:
-                this.lineTo((sx += p.getCoordinate()),(sy += p.getCoordinate()));
-                break;
-            case H:
-                sx = p.getCoordinate();
-                this.lineTo(sx,sy);
-                break;
-            case h:
-                sx += p.getCoordinate();
-                this.lineTo(sx,sy);
-                break;
-            case V:
-                sy = p.getCoordinate();
-                this.lineTo(sx,sy);
-                break;
-            case v:
-                sy += p.getCoordinate();
-                this.lineTo(sx,sy);
-                break;
-            case C:
-                this.curveTo(p.getCoordinate(),p.getCoordinate(),
-                             p.getCoordinate(),p.getCoordinate(),
-                             (sx = p.getCoordinate()),(sy = p.getCoordinate()));
-                break;
-            case c:
-                this.curveTo((sx + p.getCoordinate()),(sy + p.getCoordinate()),
-                             (sx + p.getCoordinate()),(sy + p.getCoordinate()),
-                             (sx += p.getCoordinate()),(sy += p.getCoordinate()));
-                break;
-            case S:
-            case s:
-                throw new UnsupportedOperationException(tok.name());
-            case Q:
-                this.quadTo(p.getCoordinate(),p.getCoordinate(),
-                            (sx = p.getCoordinate()),(sy = p.getCoordinate()));
-                break;
-            case q:
-                this.quadTo((sx + p.getCoordinate()),(sy + p.getCoordinate()),
-                            (sx += p.getCoordinate()),(sy += p.getCoordinate()));
-                break;
-            case T:
-            case t:
-                throw new UnsupportedOperationException(tok.name());
-            case A:
-            case a:
-                throw new UnsupportedOperationException(tok.name());
-            default:
-                throw new IllegalArgumentException(tok.name());
+                vx += (operators[cc].operands*3);
             }
-            last = tok;
+            throw new IllegalStateException();
         }
-        return this;
     }
     /**
-     * Parse SVG Path "d" attribute value expression.
+     * Three dimensional vertices
      */
-    public final static class Parser
-        extends Object
-        implements Iterable<Parser.Token>,
-                   java.util.Iterator<Parser.Token>
-    {
-        public enum Token {
-            Unknown, Coordinate, M, m, Z, z, L, l, H, h, V, v, C, c, S, s, Q, q, T, t, A, a;
-        }
-
-
-        private final char[] string;
-        private int index;
-        private java.lang.Float coordinate;
-
-
-        public Parser(String string){
-            super();
-            if (null != string){
-                this.string = string.trim().toCharArray();
-                if (0 == this.string.length)
-                    throw new IllegalArgumentException();
-            }
-            else
-                throw new IllegalArgumentException();
-        }
-
-
-        public java.lang.Float getCoordinate(){
-            java.lang.Float c = this.coordinate;
-            if (null != this.coordinate){
-                this.coordinate = null;
-                return c;
-            }
-            else if (this.hasNext() && Token.Coordinate == this.next()){
-                c = this.coordinate;
-                this.coordinate = null;
-                return c;
-            }
-            else
-                throw new java.util.NoSuchElementException();
-        }
-        public boolean hasNext(){
-            return (this.index < this.string.length);
-        }
-        public Parser.Token next(){
-            this.coordinate = null;
-            if (this.index < this.string.length){
-                Parser.Token token = null;
-                int start = this.index;
-                int end = start;
-                boolean decpt = false;
-                scan:
-                while (this.index < this.string.length){
-
-                    switch(this.string[this.index]){
-                    case ' ':
-                    case ',':
-                        if (this.index != start){
-                            end = (this.index-1);
-                            this.index++;
-                            break scan;
-                        }
-                        break;
-                    case '.':
-                        if (null != token){
-                            if (decpt || Parser.Token.Coordinate != token){
-                                end = (this.index-1);
-                                break scan;
-                            }
-                        }
-                        else
-                            token = Parser.Token.Coordinate;
-
-                        decpt = true;
-                        break;
-                    case '-':
-                        if (null != token){
-                            end = (this.index-1);
-                            break scan;
-                        }
-                        else
-                            token = Parser.Token.Coordinate;
-                        break;
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        if (null == token)
-                            token = Parser.Token.Coordinate;
-                        else if (token != Parser.Token.Coordinate){
-                            end = (this.index-1);
-                            break scan;
-                        }
-                        break;
-                    default:
-                        if (null == token)
-                            return Parser.Token.valueOf(String.valueOf(this.string[this.index++]));
-                        else {
-                            end = (this.index-1);
-                            break scan;
-                        }
-                    }
-                    this.index++;
-                }
-
-                if (Parser.Token.Coordinate == token){
-
-                    if (start == end && this.index == this.string.length)
-                        end = (this.index-1);
-
-                    this.coordinate = java.lang.Float.parseFloat(new String(this.string,start,(end-start+1)));
-                    return token;
-                }
-                else
-                    return Parser.Token.Unknown;
-            }
-            else
-                throw new java.util.NoSuchElementException();
-        }
-        public void remove(){
-            throw new UnsupportedOperationException();
-        }
-        public java.util.Iterator<Parser.Token> iterator(){
-            return this;
+    public final static float[] OperandsFromVertices(Op op, float[] vertices, int vofs){
+        if (null == vertices || 3 > vertices.length || 0 > vofs)
+            return EmptySet;
+        else {
+            final int olen = (op.operands*3);
+            final float[] oary = new float[olen];
+            System.arraycopy(vertices,vofs,oary,0,olen);
+            return oary;
         }
     }
-
+    /**
+     * Test read XML file SVG "Path D"
+     */
     public static void main(String[] argv){
         try {
             java.io.File file = new java.io.File(argv[0]);
