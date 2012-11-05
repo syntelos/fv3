@@ -19,9 +19,22 @@
 package fv3.math;
 
 /**
- * <h3>Work In Progress</h3>
+ * {@link Path} is a list of path operations and their operands.  A
+ * Path is an intermediate value, not for GL.
  * 
- * An initial experiment in path composition for producing line sets.
+ * <h3>Vertex Array</h3>
+ * 
+ * <p> The initial type of a {@link Path} is {@link
+ * VertexArray$Type#Path VertexArray.Type Path}.  This vertex array is
+ * not applicable to GL, but is an intermediate value for conversions
+ * to and from Path data lists. </p>
+ *
+ * 
+ * 
+ * <h3>Work in progress</h3>
+ * 
+ * <p> Conversions defined here and in {@link VertexArray}.
+ * </p>
  * 
  * 
  * @see VertexArray
@@ -118,7 +131,13 @@ public class Path
 
 
     public Path(){
-        super(Type.Lines,0);
+        super(Type.Path,0);
+    }
+    public Path(Type type){
+        super(type,0);
+    }
+    public Path(Type type, int cap){
+        super(type,cap);
     }
 
 

@@ -24,7 +24,7 @@ package fv3.font;
  * @author John Pritchard
  */
 public abstract class Glyph<Font extends fv3.font.Font, Path extends fv3.font.Path>
-    extends fv3.math.VertexArray
+    extends fv3.math.Path
     implements fv3.Bounds,
                Iterable<Path>
 {

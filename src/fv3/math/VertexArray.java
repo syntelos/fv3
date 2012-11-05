@@ -35,7 +35,7 @@ public class VertexArray
                java.lang.Cloneable
 {
     public enum Type {
-        Points, Lines, LineStrip, LineLoop, Triangles, TriangleStrip, TriangleFan, Quads, QuadStrip, Polygon;
+        Points, Lines, LineStrip, LineLoop, Triangles, TriangleStrip, TriangleFan, Quads, QuadStrip, Polygon, Path;
 
 
         public final static Type For(int index){
@@ -60,6 +60,8 @@ public class VertexArray
                 return QuadStrip;
             case 9:
                 return Polygon;
+            case 10:
+                return Path;
             default:
                 throw new IllegalArgumentException(String.valueOf(index));
             }
@@ -80,6 +82,8 @@ public class VertexArray
                 return true;
             case Polygon:
                 return true;
+            case Path:
+                return false;
             default:
                 throw new IllegalStateException();
             }
@@ -652,8 +656,12 @@ public class VertexArray
             }
             return this;
 
+        case Path:
+            /*
+             */
+            throw new IllegalStateException("Convert path to triangles or lines");
         default:
-            throw new IllegalStateException();
+            throw new IllegalStateException(this.type.name());
         }
     }
     public final float[] normals(){
@@ -725,10 +733,9 @@ public class VertexArray
                         break;
                     }
                     case Quads:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case QuadStrip:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case Polygon:
+                    case Path:
                         throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     default:
                         throw new IllegalStateException();
@@ -748,13 +755,10 @@ public class VertexArray
                         break;
                     }
                     case TriangleFan:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
-
                     case Quads:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case QuadStrip:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case Polygon:
+                    case Path:
                         throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     default:
                         throw new IllegalStateException();
@@ -783,10 +787,9 @@ public class VertexArray
                         break;
                     }
                     case Quads:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case QuadStrip:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case Polygon:
+                    case Path:
                         throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     default:
                         throw new IllegalStateException();
@@ -817,12 +820,10 @@ public class VertexArray
                         break;
                     }
                     case TriangleStrip:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case TriangleFan:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case QuadStrip:
-                        throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     case Polygon:
+                    case Path:
                         throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     default:
                         throw new IllegalStateException();
@@ -867,6 +868,7 @@ public class VertexArray
                         break;
                     }
                     case Polygon:
+                    case Path:
                         throw new UnsupportedOperationException(String.format("From %s To %s",this.type,thatType));
                     default:
                         throw new IllegalStateException();
@@ -875,6 +877,7 @@ public class VertexArray
 
 
                 case Polygon:
+                case Path:
 
                     switch(thatType){
 
@@ -1224,6 +1227,7 @@ public class VertexArray
                     return CountVertices(to,(fromCountFaces>>1));
 
                 case Polygon:
+                case Path:
                 default:
                     throw new IllegalStateException();
                 }
@@ -1250,6 +1254,7 @@ public class VertexArray
                 //break;
 
             case Polygon:
+            case Path:
             default:
                 throw new IllegalStateException();
             }
@@ -1282,6 +1287,7 @@ public class VertexArray
             return (2 * (countFaces+1));
 
         case Polygon:
+        case Path:
             return 1;
 
         default:
@@ -1312,6 +1318,7 @@ public class VertexArray
             return (countVertices/2)-1;
 
         case Polygon:
+        case Path:
             return 1;
 
         default:
@@ -1400,8 +1407,9 @@ public class VertexArray
                 v[x] = x;
             return v;
         }
+        case Path:
         default:
-            throw new IllegalStateException();
+            throw new IllegalStateException(type.name());
         }
     }
     public final static void SetVertex(int index, float[] vertex, int ofs, float[] vertices){
