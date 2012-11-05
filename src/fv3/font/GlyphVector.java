@@ -126,11 +126,12 @@ public class GlyphVector
         return this;
     }
     public final GlyphVector clear(){
-        this.bounds = null;
+        super.clear();
+
         this.xp = this.x;
         this.yp = this.y;
         this.zp = this.z;
-        this.countVertices(0);
+
         return this;
     }
     public final GlyphVector newline(){

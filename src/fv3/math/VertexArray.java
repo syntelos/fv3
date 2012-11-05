@@ -200,6 +200,11 @@ public class VertexArray
     }
 
 
+    public VertexArray clear(){
+        this.countVertices(0);
+        this.bounds = null;
+        return this;
+    }
     public VertexArray clone(){
         try {
             VertexArray clone = (VertexArray)super.clone();

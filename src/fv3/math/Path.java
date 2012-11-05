@@ -70,6 +70,10 @@ public class Path
     public Path(Type type, int cap){
         super(type,cap);
     }
+    public Path(Winding winding){
+        this();
+        this.winding = winding;
+    }
 
 
     public Winding getWinding(){
@@ -139,6 +143,35 @@ public class Path
 
         this.addVerticesXY(operands);
     }
+    public void reset(){
+
+        this.clear();
+    }
+    public void set(path.Path path){
+        this.reset();
+        this.add(path);
+    }
+    public void add(path.Path path){
+        for (Operand operand: path.toPathIterable()){
+            switch(operand.op){
+            case MoveTo:
+                this.moveTo(operand.vertices);
+                break;
+            case LineTo:
+                this.lineTo(operand.vertices);
+                break;
+            case QuadTo:
+                this.quadTo(operand.vertices);
+                break;
+            case CubicTo:
+                this.cubicTo(operand.vertices);
+                break;
+            case Close:
+                this.close();
+                break;
+            }
+        }
+    }
     public int lindexOf(Op op){
         Op[] operators = this.operators;
         if (null != operators){
@@ -160,6 +193,10 @@ public class Path
             return false;
     }
 
+    public final void moveTo(float[] operands) {
+
+        this.moveTo(operands[0],operands[1]);
+    }
     public final void moveTo(float x, float y) {
         if (this.lop() == Op.MoveTo)
             this.setVertex(this.index-1,x,y,0);
@@ -167,15 +204,45 @@ public class Path
             this.add(Op.MoveTo,new float[]{x,y});
         }
     }
+    public final void lineTo(float[] operands) {
+
+        this.lineTo(operands[0],operands[1]);
+    }
     public final void lineTo(float x, float y) {
 
         this.add(Op.LineTo,new float[]{x,y});
+    }
+    public void quadTo(float[] operands)
+    {
+        switch(operands.length){
+        case 4:
+            this.quadTo(operands[0],operands[1],operands[2],operands[3]);
+            break;
+        case 6:
+            this.quadTo(operands[0],operands[1],operands[3],operands[4]);
+            break;
+        default:
+            throw new IllegalArgumentException(String.valueOf(operands.length));
+        }
     }
     public void quadTo(float x1, float y1,
                        float x2, float y2)
     {
 
         this.add(Op.QuadTo,new float[]{x1,y1,0,x2,y2,0});
+    }
+    public void cubicTo(float[] operands)
+    {
+        switch(operands.length){
+        case 6:
+            this.cubicTo(operands[0],operands[1],operands[2],operands[3],operands[4],operands[5]);
+            break;
+        case 9:
+            this.cubicTo(operands[0],operands[1],operands[3],operands[4],operands[6],operands[7]);
+            break;
+        default:
+            throw new IllegalArgumentException(String.valueOf(operands.length));
+        }
     }
     public void cubicTo(float x1, float y1,
                         float x2, float y2,
