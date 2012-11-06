@@ -92,7 +92,13 @@
 
   <target name="test-apply" depends="jar-test" description="Package and run tests.">
 
-    <java classpath="${target.test.jar}" classname="Apply" fork="true" failOnError="true">
+    <java classname="Apply" fork="true" failOnError="true">
+      <jvmarg value="-Dpath.Parser.Debug=true"/>
+      <classpath>
+        <pathelement location="${target.test.jar}" />
+        <pathelement location="${target.jar}" />
+        <path refid="lib.path" />
+      </classpath>
     </java>
 
   </target>

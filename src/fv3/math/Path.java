@@ -18,6 +18,7 @@
  */
 package fv3.math;
 
+import path.Formatter;
 import path.Op;
 import path.Operand;
 import path.Winding;
@@ -55,8 +56,6 @@ public class Path
     protected Winding winding;
 
     protected boolean closed;
-
-    protected int index;
 
     protected Op[] operators;
 
@@ -102,8 +101,6 @@ public class Path
 
             this.closed = false;
 
-            this.index = 0;
-
             return this;
         }
         else
@@ -142,6 +139,9 @@ public class Path
         this.operators = Op.Add(this.operators,op);
 
         this.addVerticesXY(operands);
+
+        if (path.Parser.Debug)
+            path.Parser.Out.printf("%s %s%n",op.name(),op.format(operands));
     }
     public void reset(){
 
@@ -172,6 +172,13 @@ public class Path
             }
         }
     }
+    public int lindex(){
+        Op[] operators = this.operators;
+        if (null != operators)
+            return (operators.length-1); 
+        else
+            return -1;
+    }
     public int lindexOf(Op op){
         Op[] operators = this.operators;
         if (null != operators){
@@ -198,8 +205,9 @@ public class Path
         this.moveTo(operands[0],operands[1]);
     }
     public final void moveTo(float x, float y) {
-        if (this.lop() == Op.MoveTo)
-            this.setVertex(this.index-1,x,y,0);
+        final int lindex = this.lindex();
+        if (Op.MoveTo == this.op(lindex))
+            this.setVertex(lindex,x,y,0);
         else {
             this.add(Op.MoveTo,new float[]{x,y});
         }
@@ -286,6 +294,9 @@ public class Path
     public java.util.Iterator<Operand> toPathIterator(){
         return new path.Iterator(this,this.operators,this.vertices);
     }
+    public String toString(){
+        return Formatter.ToString(this);
+    }
 
 
     /**
@@ -298,9 +309,12 @@ public class Path
             int vx = 0;
             for (int cc = 0; cc <= search; cc++){
 
-                vx += (operators[cc].operands*3);
+                if (cc == search)
+                    return vx;
+                else
+                    vx += (operators[cc].operands*3);
             }
-            throw new IllegalStateException();
+            throw new IllegalStateException(String.format("Index not found '%d' in '%d' length list of operators",search,operators.length));
         }
     }
     /**
